@@ -1,0 +1,10 @@
+pynlpl/
+venv38/
+.idea/
+*.zip
+__pycache__/
+configs/__pycache__/
+lm/__pycache__/
+.DS_Store
+.git
+.venv
