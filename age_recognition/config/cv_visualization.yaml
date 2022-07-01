@@ -1,0 +1,12 @@
+batch_size: 16
+datasets: ['cv_english']
+del_freq: 1
+gpu: 0
+log_freq: 10
+lr: 3e-5
+max_age: 5
+max_len: 448
+model: 'sequential'
+pooling: ['mean', 'cls', 'max', 'first-last-avg']
+seed: 42
+transformer: ["hubert", "xlsr", "conformer"]

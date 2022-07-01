@@ -6,7 +6,7 @@ from utils import map_to_array
 
 
 class AgeRecModel(nn.Module):
-    def __init__(self, n_classes, device):
+    def __init__(self, n_classes, pooling, device):
         super(AgeRecModel, self).__init__()
         self.device = device
 
@@ -15,6 +15,11 @@ class AgeRecModel(nn.Module):
         # linear output layer for classification into 4 age groups
         if n_classes is not None:
             self.linear = nn.Linear(self.transformer.config.hidden_size, n_classes)
+
+        assert pooling in ['mean', 'cls', 'max', 'first-last-avg']
+        self.transformer.config.pooling = pooling
+        self.pooling = pooling
+
         self.to(self.device)
 
     def forward(self, inputs, out_from='full'):
@@ -43,7 +48,7 @@ if __name__ == '__main__':
     ds = ds.map(map_to_array)
 
     device = torch.device('cpu')
-    ar_model = AgeRecModel(4, device)
+    ar_model = AgeRecModel(4, 'mean', device)
 
     logits = ar_model(ds["speech"][0], out_from='full')
     predicted_class_ids = torch.argmax(logits, dim=-1)
