@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
-
+#!/usr/bin/env python3
 import sys
 import rospy
-import torch
 from speech_processing.srv import SpeechRecognition
 from speech_processing.msg import command_and_age
 """

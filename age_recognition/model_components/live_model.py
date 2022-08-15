@@ -6,36 +6,16 @@ import numpy as np
 import pyaudio as pa
 import torch
 from queue import Queue
-from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
-import soundfile as sf
+from age_recognition.model_components.live_inference import LiveInference
+from speech_processing.src.speech_client import speech_recognized_client
 
 
 class ASRLiveModel:
     exit_event = threading.Event()
 
     def __init__(self, model_name, device_name="default"):
+        self.model_name = model_name
         self.device_name = device_name
-        self.processor = Wav2Vec2Processor.from_pretrained(model_name)
-        # todo: add call for own trained model
-        self.model = Wav2Vec2ForCTC.from_pretrained(model_name)
-
-    def buffer_to_text(self, audio_buffer):
-        if len(audio_buffer) == 0:
-            return ""
-
-        inputs = self.processor(torch.tensor(audio_buffer), sampling_rate=16_000, return_tensors="pt", padding=True)
-
-        with torch.no_grad():
-            logits = self.model(inputs.input_values).logits
-
-        predicted_ids = torch.argmax(logits, dim=-1)
-        transcription = self.processor.batch_decode(predicted_ids)[0]
-        return transcription.lower()
-
-    def file_to_text(self, filename):
-        audio_input, samplerate = sf.read(filename)
-        assert samplerate == 16000
-        return self.buffer_to_text(audio_input)
 
     def start(self):
         """start the asr process"""
@@ -97,7 +77,8 @@ class ASRLiveModel:
         stream.close()
         audio.terminate()
 
-    def asr_process(self, in_queue, output_queue):
+    def asr_process(self, model_name, in_queue, output_queue):
+        wave2vec_asr = LiveInference(model_name)
 
         print("\nAb jetzt kann gesprochen werden!\n")
         while True:
@@ -108,7 +89,7 @@ class ASRLiveModel:
             float64_buffer = np.frombuffer(
                 audio_frames, dtype=np.int16) / 32767
             start = time.perf_counter()
-            text = self.buffer_to_text(float64_buffer).lower()
+            text = wave2vec_asr.buffer_to_text(float64_buffer).lower()
             inference_time = time.perf_counter() - start
             sample_length = len(float64_buffer) / 16000  # length in sec
             if text != "":
@@ -134,28 +115,3 @@ class ASRLiveModel:
     def get_last_text(self):
         """returns the text, sample length and inference time in seconds."""
         return self.asr_output_queue.get()
-
-    def adjust_for_ambient_noise(self, source, duration=1):
-        """
-        Adjusts the energy threshold dynamically using audio from ``source`` (an ``AudioSource`` instance) to account for ambient noise.
-        Intended to calibrate the energy threshold with the ambient energy level. Should be used on periods of audio without speech - will stop early if any speech is detected.
-        The ``duration`` parameter is the maximum number of seconds that it will dynamically adjust the threshold for before returning. This value should be at least 0.5 in order to get a representative sample of the ambient noise.
-        """
-        assert isinstance(source, AudioSource), "Source must be an audio source"
-        assert source.stream is not None, "Audio source must be entered before adjusting, see documentation for ``AudioSource``; are you using ``source`` outside of a ``with`` statement?"
-        assert self.pause_threshold >= self.non_speaking_duration >= 0
-
-        seconds_per_buffer = (source.CHUNK + 0.0) / source.SAMPLE_RATE
-        elapsed_time = 0
-
-        # adjust energy threshold until a phrase starts
-        while True:
-            elapsed_time += seconds_per_buffer
-            if elapsed_time > duration: break
-            buffer = source.stream.read(source.CHUNK)
-            energy = audioop.rms(buffer, source.SAMPLE_WIDTH)  # energy of the audio signal
-
-            # dynamically adjust the energy threshold using asymmetric weighted average
-            damping = self.dynamic_energy_adjustment_damping ** seconds_per_buffer  # account for different chunk sizes and rates
-            target_energy = energy * self.dynamic_energy_ratio
-            self.energy_threshold = self.energy_threshold * damping + target_energy * (1 - damping)

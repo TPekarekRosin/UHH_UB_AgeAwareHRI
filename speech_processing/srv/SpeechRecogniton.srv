@@ -1,4 +1,4 @@
-tuple signal
+float64[] signal
 ---
 string recognized
 float64 age_estimation

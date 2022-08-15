@@ -7,8 +7,6 @@ import stomp
 import yaml
 
 from model_components.live_model import ASRLiveModel
-from speech_processing.src.speech_server import speech_server
-from speech_processing.src.speech_client import speech_recognized_client
 
 # Init command line logging
 logging.basicConfig(level='INFO', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
