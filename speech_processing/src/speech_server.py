@@ -6,7 +6,6 @@ from age_recognition.model_components.live_inference import LiveInference
 
 
 def speech_recognized(req):
-    # todo: turn signal into queue datatype for inference model
     signal = req.signal
 
     inference_model = LiveInference()
