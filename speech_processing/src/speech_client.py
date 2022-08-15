@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys
 import rospy
+import torch
 from speech_processing.srv import SpeechRecognition
 from speech_processing.msg import command_and_age
 """
@@ -35,9 +36,13 @@ def speech_recognized_client(signal):
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
 
-    # TODO: decode the logits and age_estimation
+    # TODO: decode the logits
+    recognized = response.recognized
     command = "bring me coffee"
-    age = 0
+
+    # TODO: do more refined binary estimation,
+    age = 0 if response.age_estimation <= 0.5 else 1
+
     try:
         age_recognition_publisher(command, age)
     except rospy.ROSInterruptException:

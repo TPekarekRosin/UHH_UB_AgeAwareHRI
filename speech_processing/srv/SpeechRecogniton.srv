@@ -1,4 +1,4 @@
 tuple signal
 ---
-tuple logits
-float32 age_estimation
+string recognized
+float64 age_estimation

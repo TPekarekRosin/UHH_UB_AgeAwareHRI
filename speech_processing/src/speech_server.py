@@ -1,14 +1,15 @@
 
 import rospy
-from speech_processing.srv import SpeechRecognition
+from speech_processing.srv import *
+from age_recognition.model_components.live_model import live_speech_recognition
 
 
 def speech_recognized(req):
     signal = req.signal
-    # TODO add speech recognition
-    logits = ((0.1, 0.2, 0.3), (0.4, 0.5, 0.6))
+    # recognized, age_estimation = live_speech_recognition(signal)
+    recognized = "bring me coffee"
     age_estimation = 0.6
-    return SpeechRecognition(logits, age_estimation)
+    return SpeechRecognitionResponse(recognized, age_estimation)
 
 
 def speech_server():
