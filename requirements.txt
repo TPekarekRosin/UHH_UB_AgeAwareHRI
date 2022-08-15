@@ -1,0 +1,7 @@
+torch
+torchaudio
+pyyaml
+deep-phonemizer
+rospy
+pyaudio
+editdistance

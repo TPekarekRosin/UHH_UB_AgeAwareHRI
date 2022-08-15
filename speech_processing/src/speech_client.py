@@ -29,17 +29,7 @@ def speech_recognized_client(signal):
     try:
         recognize_speech = rospy.ServiceProxy('speech_recognized', SpeechRecognition)
         response = recognize_speech(signal)
+        return response.recognized, response.age_estimation
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
 
-    # TODO: decode the logits
-    recognized = response.recognized
-    command = "bring me coffee"
-
-    # TODO: do more refined binary estimation,
-    age = 0 if response.age_estimation <= 0.5 else 1
-
-    try:
-        age_recognition_publisher(command, age)
-    except rospy.ROSInterruptException:
-        pass

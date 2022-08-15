@@ -58,14 +58,15 @@ if __name__ == '__main__':
         device = p.get_device_info_by_index(dev_idx)
 
         logger.info("Loading wav2vec 2.0 Model...")
-        asr = ASRLiveModel(model_name, device_name=device.get('name'))
+        asr = ASRLiveModel(device.get('name'), **config)
         asr.start()
 
         try:
             while True:
-                text, sample_length, inference_time = asr.get_last_text()
+                text, age_estimation, sample_length, inference_time = asr.get_last_text()
                 logger.info(f"Sample length: {sample_length:.3f}s"
                             + f"\tInference time: {inference_time:.3f}s"
+                            + f"\tAge Estimation: {age_estimation:.3f}"
                             + f"\tHeard: {text}")
         except KeyboardInterrupt:
             asr.stop()
