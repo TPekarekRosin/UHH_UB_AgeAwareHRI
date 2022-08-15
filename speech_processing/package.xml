@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>age_recognition_pub</name>
+  <name>speech_processing</name>
   <version>0.0.0</version>
-  <description>The age_recognition_pub package</description>
+  <description>The speech_processing package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="hassouna@todo.todo">hassouna</maintainer>
+  <maintainer email="theresa.pekarek-rosin@uni-hamburg.de">Theresa Pekarek Rosin</maintainer>
+  <maintainer email="hassouna@uni-bremen.de">Vanessa Hassouna</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -58,6 +59,8 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
