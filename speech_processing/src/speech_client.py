@@ -3,10 +3,6 @@ import sys
 import rospy
 from speech_processing.srv import SpeechRecognition
 from speech_processing.msg import command_and_age
-"""
-speech_client.py handles server calls to the speech server, and passes the response
-along to the decoder, afterwards the decoded speech and binary age is published
-"""
 
 
 def age_recognition_publisher(command, age):

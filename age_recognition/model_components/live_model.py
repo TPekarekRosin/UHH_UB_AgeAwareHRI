@@ -105,18 +105,16 @@ class ASRLiveModel:
             inference_time = time.perf_counter() - start
             sample_length = len(float64_buffer) / 16000  # length in sec
             if text != "":
-                output_queue.put([text, age_estimation, sample_length, inference_time])
-
                 age = 0 if age_estimation <= 0.5 else 1
                 # todo: only return command for confidence values above threshold value
                 command, confidence = self.command_recognition(text)
-                print("Recognized: ", text)
-                print("Command: ", command, ", Confidence: ", confidence)
                 # Publish binary age and recognized command
                 try:
                     age_recognition_publisher(command, age)
                 except rospy.ROSInterruptException:
                     pass
+
+                output_queue.put([text, command, confidence, age_estimation, sample_length, inference_time])
 
     def get_last_text(self):
         # returns the text, sample length and inference time in seconds.

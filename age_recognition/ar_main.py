@@ -63,11 +63,12 @@ if __name__ == '__main__':
 
         try:
             while True:
-                text, age_estimation, sample_length, inference_time = asr.get_last_text()
+                text, command, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
                 logger.info(f"Sample length: {sample_length:.3f}s"
                             + f"\tInference time: {inference_time:.3f}s"
                             + f"\tAge Estimation: {age_estimation:.3f}"
-                            + f"\tHeard: {text}")
+                            + f"\tHeard: '{text}'")
+                logger.info("Assume command: '", command, "', with confidence of ", confidence)
         except KeyboardInterrupt:
             asr.stop()
     else:
