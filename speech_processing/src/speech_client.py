@@ -30,7 +30,7 @@ def age_recognition_publisher(command, age):
 def speech_recognized_client(signal):
     rospy.wait_for_service('speech_recognized')
     try:
-        recognize_speech = rospy.ServiceProxy('add_two_ints', SpeechRecognition)
+        recognize_speech = rospy.ServiceProxy('speech_recognized', SpeechRecognition)
         response = recognize_speech(signal)
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
