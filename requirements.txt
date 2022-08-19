@@ -5,3 +5,5 @@ deep-phonemizer
 rospy
 pyaudio
 editdistance
+stomp-py
+webrtcvad
