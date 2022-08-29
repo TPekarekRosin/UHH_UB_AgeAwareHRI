@@ -10,8 +10,7 @@ import rospy
 from queue import Queue
 from dp.phonemizer import Phonemizer
 
-from age_recognition.model_components.live_inference import LiveInference
-from age_recognition.model_components.utils import get_input_device_id, \
+from utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
 from speech_processing.src.speech_client import speech_recognized_client, age_recognition_publisher
 
