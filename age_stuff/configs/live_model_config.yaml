@@ -1,5 +1,0 @@
-model_name: "facebook/wav2vec2-large-xlsr-53"
-gpu: 0
-sample_rate: 16000
-frame_duration: 30 # 10, 20 or 30 for vad
-n_channels: 1
