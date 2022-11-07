@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sys
 import rospy
-from speech_processing.srv import SpeechRecognition
-from speech_processing.msg import command_and_age
+from speech_processing.srv import *
+from speech_processing.msg import *
 
 
 def age_recognition_publisher(command, age):
@@ -28,4 +28,3 @@ def speech_recognized_client(signal):
         return response.recognized, response.age_estimation
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
-
