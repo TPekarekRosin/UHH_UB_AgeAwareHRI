@@ -9,3 +9,4 @@ editdistance
 stomp-py
 webrtcvad
 soundfile
+transformers

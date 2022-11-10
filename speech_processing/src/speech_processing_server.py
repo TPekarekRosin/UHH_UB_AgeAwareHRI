@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 import rospy
+from models.live_model import LiveInference
 from speech_processing.srv import *
-
-from age_recognition.model_components.live_inference import LiveInference
 
 
 def speech_recognized(req):

@@ -6,7 +6,7 @@ import pyaudio as pa
 import stomp
 import yaml
 
-from model_components.live_model import ASRLiveModel
+from models.live_model import ASRLiveModel
 
 # Init command line logging
 logging.basicConfig(level='INFO', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

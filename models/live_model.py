@@ -9,12 +9,44 @@ import torch
 import rospy
 from queue import Queue
 from dp.phonemizer import Phonemizer
+import soundfile as sf
+import torch
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
 
-from utils import get_input_device_id, \
+from .utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
-from speech_processing.src.speech_client import speech_recognized_client, age_recognition_publisher
+from speech_processing.src.speech_processing_client import speech_recognized_client, age_recognition_publisher
 
 # TODO: add hotword detection
+
+
+class LiveInference:
+    def __init__(self):
+        # todo add model names
+        self.processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53")
+        # todo: add functionality to load own model
+        self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53")
+
+    def buffer_to_text(self, audio_buffer):
+        if len(audio_buffer) == 0:
+            return ""
+
+        inputs = self.processor(torch.tensor(audio_buffer), sampling_rate=16_000, return_tensors="pt", padding=True)
+
+        with torch.no_grad():
+            logits = self.model(inputs.input_values).logits
+
+        predicted_ids = torch.argmax(logits, dim=-1)
+        transcription = self.processor.batch_decode(predicted_ids)[0]
+
+        # todo: age estimation
+        age_estimation = 0.8
+        return transcription.lower(), age_estimation
+
+    def file_to_text(self, filename):
+        audio_input, samplerate = sf.read(filename)
+        assert samplerate == 16000
+        return self.buffer_to_text(audio_input)
 
 
 class ASRLiveModel:
@@ -34,6 +66,7 @@ class ASRLiveModel:
                                             args=(self.device_name,
                                                   self.asr_input_queue,))
 
+        # todo: replace this shit with sentencepiece models
         self.phonemizer = Phonemizer.from_checkpoint('checkpoints/best_model.pt')
         self.sentence_list, self.phoneme_list = read_sentence_list(self.phonemizer)
 
