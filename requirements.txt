@@ -3,7 +3,9 @@ torchaudio
 pyyaml
 deep-phonemizer
 rospy
+rospkg
 pyaudio
 editdistance
 stomp-py
 webrtcvad
+soundfile
