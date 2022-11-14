@@ -2,6 +2,7 @@ import os
 import soundfile as sf
 import editdistance
 import numpy as np
+import sentencepiece as spm
 
 
 def get_input_device_id(device_name, microphones):
@@ -29,18 +30,20 @@ def map_to_array(batch):
     return batch
 
 
-def read_sentence_list(phonemizer):
+def read_sentence_list():
     folder, _ = os.path.split(__file__)
     filepath = os.path.join(os.path.dirname(folder), 'configs', 'commands.txt')
+    sp = spm.SentencePieceProcessor()
+    sp.load(os.path.join('./sp_models', 'en_massive_2000.model'))
 
-    sentence_list, phoneme_list = [], []
+    sentence_list, tokens_list = [], []
     with open(filepath, "r") as f:
         for sentence in f:
             sentence = sentence.rstrip('\n')
             sentence_list.append(sentence.lower())
-            phonemes = phonemizer(sentence, lang='en_us')
-            phoneme_list.append(phonemes)
-    return sentence_list, phoneme_list
+            tokens = sp.encode_as_ids(sentence)
+            tokens_list.append(tokens)
+    return sentence_list, tokens_list
 
 
 def levenshtein(a, b):

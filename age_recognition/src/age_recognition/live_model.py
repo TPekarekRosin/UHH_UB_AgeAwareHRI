@@ -7,11 +7,12 @@ import numpy as np
 import pyaudio as pa
 import torch
 import rospy
+import yaml
 from queue import Queue
-from dp.phonemizer import Phonemizer
 import soundfile as sf
 import torch
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
+import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
@@ -22,10 +23,17 @@ from speech_processing.src.speech_processing_client import speech_recognized_cli
 
 class LiveInference:
     def __init__(self):
-        # todo add model names
-        self.processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53")
+        folder, _ = os.path.split(__file__)
+        filepath = os.path.join(folder, 'configs', 'live_model_config.yaml')
+        with open(filepath) as f:
+            config = yaml.safe_load(f)
+        
         # todo: add functionality to load own model
-        self.model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53")
+        self.processor = Wav2Vec2Processor.from_pretrained(config['model_name'])
+        self.model = Wav2Vec2ForCTC.from_pretrained(config['model_name'])
+        
+        # todo add ar_model
+        # self.ar_model =
 
     def buffer_to_text(self, audio_buffer):
         if len(audio_buffer) == 0:
@@ -66,9 +74,7 @@ class ASRLiveModel:
                                             args=(self.device_name,
                                                   self.asr_input_queue,))
 
-        # todo: replace this shit with sentencepiece models
-        self.phonemizer = Phonemizer.from_checkpoint('checkpoints/best_model.pt')
-        self.sentence_list, self.phoneme_list = read_sentence_list(self.phonemizer)
+        self.sentence_list, self.tokens_list = read_sentence_list()
 
     def start(self):
         # start the asr process
@@ -153,10 +159,12 @@ class ASRLiveModel:
         return self.asr_output_queue.get()
 
     def command_recognition(self, text):
-        ph_text = self.phonemizer(text, lang='en_us')
+        sp = spm.SentencePieceProcessor()
+        sp.load(os.path.join('./sp_models', 'en_massive_2000.model'))
+        tokens = sp.encode_as_ids(text)
 
-        best_match = min_levenshtein(ph_text, self.phoneme_list)
-        distance = levenshtein(ph_text, self.phoneme_list[best_match])
-        confidence = 1.0 - min(1.0, float(distance) / len(self.phoneme_list[best_match]))
-
+        best_match = min_levenshtein(tokens, self.tokens_list)
+        distance = levenshtein(tokens, self.tokens_list[best_match])
+        confidence = 1.0 - min(1.0, float(distance) / len(self.tokens_list[best_match]))
+        
         return self.sentence_list[best_match], confidence
