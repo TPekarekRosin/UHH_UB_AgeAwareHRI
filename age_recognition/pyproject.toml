@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"] # todo add package requirements
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "age_recognition"
+version = "0.0.1"
+authors = [
+  { name="Theresa Pekarek Rosin", email="author@example.com" },
+]
+description = "Performs live ASR and speaker age recognition with ROS."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/TPekarekRosin/UHH_UB_AgeAwareHRI"
