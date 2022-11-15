@@ -9,3 +9,10 @@ lm/__pycache__/
 .git
 .venv
 .*~
+
+devel/
+build/
+src/CMakeLists.txt
+.catkin_workspace
+/src/speech_processing/__init__.py
+/src/speech_processing/src/__init__.py

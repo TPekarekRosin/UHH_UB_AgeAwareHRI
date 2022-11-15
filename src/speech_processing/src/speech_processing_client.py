@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import sys
 import rospy
 import pyaudio as pa
 from speech_processing.msg import *

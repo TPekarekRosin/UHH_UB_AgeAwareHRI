@@ -8,6 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
+catkin_python_setup()
+
  add_message_files(
    FILES
    command_and_age.msg
@@ -34,6 +36,6 @@ include_directories(
 )
 
 
-catkin_install_python(PROGRAMS src/speech_processing_server.py  src/speech_processing_client.py
+catkin_install_python(PROGRAMS src/speech_processing_client.py src/age_recognition/live_model.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )

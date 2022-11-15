@@ -5,7 +5,6 @@ import webrtcvad
 
 import numpy as np
 import pyaudio as pa
-import torch
 import rospy
 import yaml
 from queue import Queue
@@ -16,7 +15,6 @@ import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
-from speech_processing.src.speech_processing_client import age_recognition_publisher
 
 
 class LiveInference:
@@ -56,7 +54,7 @@ class ASRLiveModel:
         self.device_name = device_name
 
         folder, _ = os.path.split(__file__)
-        filepath = os.path.join(os.path.dirname(folder), 'configs', 'live_model_config.yaml')
+        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs', 'live_model_config.yaml')
         with open(filepath) as f:
             self.config = yaml.safe_load(f)
 
@@ -145,6 +143,7 @@ class ASRLiveModel:
                 command, confidence = self.command_recognition(text)
                 # Publish binary age, recognized text, assumed command and confidence
                 try:
+                    from speech_processing_client import age_recognition_publisher
                     age_recognition_publisher(text, command, age, confidence)
                 except rospy.ROSInterruptException:
                     pass
@@ -155,8 +154,11 @@ class ASRLiveModel:
         return self.asr_output_queue.get()
 
     def command_recognition(self, text):
+        folder, _ = os.path.split(__file__)
+        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'sp_models', 'en_massive_2000.model')
+
         sp = spm.SentencePieceProcessor()
-        sp.load(os.path.join('./sp_models', 'en_massive_2000.model'))
+        sp.load(filepath)
         tokens = sp.encode_as_ids(text)
 
         best_match = min_levenshtein(tokens, self.tokens_list)

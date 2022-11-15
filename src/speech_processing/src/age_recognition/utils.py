@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import soundfile as sf
 import editdistance
@@ -32,9 +33,11 @@ def map_to_array(batch):
 
 def read_sentence_list():
     folder, _ = os.path.split(__file__)
-    filepath = os.path.join(os.path.dirname(folder), 'configs', 'commands.txt')
+    filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs', 'commands.txt')
+
     sp = spm.SentencePieceProcessor()
-    sp.load(os.path.join('./sp_models', 'en_massive_2000.model'))
+    sp_filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'sp_models', 'en_massive_2000.model')
+    sp.load(sp_filepath)
 
     sentence_list, tokens_list = [], []
     with open(filepath, "r") as f:
