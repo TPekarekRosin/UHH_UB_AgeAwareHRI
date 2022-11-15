@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 import sys
 import rospy
-from speech_processing.srv import *
+import pyaudio as pa
 from speech_processing.msg import *
+from age_recognition.live_model import ASRLiveModel
 
 
-def age_recognition_publisher(command, age):
-    pub = rospy.Publisher('age_recognition', command_and_age)
-    rospy.init_node('custom_age_talker', anonymous=True)
+def speech_publisher(text, command, age, confidence):
+    pub = rospy.Publisher('speech_publisher', command_and_age)
+    # rospy.init_node('custom_age_talker', anonymous=True)
     r = rospy.Rate(10)  # 10hz
 
     msg = command_and_age()
+    msg.text = text
     msg.command = command
     msg.age = age
+    msg.confidence = confidence
 
     while not rospy.is_shutdown():
         rospy.loginfo(msg)
@@ -20,11 +23,35 @@ def age_recognition_publisher(command, age):
         r.sleep()
 
 
-def speech_recognized_client(signal):
-    rospy.wait_for_service('speech_recognized')
+if __name__ == "__main__":
+    rospy.init_node('speech_engine', anonymous=True)
+
+    # choose audio device
+    p = pa.PyAudio()
+    print('Available audio input devices:')
+    input_devices = []
+    for i in range(p.get_device_count()):
+        dev = p.get_device_info_by_index(i)
+        if dev.get('maxInputChannels'):
+            input_devices.append(i)
+            print(i, dev.get('name'))
+
+    if len(input_devices):
+        dev_idx = -2
+        while dev_idx not in input_devices:
+            print('Please type input device ID:')
+            dev_idx = int(input())
+    device = p.get_device_info_by_index(dev_idx)
+    asr = ASRLiveModel(device.get('name'))
+    asr.start()
+
     try:
-        recognize_speech = rospy.ServiceProxy('speech_recognized', SpeechRecognition)
-        response = recognize_speech(signal)
-        return response.recognized, response.age_estimation
-    except rospy.ServiceException as e:
-        print("Service call failed: %s"%e)
+        while True:
+            text, command, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
+            rospy.loginfo(f"Sample length: {sample_length:.3f}s"
+                          + f"\tInference time: {inference_time:.3f}s"
+                          + f"\tAge Estimation: {age_estimation:.3f}"
+                          + f"\tHeard: '{text}'")
+            rospy.loginfo("Assume command: '", command, "', with confidence of ", confidence)
+    except KeyboardInterrupt:
+        asr.stop()

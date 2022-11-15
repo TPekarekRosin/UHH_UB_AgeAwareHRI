@@ -6,7 +6,7 @@ if [[ "$OSTYPE" =~ ^linux ]]; then
 	fi
   pip install wget
   sudo apt-get install sox libsndfile1 ffmpeg  portaudio19-dev swig
-  pip install -r requirements.txt
-  pip install numpy==1.21
-  pip install setuptools==59.5.0
+  cd age_recognition
+  pip install .
+  cd ..
 fi

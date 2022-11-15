@@ -13,11 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
    command_and_age.msg
 )
 
-add_service_files(
-   FILES
-   SpeechRecognition.srv
-)
-
 generate_messages(
   DEPENDENCIES
   std_msgs

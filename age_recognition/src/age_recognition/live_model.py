@@ -16,18 +16,11 @@ import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
-from speech_processing.src.speech_processing_client import speech_recognized_client, age_recognition_publisher
-
-# TODO: add hotword detection
+from speech_processing.src.speech_processing_client import age_recognition_publisher
 
 
 class LiveInference:
-    def __init__(self):
-        folder, _ = os.path.split(__file__)
-        filepath = os.path.join(folder, 'configs', 'live_model_config.yaml')
-        with open(filepath) as f:
-            config = yaml.safe_load(f)
-        
+    def __init__(self, config):
         # todo: add functionality to load own model
         self.processor = Wav2Vec2Processor.from_pretrained(config['model_name'])
         self.model = Wav2Vec2ForCTC.from_pretrained(config['model_name'])
@@ -58,11 +51,14 @@ class LiveInference:
 
 
 class ASRLiveModel:
-    exit_event = threading.Event()
 
-    def __init__(self, device_name="default", **config):
+    def __init__(self, device_name="default"):
         self.device_name = device_name
-        self.config = config
+
+        folder, _ = os.path.split(__file__)
+        filepath = os.path.join(os.path.dirname(folder), 'configs', 'live_model_config.yaml')
+        with open(filepath) as f:
+            self.config = yaml.safe_load(f)
 
         self.asr_output_queue = Queue()
         self.asr_input_queue = Queue()
@@ -75,6 +71,8 @@ class ASRLiveModel:
                                                   self.asr_input_queue,))
 
         self.sentence_list, self.tokens_list = read_sentence_list()
+
+        self.inference_model = LiveInference(self.config)
 
     def start(self):
         # start the asr process
@@ -113,7 +111,7 @@ class ASRLiveModel:
                             frames_per_buffer=chunk_size)
 
         frames = b''
-        while True:
+        while not rospy.is_shutdown():
             if ASRLiveModel.exit_event.is_set():
                 break
             frame = stream.read(chunk_size)
@@ -130,7 +128,7 @@ class ASRLiveModel:
 
     def asr_process(self, in_queue, output_queue):
         print("\nSpeak!\n")
-        while True:
+        while not rospy.is_shutdown():
             audio_frames = in_queue.get()
             if audio_frames == "close":
                 break
@@ -138,24 +136,22 @@ class ASRLiveModel:
             float64_buffer = np.frombuffer(
                 audio_frames, dtype=np.int16) / 32767
             start = time.perf_counter()
-            # ROS call
-            text, age_estimation = speech_recognized_client(float64_buffer)
+            text, age_estimation = self.inference_model.buffer_to_text(float64_buffer)
             inference_time = time.perf_counter() - start
             sample_length = len(float64_buffer) / 16000  # length in sec
             if text != "":
                 age = 0 if age_estimation <= 0.5 else 1
                 # todo: only return command for confidence values above threshold value
                 command, confidence = self.command_recognition(text)
-                # Publish binary age and recognized command
+                # Publish binary age, recognized text, assumed command and confidence
                 try:
-                    age_recognition_publisher(command, age)
+                    age_recognition_publisher(text, command, age, confidence)
                 except rospy.ROSInterruptException:
                     pass
 
                 output_queue.put([text, command, confidence, age_estimation, sample_length, inference_time])
 
     def get_last_text(self):
-        # returns the text, sample length and inference time in seconds.
         return self.asr_output_queue.get()
 
     def command_recognition(self, text):
