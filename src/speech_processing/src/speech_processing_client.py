@@ -16,10 +16,10 @@ def speech_publisher(text, command, age, confidence):
     msg.age = age
     msg.confidence = confidence
 
-    while not rospy.is_shutdown():
-        rospy.loginfo(msg)
-        pub.publish(msg)
-        r.sleep()
+    #while not rospy.is_shutdown():
+    rospy.loginfo(msg)
+    pub.publish(msg)
+    r.sleep()
 
 
 if __name__ == "__main__":
@@ -47,10 +47,10 @@ if __name__ == "__main__":
     try:
         while True:
             text, command, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
-            rospy.loginfo(f"Sample length: {sample_length:.3f}s"
-                          + f"\tInference time: {inference_time:.3f}s"
-                          + f"\tAge Estimation: {age_estimation:.3f}"
-                          + f"\tHeard: '{text}'")
-            rospy.loginfo("Assume command: '", command, "', with confidence of ", confidence)
+            print(f"Sample length: {sample_length:.3f}s"
+                  + f"\tInference time: {inference_time:.3f}s"
+                  + f"\tAge Estimation: {age_estimation:.3f}"
+                  + f"\tHeard: '{text}'")
+            print("Assume command: '", command, "', with confidence of ", confidence)
     except KeyboardInterrupt:
         asr.stop()

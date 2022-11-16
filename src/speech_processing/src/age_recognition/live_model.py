@@ -144,15 +144,14 @@ class ASRLiveModel:
             sample_length = len(float64_buffer) / 16000  # length in sec
             if text != "":
                 age = 0 if age_estimation <= 0.5 else 1
-                # todo: only return command for confidence values above threshold value
                 command, confidence = self.command_recognition(text)
                 # Publish binary age, recognized text, assumed command and confidence
-                try:
-                    import speech_processing_client as spc
-                    spc.speech_publisher(text, command, age, confidence)
-                except rospy.ROSInterruptException:
-                    pass
-
+                if confidence > 0.5:
+                    try:
+                        import speech_processing_client as spc
+                        spc.speech_publisher(text, command, age, confidence)
+                    except rospy.ROSInterruptException:
+                        pass
                 output_queue.put([text, command, confidence, age_estimation, sample_length, inference_time])
 
     def get_last_text(self):
