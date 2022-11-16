@@ -2,6 +2,7 @@ import os
 import time
 import threading
 import webrtcvad
+import sys
 
 import numpy as np
 import pyaudio as pa
@@ -15,6 +16,9 @@ import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, read_sentence_list, levenshtein, min_levenshtein
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 
 class LiveInference:
@@ -49,6 +53,7 @@ class LiveInference:
 
 
 class ASRLiveModel:
+    exit_event = threading.Event()
 
     def __init__(self, device_name="default"):
         self.device_name = device_name
@@ -112,7 +117,7 @@ class ASRLiveModel:
         while not rospy.is_shutdown():
             if ASRLiveModel.exit_event.is_set():
                 break
-            frame = stream.read(chunk_size)
+            frame = stream.read(chunk_size, exception_on_overflow=False)
             is_speech = vad.is_speech(frame, sample_rate)
             if is_speech:
                 frames += frame
@@ -143,8 +148,8 @@ class ASRLiveModel:
                 command, confidence = self.command_recognition(text)
                 # Publish binary age, recognized text, assumed command and confidence
                 try:
-                    from speech_processing_client import age_recognition_publisher
-                    age_recognition_publisher(text, command, age, confidence)
+                    import speech_processing_client as spc
+                    spc.speech_publisher(text, command, age, confidence)
                 except rospy.ROSInterruptException:
                     pass
 

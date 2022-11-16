@@ -14,3 +14,19 @@ Requires **Python >= 3.8**.
 2) Then execute with ```./setup.bash```
 
 During installation console will ask for sudo password.
+
+
+### Start-up
+1) Open a terminal and start ROS with ```roscore```.
+2) Open another terminal and activate the virtual environment:
+   ```bash
+   source ~/.arvenv/bin/activate
+   ```
+3) Navigate to UHH_UB_AgeAwareHRI Git repository and source the catkin workspace:
+   ```bash
+    source ./devel/setup.bash
+   ```
+4) Start the speech and age recognition:
+    ```bash
+   rosrun speech_processing speech_processing_client.py
+   ```
