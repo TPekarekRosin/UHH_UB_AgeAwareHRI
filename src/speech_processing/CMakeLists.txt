@@ -6,6 +6,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+ # speech_processing
+
 )
 
 catkin_python_setup()
@@ -13,6 +15,8 @@ catkin_python_setup()
  add_message_files(
    FILES
    command_and_age.msg
+   message_to_robot.msg
+   message_from_robot.msg
 )
 
 generate_messages(

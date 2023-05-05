@@ -118,6 +118,7 @@ class ASRLiveModel:
                 if confidence > 0.5:
                     try:
                         import speech_processing_client as spc
+                        print("evtl circular import? ")
                         spc.speech_publisher(text, command, age, confidence)
                     except rospy.ROSInterruptException:
                         pass

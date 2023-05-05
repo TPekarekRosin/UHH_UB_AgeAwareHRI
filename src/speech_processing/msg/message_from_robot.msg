@@ -1,0 +1,2 @@
+string step
+bool interruptable

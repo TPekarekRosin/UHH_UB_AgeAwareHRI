@@ -3,10 +3,10 @@ import rospy
 import pyaudio as pa
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
-
+#from speech_processing.msg import command_and_age
 
 def speech_publisher(text, command, age, confidence):
-    pub = rospy.Publisher('speech_publisher', command_and_age)
+    pub = rospy.Publisher('speech_publisher', command_and_age, queue_size=10)
     # rospy.init_node('custom_age_talker', anonymous=True)
     r = rospy.Rate(10)  # 10hz
 
