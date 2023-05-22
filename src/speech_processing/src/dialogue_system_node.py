@@ -10,7 +10,7 @@ import select
 
 class dialogue_node_class:
     def __init__(self) -> None:
-        self.pub = rospy.Publisher('to_robot', message_to_robot, queue_size=10)
+        #self.pub = rospy.Publisher('to_robot', message_to_robot, queue_size=10)
         self.pub_interrupt_minor = rospy.Publisher('robot_minor_interruption', message_to_robot, queue_size=10)
         self.pub_interrupt_major = rospy.Publisher('robot_major_interruption', message_to_robot, queue_size=10)
 
@@ -28,7 +28,8 @@ class dialogue_node_class:
         
         response = self.dia.process_speech_input(data.text,data.command,data.age, data.confidence)
         if response != None:
-            self.pub.publish(*response)
+            #self.pub.publish(*response)
+            self.pub_interrupt_minor.publish(*response)
     def callback_from_robot(self,data):
         response_to_synthesizer = self.dia.process_robot_input(robot_interruptable=data.interruptable, robot_state= data.step)
         self.pub_to_synthesizer.publish(response_to_synthesizer)
