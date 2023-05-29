@@ -26,7 +26,20 @@ During installation console will ask for sudo password.
    ```bash
     source ./devel/setup.bash
    ```
-4) Start the speech and age recognition:
+4) Start these in separate terminals. 
+   Start the speech and age recognition:
     ```bash
    rosrun speech_processing speech_processing_client.py
+   ```
+   Start the speech and age recognition:
+    ```bash
+   rosrun speech_processing dialogue_system_node.py.py
+   ```
+   Start the speech and age recognition:
+    ```bash
+   rosrun speech_processing speech_synthesis.py
+   ```
+   Start the speech and age recognition:
+    ```bash
+   rosrun robot robot.py
    ```
