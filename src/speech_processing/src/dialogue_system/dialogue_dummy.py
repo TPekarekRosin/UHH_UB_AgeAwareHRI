@@ -1,10 +1,4 @@
-#string command
-#int32 age
-#float32 confidence
-#string object_type
-#string color
-#string name
-#string location
+import rospy
 
 class dialogue_system: 
     def __init__(self):
@@ -34,7 +28,12 @@ class dialogue_system:
                 return "minor",("continue", 60, 1, "mug", "mug", "red", "name","counter","large")
                 
                 #return "continue"
-
+    
+    def get_objects_in_use(self):
+        # looks at state of rosparam \objects_in_use and return list of objects
+        param_name = rospy.search_param('object_in_use')
+        object_str = rospy.get_param(param_name)
+        return object_str.split(',')
 
     def process_robot_input(self,robot_state,robot_interruptable):
         self.robot_state = robot_state
