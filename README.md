@@ -31,15 +31,15 @@ During installation console will ask for sudo password.
     ```bash
    rosrun speech_processing speech_processing_client.py
    ```
-   Start the speech and age recognition:
+   Start the dummy dialogue manager:
     ```bash
    rosrun speech_processing dialogue_system_node.py.py
    ```
-   Start the speech and age recognition:
+   Start the dummy speech synthesis:
     ```bash
    rosrun speech_processing speech_synthesis.py
    ```
-   Start the speech and age recognition:
+   Start the dummy robot:
     ```bash
    rosrun robot robot.py
    ```
