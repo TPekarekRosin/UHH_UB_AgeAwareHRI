@@ -14,9 +14,9 @@ class dialogue_system:
     def process_speech_input(self,text,command, age,confidence):
         if command == "stop" and confidence>0.5:
 
-            return ("stop",age, confidence,"None","Red","Günther","Kitchen","large")
+            return ("stop",age, confidence,"None","None","Red","Günther","Kitchen","large")
         if command == "can i have coffee" and confidence>0.5 :
-            return ("coffee", age, confidence, "mug","red", "name","counter","large")
+            return ("coffee", age, confidence, "mug", "mug", "red", "name","counter","large")
         
     def process_commandline_input(self,command):
         
@@ -25,13 +25,13 @@ class dialogue_system:
                 print("robot not interruptable")
                 return "do_not_send","None"
             else:
-                return "major" ,("stop", 60, 1, "mug","red", "name","counter","large")
+                return "major" ,("stop", 60, 1, "mug", "mug", "red", "name","counter","large")
         elif command == "continue":
             if self.robot_state=="working":
                 print("already working")
                 return "minor", "None"
             else: 
-                return "minor",("continue", 60, 1, "mug","red", "name","counter","large")
+                return "minor",("continue", 60, 1, "mug", "mug", "red", "name","counter","large")
                 
                 #return "continue"
 
