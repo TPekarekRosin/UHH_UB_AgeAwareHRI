@@ -17,6 +17,7 @@ catkin_python_setup()
    command_and_age.msg
    message_to_robot.msg
    message_from_robot.msg
+   dict_object.msg
 )
 
 generate_messages(

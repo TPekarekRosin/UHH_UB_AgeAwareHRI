@@ -1,9 +1,7 @@
 string command
 int32 age
 float32 confidence
-string add_object_type
-string del_object_type
-string color
-string name
-string location
+dict_object add_object
+dict_object del_object
 string size_properties
+
