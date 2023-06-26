@@ -5,14 +5,14 @@ from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
 #from speech_processing.msg import command_and_age
 
-def speech_publisher(text, command, age, confidence):
+
+def speech_publisher(transcript, age, confidence):
     pub = rospy.Publisher('speech_publisher', command_and_age, queue_size=10)
     # rospy.init_node('custom_age_talker', anonymous=True)
     r = rospy.Rate(10)  # 10hz
 
     msg = command_and_age()
-    msg.text = text
-    msg.command = command
+    msg.transcript = transcript
     msg.age = age
     msg.confidence = confidence
 
@@ -46,11 +46,10 @@ if __name__ == "__main__":
 
     try:
         while True:
-            text, command, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
+            transcript, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
             print(f"Sample length: {sample_length:.3f}s"
                   + f"\tInference time: {inference_time:.3f}s"
                   + f"\tAge Estimation: {age_estimation:.3f}"
-                  + f"\tHeard: '{text}'")
-            print("Assume command: '", command, "', with confidence of ", confidence)
+                  + f"\tHeard: '{transcript}'")
     except KeyboardInterrupt:
         asr.stop()

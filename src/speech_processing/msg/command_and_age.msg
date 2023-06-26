@@ -1,4 +1,3 @@
-string text
-string command
+string transcript
 int32 age
 float32 confidence
