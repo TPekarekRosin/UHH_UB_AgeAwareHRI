@@ -31,7 +31,7 @@ class dialogue_node_class:
     def callback_from_robot(self, data):
         response_to_synthesizer = self.dia.process_robot_input(data.step, data.interruptable, data.object_info,
                                                                data.move_arm, data.move_base, data.current_location,
-                                                               data.destination.location)
+                                                               data.destination_location)
         self.pub_to_synthesizer.publish(response_to_synthesizer)
 
     def listen_and_publish(self):
