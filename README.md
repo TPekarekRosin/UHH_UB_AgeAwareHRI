@@ -33,7 +33,7 @@ During installation console will ask for sudo password.
    ```
    Start the dummy dialogue manager:
     ```bash
-   rosrun speech_processing dialogue_system_node.py.py
+   rosrun speech_processing dialogue_system_node.py
    ```
    Start the dummy speech synthesis:
     ```bash
