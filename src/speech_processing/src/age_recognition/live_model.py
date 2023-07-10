@@ -119,13 +119,12 @@ class ASRLiveModel:
                     try:
                         import speech_processing_client as spc
                         print("evtl circular import? ")
-                        spc.speech_publisher(text, command, age, confidence)
+                        spc.speech_publisher(command, age, confidence)
                     except rospy.ROSInterruptException:
                         pass
-                output_queue.put([text, command, confidence, age_estimation, sample_length, inference_time])
+                output_queue.put([command, confidence, age_estimation, sample_length, inference_time])
 
     def get_last_text(self):
-        print(self.asr_output_queue.get())
         return self.asr_output_queue.get()
 
     def command_recognition(self, text):
