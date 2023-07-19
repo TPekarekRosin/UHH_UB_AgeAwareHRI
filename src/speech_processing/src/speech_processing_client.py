@@ -44,12 +44,10 @@ if __name__ == "__main__":
     asr = ASRLiveModel(device.get('name'))
     asr.start()
 
-    try:
-        while True:
-            transcript, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
-            print(f"Sample length: {sample_length:.3f}s"
-                  + f"\tInference time: {inference_time:.3f}s"
-                  + f"\tAge Estimation: {age_estimation:.3f}"
-                  + f"\tHeard: '{transcript}'")
-    except KeyboardInterrupt:
-        asr.stop()
+    while not rospy.is_shutdown():
+        transcript, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
+        print(f"Sample length: {sample_length:.3f}s"
+              + f"\tInference time: {inference_time:.3f}s"
+              + f"\tAge Estimation: {age_estimation:.3f}"
+              + f"\tHeard: '{transcript}'")
+

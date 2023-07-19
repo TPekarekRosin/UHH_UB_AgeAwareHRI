@@ -15,7 +15,7 @@ from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
 import sentencepiece as spm
 
 from .utils import get_input_device_id, \
-    list_microphones, read_sentence_list, levenshtein, min_levenshtein
+    list_microphones, levenshtein, min_levenshtein
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
@@ -41,8 +41,6 @@ class ASRLiveModel:
         self.vad_process = threading.Thread(target=self.vad_process,
                                             args=(self.device_name,
                                                   self.asr_input_queue,))
-
-        self.sentence_list, self.tokens_list = read_sentence_list()
 
         self.inference_model = LiveInference(self.config)
 
@@ -113,33 +111,23 @@ class ASRLiveModel:
             sample_length = len(float64_buffer) / 16000  # length in sec
             if text != "":
                 age = 0 if age_estimation <= 0.5 else 1
-                command, confidence = self.command_recognition(text)
+                confidence = self.calculate_confidence(text)
                 # Publish binary age, recognized text, assumed command and confidence
                 if confidence > 0.5:
                     try:
                         import speech_processing_client as spc
-                        print("evtl circular import? ")
-                        spc.speech_publisher(command, age, confidence)
+                        spc.speech_publisher(text, age, confidence)
                     except rospy.ROSInterruptException:
                         pass
-                output_queue.put([command, confidence, age_estimation, sample_length, inference_time])
+                output_queue.put([text, confidence, age_estimation, sample_length, inference_time])
 
     def get_last_text(self):
         return self.asr_output_queue.get()
 
-    def command_recognition(self, text):
-        folder, _ = os.path.split(__file__)
-        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'sp_models', 'en_massive_2000.model')
+    def calculate_confidence(self, text):
+        confidence = 1.0
 
-        sp = spm.SentencePieceProcessor()
-        sp.load(filepath)
-        tokens = sp.encode_as_ids(text)
-
-        best_match = min_levenshtein(tokens, self.tokens_list)
-        distance = levenshtein(tokens, self.tokens_list[best_match])
-        confidence = 1.0 - min(1.0, float(distance) / len(self.tokens_list[best_match]))
-
-        return self.sentence_list[best_match], confidence
+        return confidence
 
 
 class LiveInference:
