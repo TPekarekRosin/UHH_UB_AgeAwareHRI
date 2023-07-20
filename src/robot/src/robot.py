@@ -8,6 +8,7 @@ from std_msgs.msg import String
 class robot:
     def __init__(self) -> None:
         self.pub = rospy.Publisher('from_robot', message_from_robot, queue_size=10)
+        rospy.set_param('object_in_use', 'cup,bowl,spoon,cornflakes')
         pass
 
     def callback_minor(self, data):
