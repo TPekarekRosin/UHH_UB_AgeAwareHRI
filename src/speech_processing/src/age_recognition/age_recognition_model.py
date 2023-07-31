@@ -24,20 +24,20 @@ class AgeEstimation(nn.Module):
 class SpeakerEmbeddingExtractor(nn.Module):
     def __init__(self, config):
         super(SpeakerEmbeddingExtractor, self).__init__()
-        self.feature_extraction = T.MFCC(sample_rate=config['model']['sample_rate'],
-                                         n_mfcc=config['model']['n_mfcc'],
-                                         melkwargs={'win_length': config['model']['win_length'],
-                                                    'hop_length': config['model']['hop_length']})
+        self.feature_extraction = T.MFCC(sample_rate=config['sample_rate'],
+                                         n_mfcc=config['n_mfcc'],
+                                         melkwargs={'win_length': config['win_length'],
+                                                    'hop_length': config['hop_length']})
         # self.batch_norm = nn.BatchNorm1d(num_features=config['model']['n_mfcc'])
-        self.x_vector = ModifiedXVector(input_dim=config['model']['n_mfcc'])
-        self.fc1 = nn.Linear(1024, config['model']['fc_hidden_dim'])
+        self.x_vector = ModifiedXVector(input_dim=config['n_mfcc'])
+        self.fc1 = nn.Linear(1024, config['fc_hidden_dim'])
         self.config = config
         self.device = torch.device(
-            "cuda:" + str(self.config['training']['gpu']) if torch.cuda.is_available() else "cpu")
+            "cuda:" + str(self.config['gpu']) if torch.cuda.is_available() else "cpu")
     
         # for lmcl phase 2 :
         self.nllloss = nn.CrossEntropyLoss()
-        self.fc2 = nn.Linear(config['model']['fc_hidden_dim'], config['model']['fc_output_dim'])
+        self.fc2 = nn.Linear(config['fc_hidden_dim'], config['fc_output_dim'])
 
     def forward(self, waveform):
         mfcc = self.feature_extraction(waveform)  # [0])
@@ -55,12 +55,12 @@ class SpeakerEmbeddingExtractor(nn.Module):
 class AgeEstimationClassification(nn.Module):
     def __init__(self, config):
         super(AgeEstimationClassification, self).__init__()
-        self.linear1 = nn.Linear(config['model']['fc_output_dim'],
-                                 config['model']['fc_output_dim'])
-        self.linear2 = nn.Linear(config['model']['fc_output_dim'],
-                                 config['model']['fc_output_dim'] // 2)
-        self.linear3 = nn.Linear(config['model']['fc_output_dim'] // 2,
-                                 config['model']['num_classes'])
+        self.linear1 = nn.Linear(config['fc_output_dim'],
+                                 config['fc_output_dim'])
+        self.linear2 = nn.Linear(config['fc_output_dim'],
+                                 config['fc_output_dim'] // 2)
+        self.linear3 = nn.Linear(config['fc_output_dim'] // 2,
+                                 config['num_classes'])
 
         self.activation = nn.LeakyReLU()
 

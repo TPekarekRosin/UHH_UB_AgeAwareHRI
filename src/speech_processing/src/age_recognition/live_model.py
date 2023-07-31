@@ -138,6 +138,7 @@ class LiveInference:
         self.model = Wav2Vec2ForCTC.from_pretrained(config['model_name'])
 
         self.ar_model = AgeEstimation(config)
+        self.ar_model.load_state_dict(torch.load(config['ar_checkpoint']))
 
     def buffer_to_text(self, audio_buffer):
         if len(audio_buffer) == 0:
