@@ -16,6 +16,7 @@ import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, levenshtein, min_levenshtein
+from .age_recognition_model import AgeEstimation
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
@@ -135,9 +136,8 @@ class LiveInference:
         # todo: add functionality to load own model
         self.processor = Wav2Vec2Processor.from_pretrained(config['model_name'])
         self.model = Wav2Vec2ForCTC.from_pretrained(config['model_name'])
-        
-        # todo add ar_model
-        # self.ar_model =
+
+        self.ar_model = AgeEstimation(config)
 
     def buffer_to_text(self, audio_buffer):
         if len(audio_buffer) == 0:
@@ -151,8 +151,8 @@ class LiveInference:
         predicted_ids = torch.argmax(logits, dim=-1)
         transcription = self.processor.batch_decode(predicted_ids)[0]
 
-        # todo: age estimation
-        age_estimation = 0.8
+        ar_out = self.ar_model(torch.tensor(audio_buffer))
+        age_estimation = torch.argmax(ar_out, dim=-1)/100.0
         return transcription.lower(), age_estimation
 
     def file_to_text(self, filename):
