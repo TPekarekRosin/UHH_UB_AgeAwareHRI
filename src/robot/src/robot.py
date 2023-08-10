@@ -7,7 +7,8 @@ from std_msgs.msg import String
 
 class robot:
     def __init__(self) -> None:
-        self.pub = rospy.Publisher('from_robot', message_from_robot, queue_size=10)
+        self.pub_from_robot = rospy.Publisher('from_robot', message_from_robot, queue_size=10)
+        self.pub_in_use = rospy.Publisher('objects_in_use', message_objects_in_use, queue_size=10)
         rospy.set_param('object_in_use', 'cup,bowl,spoon,cornflakes')
         pass
 
@@ -27,7 +28,17 @@ class robot:
             response.move_base = True
             response.current_location = 'kitchen'
             response.destination_location = 'kitchen'
-            self.pub.publish(response)
+
+            obj_in_use = message_objects_in_use()
+            obj_in_use.objects.append(dict_object())
+            obj_in_use.objects[0].type = 'cup'
+            obj_in_use.objects[0].color = 'red'
+            obj_in_use.objects[0].name = ''
+            obj_in_use.objects[0].location = ''
+            obj_in_use.objects[0].size = ''
+
+            self.pub_from_robot.publish(response)
+            self.pub_in_use.publish(obj_in_use)
         elif data.command == "action":
             response = message_from_robot()
             response.step = 'transporting.fetch'
@@ -42,7 +53,16 @@ class robot:
             response.move_base = False
             response.current_location = 'kitchen'
             response.destination_location = 'kitchen'
-            self.pub.publish(response)
+            self.pub_from_robot.publish(response)
+
+            obj_in_use = message_objects_in_use()
+            obj_in_use.objects.append(dict_object())
+            obj_in_use.objects[0].type = 'cup'
+            obj_in_use.objects[0].color = 'red'
+            obj_in_use.objects[0].name = ''
+            obj_in_use.objects[0].location = ''
+            obj_in_use.objects[0].size = ''
+            self.pub_in_use.publish(obj_in_use)
 
     def callback_major(self, data):
         rospy.loginfo(f"Major interruption of type {data.command}")
@@ -61,7 +81,11 @@ class robot:
             response.move_base = False
             response.current_location = 'kitchen'
             response.destination_location = 'kitchen'
-            self.pub.publish(response)
+            self.pub_from_robot.publish(response)
+
+            obj_in_use = message_objects_in_use()
+            # obj_in_use.objects.append()
+            self.pub_in_use.publish(obj_in_use)
 
     def listen(self):
         rospy.init_node('robot_node', anonymous=True)
