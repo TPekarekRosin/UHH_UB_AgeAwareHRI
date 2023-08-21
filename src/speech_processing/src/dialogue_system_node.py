@@ -2,11 +2,15 @@
 
 import rospy
 from speech_processing.msg import *
+from speech_processing.src.dialogue_system.social_brain import SocialBrain
+from speech_processing.src.dialogue_system.social_env import SocialEnv
 from std_msgs.msg import String
 from dialogue_system.dialogue_system import DialogueSystem
 
 import sys
 import select
+
+from langchain.chat_models import ChatOpenAI
 
 
 class DialogueNode:
@@ -21,6 +25,12 @@ class DialogueNode:
         self.sub_from_robot = rospy.Subscriber("from_robot", message_from_robot, self.callback_from_robot)
 
         self.dialogue_system = DialogueSystem()
+        
+        with open("openai_api_key.txt") as fapi:
+            self.api_key = fapi.read()
+        self.env = SocialEnv()
+        self.chat = ChatOpenAI(temperature=0, verbose=True, max_tokens=256, openai_api_key=self.api_key)
+        self.agent = SocialBrain(model=self.chat, env=self.env)
         
     def callback_from_asr(self, data):
         rospy.loginfo(data)
