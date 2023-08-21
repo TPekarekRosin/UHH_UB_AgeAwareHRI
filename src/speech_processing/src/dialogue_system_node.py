@@ -24,7 +24,13 @@ class DialogueNode:
         self.sub_speech = rospy.Subscriber("speech_publisher", command_and_age, self.callback_from_asr)
         self.sub_from_robot = rospy.Subscriber("from_robot", message_from_robot, self.callback_from_robot)
 
+        self.sub_objects_in_use = rospy.Subscriber('objects_in_use', message_objects_in_use, self.callback_obj_in_use)
+
         self.dialogue_system = DialogueSystem()
+
+    def callback_obj_in_use(self, data):
+        rospy.loginfo(data)
+        self.dialogue_system.objects_in_use = data
         
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
