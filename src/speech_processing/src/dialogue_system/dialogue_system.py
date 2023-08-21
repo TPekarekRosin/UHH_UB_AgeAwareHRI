@@ -1,6 +1,9 @@
 import rospy
 from speech_processing.msg import *
 
+from langchain.chat_models import ChatOpenAI
+from dialogue_system.social_brain import SocialBrain
+from dialogue_system.social_env import SocialEnv
 
 class DialogueSystem:
     def __init__(self):
@@ -8,6 +11,13 @@ class DialogueSystem:
         self.robot_interruptable = False
         
         self.objects_in_use = []
+        self.user_data = dict()
+        self.robot_data = dict()
+        with open("openai_api_key.txt") as fapi:
+            self.api_key = fapi.read()
+        self.env = SocialEnv()
+        self.chat = ChatOpenAI(temperature=0, verbose=True, max_tokens=256, openai_api_key=self.api_key)
+        self.agent = SocialBrain(model=self.chat, env=self.env)
         
     def process_speech_input(self, transcript, age, confidence):
         # todo: define major interruptions

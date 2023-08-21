@@ -9,3 +9,10 @@ transformers
 numpy==1.21
 editdistance
 webrtcvad
+
+# package for dialog
+# pip install gTTs
+# pip install --upgrade langchain
+# pip install playsound
+# pip install gymnasium
+# pip install openai

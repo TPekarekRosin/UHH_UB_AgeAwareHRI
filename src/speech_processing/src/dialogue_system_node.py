@@ -2,15 +2,11 @@
 
 import rospy
 from speech_processing.msg import *
-from speech_processing.src.dialogue_system.social_brain import SocialBrain
-from speech_processing.src.dialogue_system.social_env import SocialEnv
 from std_msgs.msg import String
 from dialogue_system.dialogue_system import DialogueSystem
 
 import sys
 import select
-
-from langchain.chat_models import ChatOpenAI
 
 
 class DialogueNode:
@@ -31,15 +27,13 @@ class DialogueNode:
     def callback_obj_in_use(self, data):
         rospy.loginfo(data)
         self.dialogue_system.objects_in_use = data
-        
-        with open("openai_api_key.txt") as fapi:
-            self.api_key = fapi.read()
-        self.env = SocialEnv()
-        self.chat = ChatOpenAI(temperature=0, verbose=True, max_tokens=256, openai_api_key=self.api_key)
-        self.agent = SocialBrain(model=self.chat, env=self.env)
-        
+              
     def callback_from_asr(self, data):
         rospy.loginfo(data)
+        
+        self.dialogue_system.user_data["transcript"] = data.transcript
+        self.dialogue_system.user_data["age"] = data.age
+        self.dialogue_system.user_data["confidence"] = data.confidence
 
         minor_or_major, response = self.dialogue_system.process_speech_input(data.transcript,
                                                                              data.age,
@@ -55,6 +49,15 @@ class DialogueNode:
 
     def callback_from_robot(self, data):
         rospy.loginfo(data)
+        
+        self.dialogue_system.robot_data["step"] = data.step
+        self.dialogue_system.robot_data["interruptable"] = data.interruptable
+        self.dialogue_system.robot_data["object"] = data.object
+        self.dialogue_system.robot_data["move_arm"] = data.move_arm
+        self.dialogue_system.robot_data["move_base"] = data.move_base
+        self.dialogue_system.robot_data["current_location"] = data.current_location                                                        
+        self.dialogue_system.robot_data["destination_location"] = data.destination_location
+
         response_to_synthesizer = self.dialogue_system.process_robot_input(data.step, data.interruptable, data.object,
                                                                data.move_arm, data.move_base, data.current_location,
                                                                data.destination_location)

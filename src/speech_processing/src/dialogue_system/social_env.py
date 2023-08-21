@@ -55,48 +55,5 @@ class SocialEnv(gym.Env):
     def __init__(self) -> None:
         super().__init__()
     
-    ########## message_to_robot (env).msg ###########
-    # string command,
-    # int32 age,
-    # float32 confidence,
-    # dict add_object,
-    # dict del_object,
-    # add_object {
-    #               string type,
-    #               string color,
-    #               string name,
-    #               string location,
-    #               string size
-    #            }
-    # del_object {
-    #               string type,
-    #               string color,
-    #               string name,
-    #               string location,
-    #               string size
-    #            }
-    def setup_robot_parameters(self, age, confidence, action, add_object_type, del_object_type, object_name, object_color, object_size):
-    # question: how to send message to topic 
-        parmeters = {
-            "age": age,
-            "confidence": confidence,
-            "command": action,
-            "add_object": add_object_type,
-            "del_object": del_object_type,
-            }
-        
-        print("parmeters", parmeters)
-        return True
-        
-    
-        
-    
-
-        
-        
-    
- 
-
 if __name__ == '__main__':
     social_env = SocialEnv()
-    utterance, age, confidence = social_env.get_user_utterance()

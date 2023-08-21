@@ -17,3 +17,5 @@ src/CMakeLists.txt
 /src/speech_processing/__init__.py
 /src/speech_processing/src/__init__.py
 venv
+
+openai_api_key.txt
