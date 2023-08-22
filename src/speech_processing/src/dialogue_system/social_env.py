@@ -17,24 +17,10 @@ class SocialEnv(gym.Env):
     Task Description
     RP2 robot working in the kitchen. Your work to let the PR2 robot and user communicate. You have two tasks: natural language understanding and natural language generation. 
     Here is the template that you will get:
-    utterance: “string”,
-    age: “string”
-    confidence_of_age: int
-    step: “string”,
-    interruptible: bool,
-    dict_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”}
-    move_arm: bool,
-    move_base: bool,
-    current_location: “string”,
-    destination_location: “string”,
-    objects_in_use: list.
+    utterance: “string”,age: “string”,confidence_of_age: int,step: “string”,interruptible: bool,dict_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},move_arm: bool,move_base: bool,current_location: “string”,destination_location: “string”,objects_in_use: list.
 
     Here is the template that you are supposed to generate:
-    response: “string”
-    command: “string”,
-    add_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},
-    del_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},
-
+    response: “string”,command: “string”,add_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},del_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”}
 
     Here are the rules that tell you how to use the information that you get.
     For command items:
