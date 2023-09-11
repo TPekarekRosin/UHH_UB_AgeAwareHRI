@@ -30,7 +30,6 @@ class SocialBrain:
         self.action_parser = RegexParser( 
             regex=r"^response:(.*)command: (.*)add_object: (.*)del_object: (.*)",
             output_keys=["response", "command", "add_object", "del_object"],
-            # output_keys=["action", "object"],
             default_output_key="response",
         )
         
@@ -73,14 +72,12 @@ class SocialBrain:
 if __name__ == '__main__':
 
     with open("openai_api_key.txt") as fapi:
-            api_key = fapi.read()
+        api_key = fapi.read()
     env = SocialEnv()
     chat = ChatOpenAI(temperature=0, verbose=True, max_tokens=256, openai_api_key=api_key)
     agent = SocialBrain(model=chat, env=env)
     agent.reset()
    
-    
-
     utterance_user = ""
     age = "elder"
     confidence_of_age = 90

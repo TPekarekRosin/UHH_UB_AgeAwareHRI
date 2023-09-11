@@ -20,6 +20,22 @@ class DialogueSystem:
         self.agent = SocialBrain(model=self.chat, env=self.env)
         
     def process_speech_input(self, transcript, age, confidence):
+        
+        # utterance_user, 
+        # age, 
+        # confidence_of_age, 
+        step = self.robot_data["step"]
+        interruptible = self.robot_data["interruptable"]
+        dict_object = self.robot_data["object"]
+        move_arm = self.robot_data["move_arm"]
+        move_base = self.robot_data["move_base"]
+        current_location = self.robot_data["current_location"]
+        destination_location = self.robot_data["destination_location"]
+        objects_in_use = self.objects_in_use
+        
+        response, command, add_object, del_object = self.agent.information_process(transcript, age, confidence, step, interruptible, 
+                                                                                   dict_object, move_arm, move_base, current_location, 
+                                                                                   destination_location, objects_in_use)
         # todo: define major interruptions
         if "stop" in transcript and confidence > 0.5:
             # todo: generate valid response for major interruptions
@@ -70,12 +86,31 @@ class DialogueSystem:
             print('Command was not recognized.')
             return '', ()
 
-    def process_robot_input(self, state, interruptable, object_info,
+    def process_robot_input(self, step, interruptable, object_info,
                             move_arm, move_base, current_loc, destination_loc):
         # todo process the message from the robot to create speech output
         self.robot_state = state
         self.robot_interruptable = interruptable
         string_for_synthesizer = f"I am {state}"
+        
+        utterance_user = self.user_data["transcript"]
+        age = self.user_data["age"]
+        confidence_of_age = self.user_data["confidence"]
+        
+        step = step
+        interruptible = interruptable
+        dict_object = object_info
+        move_arm = move_arm
+        move_base = move_base
+        current_location = current_loc
+        destination_location = destination_loc
+        objects_in_use = self.objects_in_use
+       
+
+        response, command, add_object, del_object = self.agent.information_process(utterance_user, age, confidence_of_age, step, 
+                                                                                   interruptible, dict_object, move_arm, move_base, 
+                                                                                   current_location, destination_location, objects_in_use)
+        
         return string_for_synthesizer
 
     def get_objects_in_use(self):
