@@ -137,8 +137,11 @@ class LiveInference:
         self.processor = Wav2Vec2Processor.from_pretrained(config['model_name'])
         self.model = Wav2Vec2ForCTC.from_pretrained(config['model_name'])
 
+        folder, _ = os.path.split(__file__)
+        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs', config['ar_checkpoint'])
+
         self.ar_model = AgeEstimation(config)
-        self.ar_model.load_state_dict(torch.load(config['ar_checkpoint']))
+        self.ar_model.load_state_dict(torch.load(filepath))
 
     def buffer_to_text(self, audio_buffer):
         if len(audio_buffer) == 0:
