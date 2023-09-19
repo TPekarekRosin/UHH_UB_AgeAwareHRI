@@ -61,7 +61,7 @@ class ASRLiveModel:
     # voice activity detector
     def vad_process(self, device_name, asr_input_queue):
         vad = webrtcvad.Vad()
-        vad.set_mode(1)
+        vad.set_mode(2)
 
         audio = pa.PyAudio()
         pa_format = pa.paInt16
@@ -141,7 +141,15 @@ class LiveInference:
         filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs', config['ar_checkpoint'])
 
         self.ar_model = AgeEstimation(config)
-        self.ar_model.load_state_dict(torch.load(filepath))
+        pretrained_dict = torch.load(filepath)
+        model_dict = self.ar_model.state_dict()
+        # 1. filter out unnecessary keys
+        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+        # 2. overwrite entries in the existing state dict
+        model_dict.update(pretrained_dict)
+        # 3. load the new state dict
+        self.ar_model.load_state_dict(pretrained_dict)
+        # self.ar_model.load_state_dict(torch.load(filepath))
 
     def buffer_to_text(self, audio_buffer):
         if len(audio_buffer) == 0:
@@ -155,9 +163,11 @@ class LiveInference:
         predicted_ids = torch.argmax(logits, dim=-1)
         transcription = self.processor.batch_decode(predicted_ids)[0]
 
-        ar_out = self.ar_model(torch.tensor(audio_buffer))
+        # print(torch.DoubleTensor(audio_buffer))
+        ar_out = self.ar_model(torch.FloatTensor(audio_buffer))
         age_estimation = torch.argmax(ar_out, dim=-1)/100.0
-        return transcription.lower(), age_estimation
+        # age_estimation = 0.6
+        return transcription.lower(), age_estimation.item()
 
     def file_to_text(self, filename):
         audio_input, samplerate = sf.read(filename)

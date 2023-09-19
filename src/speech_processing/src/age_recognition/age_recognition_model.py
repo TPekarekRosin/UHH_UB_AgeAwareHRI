@@ -41,7 +41,8 @@ class SpeakerEmbeddingExtractor(nn.Module):
 
     def forward(self, waveform):
         mfcc = self.feature_extraction(waveform)  # [0])
-        norm = Normalize(mean=[0 for _ in range(len(waveform))], std=[1 for _ in range(len(waveform))])
+        mfcc = mfcc.unsqueeze(0)
+        norm = Normalize(mean=0, std=1)
         mfcc_norm = norm(mfcc)
         mfcc_norm_t = mfcc_norm.transpose(1, 2)
     
