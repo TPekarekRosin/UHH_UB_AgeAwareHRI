@@ -7,7 +7,7 @@ from langchain.schema import (
 )
 from langchain.output_parsers import RegexParser
 
-from social_env import SocialEnv
+from dialogue_system.social_env import SocialEnv
 from langchain.chat_models import ChatOpenAI
 
 #      ___       _______  _______ .__   __. .___________.
@@ -91,10 +91,6 @@ if __name__ == '__main__':
     objects_in_use = "null"
     dict_object = "{object_type: cup, color: red, name: null, location: null, size: null}"
     
-
-                   
-    
-
     
     agent.information_process(utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use)
     
