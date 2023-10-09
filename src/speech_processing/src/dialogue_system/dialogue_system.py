@@ -7,7 +7,7 @@ from dialogue_system.social_env import SocialEnv
 
 class DialogueSystem:
     def __init__(self):
-        self.robot_state = None
+        self.robot_step = None
         self.robot_interruptable = False
         
         self.objects_in_use = []
@@ -24,6 +24,8 @@ class DialogueSystem:
         # utterance_user, 
         # age, 
         # confidence_of_age, 
+        print("robot data", self.robot_data)
+        
         step = self.robot_data["step"]
         interruptible = self.robot_data["interruptable"]
         dict_object = self.robot_data["object"]
@@ -89,26 +91,27 @@ class DialogueSystem:
     def process_robot_input(self, step, interruptable, object_info,
                             move_arm, move_base, current_loc, destination_loc):
         # todo process the message from the robot to create speech output
-        self.robot_state = state
+        self.robot_step = step
+        print("step", step)
         self.robot_interruptable = interruptable
-        string_for_synthesizer = f"I am {state}"
+        string_for_synthesizer = f"I am {step}"
         
-        utterance_user = self.user_data["transcript"]
-        age = self.user_data["age"]
-        confidence_of_age = self.user_data["confidence"]
-        
-        step = step
-        interruptible = interruptable
         dict_object = object_info
         move_arm = move_arm
         move_base = move_base
         current_location = current_loc
         destination_location = destination_loc
         objects_in_use = self.objects_in_use
+        
+        print("user data", self.user_data)
+        
+        utterance_user = self.user_data["transcript"]
+        age = self.user_data["age"]
+        confidence_of_age = self.user_data["confidence"]
        
 
-        response, command, add_object, del_object = self.agent.information_process(utterance_user, age, confidence_of_age, step, 
-                                                                                   interruptible, dict_object, move_arm, move_base, 
+        string_for_synthesizer, command, add_object, del_object = self.agent.information_process(utterance_user, age, confidence_of_age, self.robot_step, 
+                                                                                   self.robot_interruptable, dict_object, move_arm, move_base, 
                                                                                    current_location, destination_location, objects_in_use)
         
         return string_for_synthesizer
@@ -120,4 +123,4 @@ class DialogueSystem:
         self.objects_in_use = object_str.split(',')
 
     def get_robot_states(self):
-        return self.robot_state, self.robot_interruptable
+        return self.robot_step, self.robot_interruptable
