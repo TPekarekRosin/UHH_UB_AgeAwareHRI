@@ -21,6 +21,7 @@ from .age_recognition_model import AgeEstimation
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
+# for vad: https://colab.research.google.com/github/snakers4/silero-vad/blob/master/silero-vad.ipynb#scrollTo=pSifus5IilRp
 
 class ASRLiveModel:
     exit_event = threading.Event()
@@ -42,7 +43,12 @@ class ASRLiveModel:
         self.vad_process = threading.Thread(target=self.vad_process,
                                             args=(self.device_name,
                                                   self.asr_input_queue,))
-
+        
+        vad_model, vad_utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
+                                              model='silero_vad', force_reload=True,
+                                              onnx=False)
+        (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = vad_utils
+        self.vad_iterator = VADIterator(vad_model)
         self.inference_model = LiveInference(self.config)
 
     def start(self):
