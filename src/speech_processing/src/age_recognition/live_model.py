@@ -21,7 +21,6 @@ from .age_recognition_model import AgeEstimation
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-# for vad: https://colab.research.google.com/github/snakers4/silero-vad/blob/master/silero-vad.ipynb#scrollTo=pSifus5IilRp
 
 class ASRLiveModel:
     exit_event = threading.Event()
@@ -43,12 +42,17 @@ class ASRLiveModel:
         self.vad_process = threading.Thread(target=self.vad_process,
                                             args=(self.device_name,
                                                   self.asr_input_queue,))
-        
-        vad_model, vad_utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
-                                              model='silero_vad', force_reload=True,
-                                              onnx=False)
-        (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = vad_utils
-        self.vad_iterator = VADIterator(vad_model)
+        # https://github.com/snakers4/silero-vad/blob/master/examples/pyaudio-streaming/pyaudio-streaming-examples.ipynb
+        self.vad_model, vad_utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
+                                              model='silero_vad',
+                                              force_reload=True)
+        (get_speech_timestamps,
+         save_audio, read_audio,
+         VADIterator,
+         collect_chunks) = vad_utils
+
+        self.vad_confidence = 0.0
+
         self.inference_model = LiveInference(self.config)
 
     def start(self):
@@ -66,8 +70,8 @@ class ASRLiveModel:
 
     # voice activity detector
     def vad_process(self, device_name, asr_input_queue):
-        vad = webrtcvad.Vad()
-        vad.set_mode(2)
+        # vad = webrtcvad.Vad()
+        # vad.set_mode(2)
 
         audio = pa.PyAudio()
         pa_format = pa.paInt16
@@ -92,8 +96,13 @@ class ASRLiveModel:
             if ASRLiveModel.exit_event.is_set():
                 break
             frame = stream.read(chunk_size, exception_on_overflow=False)
-            is_speech = vad.is_speech(frame, sample_rate)
-            if is_speech:
+            # check confidence that frame is speech
+            audio_int16 = np.frombuffer(frame, np.int16)
+            audio_float32 = self.int2float(audio_int16)
+            self.vad_confidence = self.vad_model(torch.from_numpy(audio_float32), 16000).item()
+            print("VAD Confidence", self.vad_confidence)
+            # is_speech = vad.is_speech(frame, sample_rate)
+            if self.vad_confidence >= 0.6:
                 frames += frame
             else:
                 if len(frames) > 1:
@@ -132,9 +141,15 @@ class ASRLiveModel:
         return self.asr_output_queue.get()
 
     def calculate_confidence(self, text):
-        confidence = 1.0
+        return self.vad_confidence
 
-        return confidence
+    def int2float(self, sound):
+        abs_max = np.abs(sound).max()
+        sound = sound.astype('float32')
+        if abs_max > 0:
+            sound *= 1 / 32768
+        sound = sound.squeeze()  # depends on the use case
+        return sound
 
 
 class LiveInference:
