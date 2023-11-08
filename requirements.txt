@@ -6,7 +6,6 @@ pyaudio
 soundfile
 sentencepiece
 transformers
-numpy==1.21
 editdistance
 webrtcvad
 faster-whisper
