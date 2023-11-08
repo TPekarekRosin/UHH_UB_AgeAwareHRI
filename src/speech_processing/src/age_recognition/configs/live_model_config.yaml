@@ -9,6 +9,6 @@ fc_hidden_dim: 512
 fc_output_dim: 256
 num_classes: 100
 
-model_name: "jonatasgrosman/wav2vec2-large-xlsr-53-english"
+model_name: "large-v2" # "jonatasgrosman/wav2vec2-large-xlsr-53-english"
 frame_duration: 30 # 10, 20 or 30 for vad
 n_channels: 1

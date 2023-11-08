@@ -3,6 +3,7 @@ import rospy
 import pyaudio as pa
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
+from faster_whisper import WhisperModel
 #from speech_processing.msg import command_and_age
 
 
@@ -41,13 +42,11 @@ if __name__ == "__main__":
             print('Please type input device ID:')
             dev_idx = int(input())
     device = p.get_device_info_by_index(dev_idx)
-    asr = ASRLiveModel(device.get('name'))
-    asr.start()
+    asr = ASRLiveModel(p, device.get('name'))
 
     while not rospy.is_shutdown():
-        transcript, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
-        print(f"Sample length: {sample_length:.3f}s"
-              + f"\tInference time: {inference_time:.3f}s"
-              + f"\tAge Estimation: {age_estimation:.3f}"
-              + f"\tHeard: '{transcript}'")
+        transcript, confidence, age_estimation = asr.get_last_text()
+        print(f"\tHeard: '{transcript}'"
+              + f"\tConfidence: {confidence:.3f}s"
+              + f"\tAge Estimation: {age_estimation:.3f}")
 
