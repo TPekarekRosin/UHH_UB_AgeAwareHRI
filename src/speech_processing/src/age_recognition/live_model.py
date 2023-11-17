@@ -150,11 +150,6 @@ class ASRLiveModel:
     
     def get_last_text(self):
         return self.asr_output_queue.get()
-    
-    def calculate_confidence(self, text):
-        confidence = 1.0
-        
-        return confidence
 
 
 
