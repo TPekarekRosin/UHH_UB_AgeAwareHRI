@@ -24,7 +24,6 @@ sys.path.append(
 
 
 class ASRLiveModel:
-    exit_event = threading.Event()
     
     def __init__(self, device_name="default"):
         self.device_name = device_name
@@ -53,7 +52,7 @@ class ASRLiveModel:
         
         # age recognition
         self.ar_model = AgeEstimation(self.config)
-        filepath = os.path.join(os.path.dirname(folder), 'src', 'age_recognition', 'configs',
+        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs',
                                 self.config['ar_checkpoint'])
         pretrained_dict = torch.load(filepath)
         model_dict = self.ar_model.state_dict()
@@ -69,26 +68,16 @@ class ASRLiveModel:
     def start(self):
         # start the asr process
         self.asr_process.start()
-        time.sleep(5)
         # start the voice activity detection
         self.vad_process.start()
     
-    def stop(self):
-        # stop asr
-        ASRLiveModel.exit_event.set()
-        self.asr_input_queue.put("close")
-        print("asr stopped")
-    
     # voice activity detector
     def vad_process(self, device_name, asr_input_queue):
-        vad = webrtcvad.Vad()
-        vad.set_mode(1)
-        
         audio = pa.PyAudio()
         pa_format = pa.paInt16
         n_channels = self.config['n_channels']
         sample_rate = self.config['sample_rate']
-        chunk_size = 1024
+        chunk_size = int(sample_rate/10)
         
         microphones = list_microphones(audio)
         selected_input_device_id = get_input_device_id(device_name, microphones)
@@ -101,19 +90,24 @@ class ASRLiveModel:
                             frames_per_buffer=chunk_size)
         
         frames = b''
+        speech_started = False
         while not rospy.is_shutdown():
-            if ASRLiveModel.exit_event.is_set():
-                break
-            frame = stream.read(chunk_size, exception_on_overflow=False)
-            float32_buffer = np.frombuffer(frame, dtype=np.int16).astype(np.float32)
-            new_confidence = self.vad_model(torch.from_numpy(float32_buffer), 16000).item()
+            audio_chunk = stream.read(chunk_size, exception_on_overflow=False)
+            audio_int16 = np.frombuffer(audio_chunk, np.int16)
+            audio_float32 = self.int2float(audio_int16)
+
+            new_confidence = self.vad_model(torch.from_numpy(audio_float32), 16000).item()
             
-            if new_confidence > 0.6:
-                frames += frame
+            if new_confidence > 0.5:
+                if not speech_started:
+                    speech_started = True
+                frames += audio_chunk
                 self.confidences.append(new_confidence)
             else:
-                if len(frames) > 1:
-                    asr_input_queue.put(frames)
+                if speech_started:
+                    speech_started = False
+                    if len(frames) > 1:
+                        asr_input_queue.put(frames)
                 frames = b''
         stream.stop_stream()
         stream.close()
@@ -123,19 +117,18 @@ class ASRLiveModel:
         print("\nSpeak!\n")
         while not rospy.is_shutdown():
             audio_frames = in_queue.get()
-            if audio_frames == "close":
-                break
-            
-            float32_buffer = np.frombuffer(audio_frames, dtype=np.int16).astype(np.float32)
+
+            audio_int16 = np.frombuffer(audio_frames, np.int16)
+            audio_float32 = self.int2float(audio_int16)
             # speech recognition
-            segments, _ = self.asr_model.transcribe(float32_buffer)
+            segments, _ = self.asr_model.transcribe(audio_float32)
             s = list(segments)
             
             if len(s) != 0:
                 text = s[0].text
                 confidence = np.mean(self.confidences)
                 # age recognition
-                ar_out = self.ar_model(torch.from_numpy(float32_buffer))
+                ar_out = self.ar_model(torch.from_numpy(audio_float32))
                 age_estimation = torch.argmax(ar_out, dim=-1) / 100.0
                 age = 0 if age_estimation <= 0.5 else 1
                 # Publish binary age, recognized text, assumed command and confidence
@@ -151,5 +144,12 @@ class ASRLiveModel:
     def get_last_text(self):
         return self.asr_output_queue.get()
 
+    def int2float(self, sound):
+        abs_max = np.abs(sound).max()
+        sound = sound.astype('float32')
+        if abs_max > 0:
+            sound *= 1 / 32768
+        sound = sound.squeeze()  # depends on the use case
+        return sound
 
 
