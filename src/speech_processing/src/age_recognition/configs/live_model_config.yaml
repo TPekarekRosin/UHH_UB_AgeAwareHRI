@@ -1,5 +1,14 @@
-model_name: "jonatasgrosman/wav2vec2-large-xlsr-53-english"
 gpu: 0
 sample_rate: 16000
+
+ar_checkpoint: 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
+n_mfcc: 24
+win_length: 400
+hop_length: 160
+fc_hidden_dim: 512
+fc_output_dim: 256
+num_classes: 100
+
+model_name: "small.en" # "jonatasgrosman/wav2vec2-large-xlsr-53-english"
 frame_duration: 30 # 10, 20 or 30 for vad
 n_channels: 1

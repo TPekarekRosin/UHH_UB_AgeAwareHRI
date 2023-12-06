@@ -1,14 +1,14 @@
-torch==1.12.0
-torchvision==0.13.0
-torchaudio==0.12.0
+torch
+torchvision
+torchaudio
 pyyaml
 pyaudio
 soundfile
 sentencepiece
 transformers
-numpy==1.21
 editdistance
 webrtcvad
+<<<<<<< HEAD
 
 # package for dialog
 # pip install gTTs
@@ -16,3 +16,7 @@ webrtcvad
 # pip install playsound
 # pip install gymnasium
 # pip install openai
+=======
+faster-whisper
+numpy==1.21.6
+>>>>>>> aeaae90ecb31449ca343417681019f71800ac150
