@@ -10,10 +10,7 @@ import rospy
 import yaml
 from queue import Queue
 from faster_whisper import WhisperModel
-import soundfile as sf
 import torch
-from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
-import sentencepiece as spm
 
 from .utils import get_input_device_id, \
     list_microphones, levenshtein, min_levenshtein
