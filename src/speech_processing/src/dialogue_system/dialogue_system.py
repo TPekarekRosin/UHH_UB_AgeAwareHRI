@@ -12,6 +12,12 @@ class DialogueSystem:
         
         self.objects_in_use = []
         self.user_data = dict()
+        # string transcript
+        # int32 age
+        # float32 confidence
+        self.user_data["transcript"] = "please ready to serve"
+        self.user_data["age"] = 1
+        self.user_data["confidence"] = 1
         self.robot_data = dict()
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
@@ -35,64 +41,39 @@ class DialogueSystem:
         destination_location = self.robot_data["destination_location"]
         objects_in_use = self.objects_in_use
         
-        response, command, add_object, del_object = self.agent.information_process(transcript, age, confidence, step, interruptible, 
-                                                                                   dict_object, move_arm, move_base, current_location, 
-                                                                                   destination_location, objects_in_use)
-        # todo: define major interruptions
-        if "stop" in transcript and confidence > 0.5:
-            # todo: generate valid response for major interruptions
-            response = message_to_robot()
-            response.command = 'stop'
-            response.age = age
-            response.confidence = confidence
-            # properties of added object
-            response.add_object.append(dict_object())
-            response.add_object[0].type = ''
-            response.add_object[0].color = ''
-            response.add_object[0].name = ''
-            response.add_object[0].location = ''
-            response.add_object[0].size = ''
-            # properties of deleted object
-            response.del_object.append(dict_object())
-            response.del_object[0].type = ''
-            response.del_object[0].color = ''
-            response.del_object[0].name = ''
-            response.del_object[0].location = ''
-            response.del_object[0].size = ''
-
-            return 'major', response
-
         # todo: define minor interruptions
-        elif 'cup' in transcript and confidence > 0.5:
+        if "stop" not in transcript and confidence > 0.5:
             # todo: generate valid response for minor interruptions
-            response = message_to_robot()
-            response.command = 'object'
-            response.age = age
-            response.confidence = confidence
-            # properties of added object
-            response.add_object.append(dict_object())
-            response.add_object[0].type = 'cup'
-            response.add_object[0].color = 'red'
-            response.add_object[0].name = ''
-            response.add_object[0].location = ''
-            response.add_object[0].size = ''
-            # properties of deleted object
-            response.del_object.append(dict_object())
-            response.del_object[0].type = ''
-            response.del_object[0].color = ''
-            response.del_object[0].name = ''
-            response.del_object[0].location = ''
-            response.del_object[0].size = ''
-            return 'minor', response
+            system_transcript, response_to_robot = self.agent.information_process(
+                                                    transcript, age, confidence, step, interruptible, 
+                                                    dict_object, move_arm, move_base, current_location, 
+                                                    destination_location, objects_in_use)
+            
+            
+            return 'minor', response_to_robot, system_transcript
+        
+        # todo: define major interruptions
+        elif 'stop' in transcript and confidence > 0.5:
+            # todo: generate valid response for major interruptions
+            system_transcript = "ok i will stop anything what i am doing now"
+            return 'major', (), system_transcript
         else:
+            system_transcript = "i got trouble something is wrong"
             print('Command was not recognized.')
-            return '', ()
+            return '', (), system_transcript
 
     def process_robot_input(self, step, interruptable, object_info,
                             move_arm, move_base, current_loc, destination_loc):
         # todo process the message from the robot to create speech output
         self.robot_step = step
         print("step", step)
+        print("interruptable", interruptable)
+        print("object_info", object_info)
+        print("move_arm", move_arm)
+        print("move_base", move_base)
+        print("current_loc", current_loc)
+        print("destination_loc", destination_loc)
+
         self.robot_interruptable = interruptable
         string_for_synthesizer = f"I am {step}"
         
@@ -102,17 +83,17 @@ class DialogueSystem:
         current_location = current_loc
         destination_location = destination_loc
         objects_in_use = self.objects_in_use
-        
+       
         print("user data", self.user_data)
-        
         utterance_user = self.user_data["transcript"]
         age = self.user_data["age"]
         confidence_of_age = self.user_data["confidence"]
        
 
-        string_for_synthesizer, command, add_object, del_object = self.agent.information_process(utterance_user, age, confidence_of_age, self.robot_step, 
-                                                                                   self.robot_interruptable, dict_object, move_arm, move_base, 
-                                                                                   current_location, destination_location, objects_in_use)
+        string_for_synthesizer, response_to_robot = self.agent.information_process(
+                                                        utterance_user, age, confidence_of_age, self.robot_step, 
+                                                        self.robot_interruptable, dict_object, move_arm, move_base, 
+                                                        current_location, destination_location, objects_in_use)
         
         return string_for_synthesizer
 

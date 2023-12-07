@@ -28,11 +28,22 @@ class SocialBrain:
         self.model = model
         self.docs = self.get_docs(env)
         self.action_parser = RegexParser( 
-            regex=r"^response:(.*)command: (.*)add_object: (.*)del_object: (.*)",
-            output_keys=["response", "command", "add_object", "del_object"],
-            default_output_key="response",
+            regex=r"^system_transcript:(.*)command: (.*)add_type: (.*)add_color: (.*)add_name: (.*)add_location: (.*)add_size: (.*)del_type: (.*)del_color: (.*)del_name: (.*)del_location: (.*)del_size",
+            output_keys=["system_transcript", "command", "add_type","add_color","add_name","add_location","add_size","del_type","del_color","del_name","del_location","del_size"],
+            #"system_transcript", 
+            # "command", 
+            # "add_type",
+            # "add_color",
+            # "add_name",
+            # "add_location",
+            # "add_size",
+            # "del_type",
+            # "del_color",
+            # "del_name",
+            # "del_location",
+            # "del_size",
+            default_output_key="system_transcript",
         )
-        
         self.message_history = []
         # self.ret = 0
         
@@ -50,18 +61,25 @@ class SocialBrain:
         parsed = self.action_parser.parse(act_message.content)
         print("parsed:", parsed)
         
-        response = parsed["response"]
-        command = parsed["command"]
-        add_object = parsed["add_object"]
-        del_object = parsed["del_object"]
+        system_transcript = parsed["system_transcript"]
+        response_to_robot = dict()
+        response_to_robot["command"] = parsed["command"]
+        response_to_robot["add_type"] = parsed["add_type"]
+        response_to_robot["add_color"] = parsed["add_color"]
+        response_to_robot["add_name"] = parsed["add_name"]
+        response_to_robot["add_location"] = parsed["add_location"]
+        response_to_robot["add_size"] = parsed["add_size"]
+        response_to_robot["del_type"] = parsed["del_type"]
+        response_to_robot["del_color"] = parsed["del_color"]
+        response_to_robot["del_name"] = parsed["del_name"]
+        response_to_robot["del_location"] = parsed["del_location"]
+        response_to_robot["del_location"] = parsed["del_location"]
+        response_to_robot["del_size"] = parsed["del_size"]
         
         self.message_history.append(act_message)
-        print("response", response)
-        print("command", command)
-        print("add_object", add_object)
-        print("del_object", del_object)
-
-        return response, command, add_object, del_object
+        print("system_transcript: ", system_transcript)
+        print("response_to_robot: ", response_to_robot)
+        return system_transcript, response_to_robot
     def reset(self):
         self.message_history = [
             SystemMessage(content=self.docs),

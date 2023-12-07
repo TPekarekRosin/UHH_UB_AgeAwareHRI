@@ -20,7 +20,7 @@ class SocialEnv(gym.Env):
     utterance: “string”,age: “string”,confidence_of_age: int,step: “string”,interruptible: bool,dict_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},move_arm: bool,move_base: bool,current_location: “string”,destination_location: “string”,objects_in_use: list.
 
     Here is the template that you are supposed to generate:
-    response: “string”,command: “string”,add_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”},del_object: {type: “string”, color: “string”, name: “string”, location: “string”, size: “string”}
+    system_transcript: “string”,command: “string”,add_type: “string”, add_color: “string”, add_name: “string”, add_location: “string”, add_size: “string”,del_type: “string”, del_color: “string”, del_name: “string”, del_location: “string”, del_size: “string”}
 
     Here are the rules that tell you how to use the information that you get.
     For command items:
