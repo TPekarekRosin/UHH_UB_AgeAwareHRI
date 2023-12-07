@@ -3,6 +3,8 @@ import rospy
 import pyaudio as pa
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def speech_publisher(transcript, age, confidence):

@@ -1,5 +1,5 @@
 import rospy
-from speech_processing.msg import *
+# from speech_processing.msg import *
 
 from langchain.chat_models import ChatOpenAI
 from dialogue_system.social_brain import SocialBrain
