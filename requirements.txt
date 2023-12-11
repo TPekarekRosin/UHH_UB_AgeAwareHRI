@@ -1,11 +1,12 @@
-torch==1.12.0
-torchvision==0.13.0
-torchaudio==0.12.0
+torch
+torchvision
+torchaudio
 pyyaml
 pyaudio
 soundfile
 sentencepiece
 transformers
-numpy==1.21
 editdistance
 webrtcvad
+faster-whisper
+numpy==1.21.6

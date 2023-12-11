@@ -3,7 +3,6 @@ import rospy
 import pyaudio as pa
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
-#from speech_processing.msg import command_and_age
 
 
 def speech_publisher(transcript, age, confidence):
@@ -45,9 +44,6 @@ if __name__ == "__main__":
     asr.start()
 
     while not rospy.is_shutdown():
-        transcript, confidence, age_estimation, sample_length, inference_time = asr.get_last_text()
-        print(f"Sample length: {sample_length:.3f}s"
-              + f"\tInference time: {inference_time:.3f}s"
-              + f"\tAge Estimation: {age_estimation:.3f}"
+        transcript, confidence, age_estimation = asr.get_last_text()
+        print(f"\tAge Estimation: {age_estimation.item()}"
               + f"\tHeard: '{transcript}'")
-
