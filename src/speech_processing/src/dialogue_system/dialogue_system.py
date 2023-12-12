@@ -4,6 +4,7 @@ import rospy
 from langchain.chat_models import ChatOpenAI
 from dialogue_system.social_brain import SocialBrain
 from dialogue_system.social_env import SocialEnv
+import ast
 
 class DialogueSystem:
     def __init__(self):
@@ -16,13 +17,14 @@ class DialogueSystem:
         # int32 age
         # float32 confidence
         self.user_data["transcript"] = "please ready to serve"
-        self.user_data["age"] = 1
-        self.user_data["confidence"] = 1
+        self.user_data["age"] = "young"
+        self.user_data["confidence"] = 90
         self.robot_data = dict()
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
         self.env = SocialEnv()
-        self.chat = ChatOpenAI(temperature=0, verbose=True, max_tokens=256, openai_api_key=self.api_key)
+        self.model_version = "gpt-3.5-turbo-1106"
+        self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=256, openai_api_key=self.api_key)
         self.agent = SocialBrain(model=self.chat, env=self.env)
         
     def process_speech_input(self, transcript, age, confidence):
@@ -69,6 +71,16 @@ class DialogueSystem:
         print("step", step)
         print("interruptable", interruptable)
         print("object_info", object_info)
+        print("object_info type", object_info[0].type)
+        # Replace colons with commas to make it a valid list
+        # input_string = str(object_info[0]).replace(":",",")
+
+        # # Use ast.literal_eval to safely evaluate the string as a literal
+        # parsed_list = ast.literal_eval(input_string)
+
+        # # Print the result
+        # print(parsed_list)
+
         print("move_arm", move_arm)
         print("move_base", move_base)
         print("current_loc", current_loc)
@@ -82,7 +94,7 @@ class DialogueSystem:
         move_base = move_base
         current_location = current_loc
         destination_location = destination_loc
-        objects_in_use = self.objects_in_use
+        objects_in_use = []
        
         print("user data", self.user_data)
         utterance_user = self.user_data["transcript"]

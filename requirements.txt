@@ -8,7 +8,6 @@ sentencepiece
 transformers
 editdistance
 webrtcvad
-<<<<<<< HEAD
 
 # package for dialog
 # pip install gTTs
@@ -16,7 +15,3 @@ webrtcvad
 # pip install playsound
 # pip install gymnasium
 # pip install openai
-=======
-faster-whisper
-numpy==1.21.6
->>>>>>> aeaae90ecb31449ca343417681019f71800ac150

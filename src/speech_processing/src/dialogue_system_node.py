@@ -91,10 +91,12 @@ class DialogueNode:
         print("response_to_synthesizer", response_to_synthesizer)
         self.text_to_speech(response_to_synthesizer)
         # self.pub_to_synthesizer.publish(response_to_synthesizer)
+        
     def text_to_speech(self, text):
-        tts = gtts.gTTS(text)
-        tts.save("system_transcript.mp3")
-        playsound("system_transcript.mp3")
+        # tts = gtts.gTTS(text)
+        # tts.save("system_transcript.mp3")
+        # playsound("system_transcript.mp3")
+        print(text)
 
     
 
