@@ -6,7 +6,8 @@ from std_msgs.msg import String
 
 import sys
 import select
-
+import gtts
+from playsound import playsound
 
 class SynthesizerNode:
     def __init__(self) -> None:
@@ -14,7 +15,11 @@ class SynthesizerNode:
 
     def callback(self, data):
         rospy.loginfo(data)
-
+        text = data.data
+        tts = gtts.gTTS(text)
+        tts.save("system_transcript.mp3")
+        playsound("system_transcript.mp3")
+        
 
 if __name__ == "__main__": 
     rospy.init_node('synthesizer_node', anonymous=True)

@@ -41,8 +41,9 @@ class DialogueNode:
         minor_or_major, response_to_robot, system_transcript= self.dialogue_system.process_speech_input(data.transcript,
                                                                              data.age,
                                                                              data.confidence)
-        self.text_to_speech(system_transcript)
-        print(minor_or_major, response)
+        # self.text_to_speech(system_transcript)
+        self.pub_to_synthesizer.publish(system_transcript)
+        print("minor_or_major", minor_or_major)
         if minor_or_major == 'minor':
             # response is a  message to robot
             response = message_to_robot()
@@ -66,9 +67,24 @@ class DialogueNode:
             self.pub_interrupt_minor.publish(response)
             print('now in the minor interruption')
         elif minor_or_major == 'major':
-            # what you want to get from me 
             response = message_to_robot()
             response.command = "stop"
+            response.age = data.age
+            response.confidence = data.confidence
+            # properties of added object
+            response.add_object.append(dict_object())
+            response.add_object[0].type = response_to_robot["add_type"]
+            response.add_object[0].color = response_to_robot["add_color"]
+            response.add_object[0].name = response_to_robot["add_name"]
+            response.add_object[0].location = response_to_robot["add_location"]
+            response.add_object[0].size = response_to_robot["add_size"]
+            # properties of deleted object
+            response.del_object.append(dict_object())
+            response.del_object[0].type = response_to_robot["del_type"]
+            response.del_object[0].color = response_to_robot["del_color"]
+            response.del_object[0].name = response_to_robot["del_name"]
+            response.del_object[0].location = response_to_robot["del_location"]
+            response.del_object[0].size = response_to_robot["del_size"]
             self.pub_interrupt_major.publish(response)
             print('now in the major interruption')
         else:
@@ -89,8 +105,8 @@ class DialogueNode:
                                                                data.move_arm, data.move_base, data.current_location,
                                                                data.destination_location)
         print("response_to_synthesizer", response_to_synthesizer)
-        self.text_to_speech(response_to_synthesizer)
-        # self.pub_to_synthesizer.publish(response_to_synthesizer)
+        # self.text_to_speech(response_to_synthesizer)
+        self.pub_to_synthesizer.publish(response_to_synthesizer)
         
     def text_to_speech(self, text):
         # tts = gtts.gTTS(text)

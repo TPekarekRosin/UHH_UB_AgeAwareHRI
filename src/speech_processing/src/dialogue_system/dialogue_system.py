@@ -26,6 +26,7 @@ class DialogueSystem:
         self.model_version = "gpt-3.5-turbo-1106"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=256, openai_api_key=self.api_key)
         self.agent = SocialBrain(model=self.chat, env=self.env)
+        self.agent.reset()
         
     def process_speech_input(self, transcript, age, confidence):
         
@@ -36,12 +37,22 @@ class DialogueSystem:
         
         step = self.robot_data["step"]
         interruptible = self.robot_data["interruptable"]
-        dict_object = self.robot_data["object"]
+        dict_object_test = self.robot_data["object"]
+        print("dict_object_test: ", dict_object_test)
+        dict_object = {}
+        dict_object["type"] = self.robot_data["object"][0].type
+        dict_object["color"] = self.robot_data["object"][0].color
+        dict_object["name"] = self.robot_data["object"][0].name
+        dict_object["location"] = self.robot_data["object"][0].location
+        dict_object["size"] = self.robot_data["object"][0].size
+        print("dict_object: ", dict_object)
+        
+        self.robot_data["object"]
         move_arm = self.robot_data["move_arm"]
         move_base = self.robot_data["move_base"]
         current_location = self.robot_data["current_location"]
         destination_location = self.robot_data["destination_location"]
-        objects_in_use = self.objects_in_use
+        objects_in_use = []
         
         # todo: define minor interruptions
         if "stop" not in transcript and confidence > 0.5:
@@ -71,16 +82,6 @@ class DialogueSystem:
         print("step", step)
         print("interruptable", interruptable)
         print("object_info", object_info)
-        print("object_info type", object_info[0].type)
-        # Replace colons with commas to make it a valid list
-        # input_string = str(object_info[0]).replace(":",",")
-
-        # # Use ast.literal_eval to safely evaluate the string as a literal
-        # parsed_list = ast.literal_eval(input_string)
-
-        # # Print the result
-        # print(parsed_list)
-
         print("move_arm", move_arm)
         print("move_base", move_base)
         print("current_loc", current_loc)
@@ -89,7 +90,14 @@ class DialogueSystem:
         self.robot_interruptable = interruptable
         string_for_synthesizer = f"I am {step}"
         
-        dict_object = object_info
+        dict_object = {}
+        dict_object["type"] = object_info[0].type
+        dict_object["color"] = object_info[0].color
+        dict_object["name"] = object_info[0].name
+        dict_object["location"] = object_info[0].location
+        dict_object["size"] = object_info[0].size
+        print("dict_object: ", dict_object)
+        
         move_arm = move_arm
         move_base = move_base
         current_location = current_loc

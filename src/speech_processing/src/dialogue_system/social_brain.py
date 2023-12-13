@@ -29,18 +29,6 @@ class SocialBrain:
     def __init__(self, model, env):
         self.model = model
         self.docs = self.get_docs(env)
-        #"system_transcript", 
-        # "command", 
-        # "add_type",
-        # "add_color",
-        # "add_name",
-        # "add_location",
-        # "add_size",
-        # "del_type",
-        # "del_color",
-        # "del_name",
-        # "del_location",
-        # "del_size",
         self.action_parser = RegexParser( 
             regex=r"^system_transcript:(,*)command: (,*)add_type: (,*)add_color: (,*)add_name: (,*)add_location: (,*)add_size: (,*)del_type: (,*)del_color: (,*)del_name: (,*)del_location: (,*)del_size",
             output_keys=["system_transcript","command","add_type","add_color","add_name","add_location","add_size","del_type","del_color","del_name","del_location","del_size"],
@@ -127,7 +115,7 @@ if __name__ == '__main__':
         # False or True
         interruptible= input("interruptible: ")
         # "{type: null, color: null, name: null, location: null, size: null}"
-        # [type: '', color: '', name: '', location: '', size: '']
+        # {type: '', color: '', name: '', location: '', size: ''}
         dict_object = input("dict_object: ")
         # False or True
         move_arm = input("move_arm: ")
