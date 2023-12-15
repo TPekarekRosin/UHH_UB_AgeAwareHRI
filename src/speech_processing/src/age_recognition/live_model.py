@@ -11,6 +11,7 @@ import yaml
 from queue import Queue
 from faster_whisper import WhisperModel
 import torch
+from std_msgs.msg import String
 
 from .utils import get_input_device_id, \
     list_microphones, levenshtein, min_levenshtein
@@ -62,6 +63,8 @@ class ASRLiveModel:
         self.ar_model.load_state_dict(pretrained_dict)
 
         self.confidences = []
+        
+        self.sub_speech = rospy.Subscriber("asr_activation", String, self.callback)
 
     def start(self):
         # start the asr process
@@ -150,7 +153,14 @@ class ASRLiveModel:
         
     def activate_asr(self):
         self.asr_output = True
-
+    
+    def callback(self, msg):
+        rospy.loginfo(msg)
+        if msg == "on":
+            self.activate_asr()
+        elif msg == "off":
+            self.deactivate_asr()
+        
     def int2float(self, sound):
         abs_max = np.abs(sound).max()
         sound = sound.astype('float32')
