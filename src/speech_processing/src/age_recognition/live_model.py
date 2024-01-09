@@ -11,6 +11,7 @@ import yaml
 from queue import Queue
 from faster_whisper import WhisperModel
 import torch
+from std_msgs.msg import String
 
 from .utils import get_input_device_id, \
     list_microphones, levenshtein, min_levenshtein
@@ -46,6 +47,7 @@ class ASRLiveModel:
                                                force_reload=True)
         # speech recognition
         self.asr_model = WhisperModel(self.config['model_name'], device="cuda", compute_type="float16")
+        self.asr_output = True
         
         # age recognition
         self.ar_model = AgeEstimation(self.config)
@@ -62,6 +64,7 @@ class ASRLiveModel:
 
         self.confidences = []
         self.age_estimations = []
+        self.sub_speech = rospy.Subscriber("asr_activation", String, self.callback)
 
     def start(self):
         # start the asr process
@@ -138,8 +141,11 @@ class ASRLiveModel:
                     age_estimation_mean = np.mean(self.age_estimations)
                     age = 0 if age_estimation_mean <= 0.5 else 1
                     try:
-                        import speech_processing_client as spc
-                        spc.speech_publisher(text, age, confidence)
+                        if self.asr_output:
+                            import speech_processing_client as spc
+                            spc.speech_publisher(text, age, confidence)
+                        else:
+                            print("ASR output is disabled.")
                     except rospy.ROSInterruptException:
                         pass
                 output_queue.put([text, confidence, age_estimation])
@@ -147,7 +153,20 @@ class ASRLiveModel:
     
     def get_last_text(self):
         return self.asr_output_queue.get()
-
+    
+    def deactivate_asr(self):
+        self.asr_output = False
+        
+    def activate_asr(self):
+        self.asr_output = True
+    
+    def callback(self, msg):
+        rospy.loginfo(msg)
+        if msg == "on":
+            self.activate_asr()
+        elif msg == "off":
+            self.deactivate_asr()
+        
     def int2float(self, sound):
         abs_max = np.abs(sound).max()
         sound = sound.astype('float32')
