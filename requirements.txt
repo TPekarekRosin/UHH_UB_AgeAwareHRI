@@ -8,5 +8,5 @@ sentencepiece
 transformers
 editdistance
 webrtcvad
-faster-whisper
+faster_whisper
 numpy==1.21.6
