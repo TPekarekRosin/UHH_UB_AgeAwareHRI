@@ -40,8 +40,8 @@ class SocialBrain:
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use):
         
         human_message = f"user_utterance: {utterance_user} age: {age} confidence_of_age: {confidence_of_age} step: {step} interruptible: {interruptible} dict_object :{dict_object} move_arm:{move_arm} move_base:{move_base} current_location:{current_location} destination_location:{destination_location} objects_in_use:{objects_in_use}"
-        print("-----------------------------before model--------------------------")
-        print("human_message", human_message)
+        # print("-----------------------------before model--------------------------")
+        # print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
         )
         # Use LLM to process the user's utterance or robot status, and then generate a transcript for the user or command for robot
@@ -58,7 +58,7 @@ class SocialBrain:
         parsed = dict(matches)
         system_transcript = str
         response_to_robot = dict()
-        print("parsed:", parsed)
+        # print("parsed:", parsed)
         if len(parsed) == 0:
             print("the output is wrong")
             system_transcript = "the output is wrong"
