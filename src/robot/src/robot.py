@@ -39,6 +39,7 @@ class robot:
         self.pub_in_use.publish(self.obj_in_use)
         self.rate.sleep()
 
+
     def callback_minor(self, data):
         rospy.loginfo(f"Minor interruption of type {data.command}")
         if data.command == "object":

@@ -19,7 +19,9 @@ class DialogueNode:
         self.pub_interrupt_major = rospy.Publisher('robot_major_interruption', message_to_robot, queue_size=10)
 
         self.pub_to_synthesizer = rospy.Publisher('to_synthesizer', String, queue_size=10)
-
+        # publisher to activate and deactivate speech recognition
+        self.pub_to_speech = rospy.Publisher('asr_activation', String, queue_size=10)
+        
         self.sub_speech = rospy.Subscriber("speech_publisher", command_and_age, self.callback_from_asr)
         self.sub_from_robot = rospy.Subscriber("from_robot", message_from_robot, self.callback_from_robot)
 
@@ -28,6 +30,7 @@ class DialogueNode:
         self.dialogue_system = DialogueSystem()
 
     def callback_obj_in_use(self, data):
+
         # rospy.loginfo(data)
         self.dialogue_system.objects_in_use = data
               
