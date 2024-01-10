@@ -8,10 +8,8 @@ sentencepiece
 transformers
 editdistance
 webrtcvad
-
-# package for dialog
-# pip install gTTs
-# pip install --upgrade langchain
-# pip install playsound
-# pip install gymnasium
-# pip install openai
+gTTs
+langchain
+playsound
+gymnasium
+openai
