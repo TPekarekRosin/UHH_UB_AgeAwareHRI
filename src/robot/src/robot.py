@@ -12,8 +12,8 @@ class robot:
         rospy.set_param('object_in_use', 'cup,bowl,spoon,cornflakes')
         self.from_robot = message_from_robot()
         self.obj_in_use = message_objects_in_use()
-        self.from_robot.step = 'idle'
-        self.from_robot.interruptable = False
+        self.from_robot.step = 'set_parameters'
+        self.from_robot.interruptable = True
         self.from_robot.object.append(dict_object())
         self.from_robot.object[0].type = ''
         self.from_robot.object[0].color = ''
@@ -34,10 +34,11 @@ class robot:
         pass
 
     def from_robot_pub(self):
-        while not rospy.is_shutdown():
-            self.pub_from_robot.publish(self.from_robot)
-            self.pub_in_use.publish(self.obj_in_use)
-            self.rate.sleep()
+        # while not rospy.is_shutdown():
+        self.pub_from_robot.publish(self.from_robot)
+        self.pub_in_use.publish(self.obj_in_use)
+        self.rate.sleep()
+
 
     def callback_minor(self, data):
         rospy.loginfo(f"Minor interruption of type {data.command}")
@@ -85,7 +86,7 @@ class robot:
             # robot.force_stop()
             self.from_robot.step = 'idle'
             self.from_robot.interruptable = False
-            self.from_robot.object[0].type = ''
+            self.from_robot.object[0].type = 'cup'
             self.from_robot.object[0].color = ''
             self.from_robot.object[0].name = ''
             self.from_robot.object[0].location = ''

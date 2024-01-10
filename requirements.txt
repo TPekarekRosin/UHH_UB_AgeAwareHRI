@@ -8,5 +8,10 @@ sentencepiece
 transformers
 editdistance
 webrtcvad
+gTTs
+langchain
+playsound
+gymnasium
+openai
 faster_whisper
 numpy==1.21.6
