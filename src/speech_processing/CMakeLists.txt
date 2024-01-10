@@ -18,6 +18,7 @@ catkin_python_setup()
    message_to_robot.msg
    message_from_robot.msg
    dict_object.msg
+   message_objects_in_use.msg
 )
 
 generate_messages(
