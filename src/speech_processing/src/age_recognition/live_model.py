@@ -82,14 +82,28 @@ class ASRLiveModel:
         
         microphones = list_microphones(audio)
         selected_input_device_id = get_input_device_id(device_name, microphones)
-
-        # todo fix issue with different sample rates
-        stream = audio.open(input_device_index=selected_input_device_id,
-                            format=pa_format,
-                            channels=n_channels,
-                            rate=sample_rate,
-                            input=True,
-                            frames_per_buffer=chunk_size)
+        
+        # check if the defined sample rate works with the device, and if not
+        if audio.is_format_supported(sample_rate,
+                                     input_device=selected_input_device_id,
+                                     input_channels=n_channels, input_format=pa_format):
+            stream = audio.open(input_device_index=selected_input_device_id,
+                                format=pa_format,
+                                channels=n_channels,
+                                rate=sample_rate,
+                                input=True,
+                                frames_per_buffer=chunk_size)
+        elif audio.is_format_supported(16000,
+                                       input_device=selected_input_device_id,
+                                       input_channels=n_channels, input_format=pa_format):
+            stream = audio.open(input_device_index=selected_input_device_id,
+                                format=pa_format,
+                                channels=n_channels,
+                                rate=sample_rate,
+                                input=True,
+                                frames_per_buffer=chunk_size)
+        else:
+            raise NotImplementedError
         
         frames = b''
         speech_started = False
@@ -135,7 +149,7 @@ class ASRLiveModel:
                 age_estimation = torch.argmax(ar_out, dim=-1) / 100.0
                 # Publish binary age, recognized text, assumed command and confidence
                 if confidence > 0.5:
-                    self.age_estimations.insert(0, age_estimation)
+                    self.age_estimations.insert(0, age_estimation.item())
                     if len(self.age_estimations) > 5:
                         self.age_estimations.pop()
                     age_estimation_mean = np.mean(self.age_estimations)
