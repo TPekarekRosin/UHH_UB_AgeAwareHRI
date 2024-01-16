@@ -84,26 +84,20 @@ class ASRLiveModel:
         selected_input_device_id = get_input_device_id(device_name, microphones)
         
         # check if the defined sample rate works with the device, and if not
-        if audio.is_format_supported(sample_rate,
-                                     input_device=selected_input_device_id,
-                                     input_channels=n_channels, input_format=pa_format):
-            stream = audio.open(input_device_index=selected_input_device_id,
-                                format=pa_format,
-                                channels=n_channels,
-                                rate=sample_rate,
-                                input=True,
-                                frames_per_buffer=chunk_size)
-        elif audio.is_format_supported(16000,
-                                       input_device=selected_input_device_id,
-                                       input_channels=n_channels, input_format=pa_format):
-            stream = audio.open(input_device_index=selected_input_device_id,
-                                format=pa_format,
-                                channels=n_channels,
-                                rate=sample_rate,
-                                input=True,
-                                frames_per_buffer=chunk_size)
-        else:
-            raise NotImplementedError
+        try:
+            is_supported = audio.is_format_supported(sample_rate,
+                                                     input_device=selected_input_device_id,
+                                                     input_channels=n_channels, input_format=pa_format)
+        except ValueError:
+            print("Config sample rate doesn't work, setting sample rate to 16000.")
+            sample_rate = 16000
+
+        stream = audio.open(input_device_index=selected_input_device_id,
+                            format=pa_format,
+                            channels=n_channels,
+                            rate=sample_rate,
+                            input=True,
+                            frames_per_buffer=chunk_size)
         
         frames = b''
         speech_started = False
