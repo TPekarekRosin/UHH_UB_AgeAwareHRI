@@ -146,7 +146,7 @@ class ASRLiveModel:
                     self.age_estimations.insert(0, age_estimation.item())
                     if len(self.age_estimations) > 5:
                         self.age_estimations.pop()
-                    # age_estimation_mean = np.mean(self.age_estimations)
+                    age_estimation_mean = np.mean(self.age_estimations)
                     age = 0 if age_estimation <= 0.5 else 1
                     try:
                         if self.asr_output:
