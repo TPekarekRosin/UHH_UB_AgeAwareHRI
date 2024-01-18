@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import pyaudio as pa
+from std_msgs.msg import String
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
 import ssl
@@ -43,9 +44,11 @@ if __name__ == "__main__":
             dev_idx = int(input())
     device = p.get_device_info_by_index(dev_idx)
     asr = ASRLiveModel(device.get('name'))
+    sub_speech = rospy.Subscriber("asr_activation", String, asr.callback)
     asr.start()
 
-    while not rospy.is_shutdown():
+    """while not rospy.is_shutdown():
+        
         transcript, confidence, age_estimation = asr.get_last_text()
         print(f"\tAge Estimation: {age_estimation.item()}"
-              + f"\tHeard: '{transcript}'")
+              + f"\tHeard: '{transcript}'")"""

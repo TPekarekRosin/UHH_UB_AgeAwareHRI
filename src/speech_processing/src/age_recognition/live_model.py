@@ -11,7 +11,6 @@ import yaml
 from queue import Queue
 from faster_whisper import WhisperModel
 import torch
-from std_msgs.msg import String
 
 from .utils import get_input_device_id, \
     list_microphones, levenshtein, min_levenshtein
@@ -64,7 +63,6 @@ class ASRLiveModel:
 
         self.confidences = []
         self.age_estimations = []
-        self.sub_speech = rospy.Subscriber("asr_activation", String, self.callback)
 
     def start(self):
         # start the asr process
@@ -98,7 +96,15 @@ class ASRLiveModel:
                             rate=sample_rate,
                             input=True,
                             frames_per_buffer=chunk_size)
-        
+
+        self.asr_output = False
+        try:
+            import speech_processing_client as spc
+            spc.speech_publisher("please ready to serve", 0, 1.0)
+        except rospy.ROSInterruptException:
+            pass
+
+        self.asr_output = True
         frames = b''
         speech_started = False
         while not rospy.is_shutdown():
@@ -109,7 +115,7 @@ class ASRLiveModel:
             new_confidence = self.vad_model(torch.from_numpy(audio_float32), 16000).item()
 
             # todo increase tolerance for pauses
-            if new_confidence > 0.5:
+            if new_confidence > 0.5 and self.asr_output:
                 if not speech_started:
                     speech_started = True
                 frames += audio_chunk
@@ -117,7 +123,8 @@ class ASRLiveModel:
             else:
                 if speech_started:
                     speech_started = False
-                    if len(frames) > 1:
+                    print("FRAMES", len(frames))
+                    if len(frames) > 1 and self.asr_output:
                         asr_input_queue.put(frames)
                 frames = b''
         stream.stop_stream()
@@ -161,19 +168,14 @@ class ASRLiveModel:
     
     def get_last_text(self):
         return self.asr_output_queue.get()
-    
-    def deactivate_asr(self):
-        self.asr_output = False
-        
-    def activate_asr(self):
-        self.asr_output = True
-    
+
     def callback(self, msg):
-        rospy.loginfo(msg)
-        if msg == "on":
-            self.activate_asr()
-        elif msg == "off":
-            self.deactivate_asr()
+        if msg.data == "on" and not self.asr_output:
+            rospy.loginfo("ASR activated.")
+            self.asr_output = True
+        elif msg.data == "off" and self.asr_output:
+            rospy.loginfo("ASR deactivated.")
+            self.asr_output = False
         
     def int2float(self, sound):
         abs_max = np.abs(sound).max()

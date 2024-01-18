@@ -40,6 +40,7 @@ class DialogueNode:
         self.dialogue_system.user_data["transcript"] = data.transcript
         self.dialogue_system.user_data["age"] = data.age
         self.dialogue_system.user_data["confidence"] = data.confidence
+        print("CONTROL PRINT", self.dialogue_system.user_data)
 
         minor_or_major, response_to_robot, system_transcript= self.dialogue_system.process_speech_input(data.transcript,
                                                                              data.age,
