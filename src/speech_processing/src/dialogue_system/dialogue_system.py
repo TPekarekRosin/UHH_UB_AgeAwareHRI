@@ -53,9 +53,10 @@ class DialogueSystem:
         current_location = self.robot_data["current_location"]
         destination_location = self.robot_data["destination_location"]
         objects_in_use = []
+        print("transcript", transcript)
         
         # todo: define minor interruptions
-        if "stop" not in transcript and confidence > 0.5:
+        if "stop" not in transcript.lower() and confidence > 0.5:
             # todo: generate valid response for minor interruptions
             system_transcript, response_to_robot = self.agent.information_process(
                                                     transcript, age, confidence, step, interruptible, 
@@ -66,7 +67,7 @@ class DialogueSystem:
             return 'minor', response_to_robot, system_transcript
         
         # todo: define major interruptions
-        elif 'stop' in transcript and confidence > 0.5:
+        elif "stop" in transcript.lower() and confidence > 0.5:
             # todo: generate valid response for major interruptions
             system_transcript = "ok i will stop anything what i am doing now"
             return 'major', (), system_transcript

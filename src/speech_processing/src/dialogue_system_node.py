@@ -75,20 +75,20 @@ class DialogueNode:
             response.command = "stop"
             response.age = data.age
             response.confidence = data.confidence
-            # properties of added object
-            response.add_object.append(dict_object())
-            response.add_object[0].type = response_to_robot["add_type"]
-            response.add_object[0].color = response_to_robot["add_color"]
-            response.add_object[0].name = response_to_robot["add_name"]
-            response.add_object[0].location = response_to_robot["add_location"]
-            response.add_object[0].size = response_to_robot["add_size"]
-            # properties of deleted object
-            response.del_object.append(dict_object())
-            response.del_object[0].type = response_to_robot["del_type"]
-            response.del_object[0].color = response_to_robot["del_color"]
-            response.del_object[0].name = response_to_robot["del_name"]
-            response.del_object[0].location = response_to_robot["del_location"]
-            response.del_object[0].size = response_to_robot["del_size"]
+            # # properties of added object
+            # response.add_object.append(dict_object())
+            # response.add_object[0].type = response_to_robot["add_type"]
+            # response.add_object[0].color = response_to_robot["add_color"]
+            # response.add_object[0].name = response_to_robot["add_name"]
+            # response.add_object[0].location = response_to_robot["add_location"]
+            # response.add_object[0].size = response_to_robot["add_size"]
+            # # properties of deleted object
+            # response.del_object.append(dict_object())
+            # response.del_object[0].type = response_to_robot["del_type"]
+            # response.del_object[0].color = response_to_robot["del_color"]
+            # response.del_object[0].name = response_to_robot["del_name"]
+            # response.del_object[0].location = response_to_robot["del_location"]
+            # response.del_object[0].size = response_to_robot["del_size"]
             self.pub_interrupt_major.publish(response)
             print('now in the major interruption')
         else:
