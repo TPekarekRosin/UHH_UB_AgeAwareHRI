@@ -45,7 +45,9 @@ class ASRLiveModel:
                                                model='silero_vad',
                                                force_reload=True)
         # speech recognition
-        self.asr_model = WhisperModel(self.config['model_name'], device="cuda", compute_type="float16")
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.asr_model = WhisperModel(self.config['model_name'], device=device,
+                                      compute_type="float16" if device == "cuda" else "int8")
         self.asr_output = True
         
         # age recognition
