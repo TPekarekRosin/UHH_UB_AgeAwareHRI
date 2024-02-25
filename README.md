@@ -12,7 +12,7 @@ Requires **Python >= 3.8**.
 
 1) Make shell file executable with ```chmod +x setup.bash```
 2) Then execute with ```./setup.bash```
-*optional* 3) Then initialize pycram with ```./setup_pycram.bash```
+3) *optional* Then initialize pycram with ```./setup_pycram.bash```
 
 During installation console will ask for sudo password.
 
