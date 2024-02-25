@@ -12,6 +12,8 @@ lm/__pycache__/
 
 devel/
 build/
+logs/
+.catkin_tools
 src/CMakeLists.txt
 .catkin_workspace
 /src/speech_processing/__init__.py
@@ -19,3 +21,11 @@ src/CMakeLists.txt
 venv
 .vscode
 openai_api_key.txt
+
+/src/iai_maps
+/src/iai_robots
+/src/kdl_ik_services
+/src/orocos_kinematics_dynamics
+/src/pr2_common
+/src/pr2_kinematics
+/src/pycram/launchs
