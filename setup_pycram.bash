@@ -202,7 +202,6 @@ Window Geometry:
   Y: 27
 EOF
 
-# Create the launch file
 cat <<EOF >$WORKDIR/run_robot_demo.sh
 #!/bin/bash
 
@@ -218,6 +217,22 @@ roslaunch pycram run_interrupt_demo.launch
 
 deactivate
 EOF
+
+cat <<EOF >$WORKDIR/clean_pycram.sh
+#!/bin/bash
+
+cd $PACKAGE_DIR
+
+git restore "$PYTHON_SCRIPT_PATH"
+
+rm $LAUNCH_DIR/$LAUNCH_FILE_NAME
+rm $LAUNCH_DIR/$CONFIG_FILE_NAME
+
+EOF
+
+cd $WORKDIR
+
+sudo chmod +x clean_pycram.sh
 
 TEMP_FILE=$(mktemp)
 
