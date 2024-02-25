@@ -44,7 +44,7 @@ During installation console will ask for sudo password.
     ```bash
    rosrun robot robot.py
    ```
-*optional* 5) To start the pycram demo, first make sure you initialized pycram as outlined in 3) of the installation. Open another terminal and source the workspace:
+5) *optional* To start the pycram demo, first make sure you initialized pycram as outlined in 3) of the installation. Open another terminal and source the workspace:
    ```bash
    source ./devel/setup.bash
    ```
