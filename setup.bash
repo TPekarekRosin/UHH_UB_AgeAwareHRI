@@ -39,9 +39,9 @@ echo "Building ROS packages"
 cd $WORKDIR
 
 if [ -x "$(command -v catkin_make)" ]; then
-  sudo apt-get install cmake python3-catkin-pkg python3-rospy python-nose python-setuptools libgtest-dev build-essential
+  sudo apt-get install cmake python3-catkin-pkg python3-rospy python-nose python-setuptools libgtest-dev build-essential python3-catkin-tools
   pip install rospkg empy
-  catkin_make -DPYTHON_EXECUTABLE=~/.$VIRTUALENVDIR/bin/python3
+  catkin build
   source $WORKDIR/devel/setup.bash
 fi
 if ! [ -x "$(command -v catkin_make)" ]; then

@@ -3,3 +3,7 @@
 	url = https://github.com/sunava/cram
 	branch = ease-milestone
 
+[submodule "src/pycram"]
+	path = src/pycram
+	url = https://github.com/sunava/pycram
+	branch = suturo
