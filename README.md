@@ -10,9 +10,18 @@ The Git Repository is treated as a catkin workspace.
 
 Requires **Python >= 3.8**.
 
-1) Make shell file executable with ```chmod +x setup.bash```
-2) Then execute with ```./setup.bash```
-3) *optional* Then initialize pycram with ```./setup_pycram.bash```
+1) Make shell file executable with
+    ```bash
+   chmod +x setup.bash
+    ```
+3) Then execute with
+    ```bash
+   ./setup.bash
+    ```
+5) *optional* Then initialize pycram with
+    ```bash
+   ./setup_pycram.bash
+    ```
 
 During installation console will ask for sudo password.
 
