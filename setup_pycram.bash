@@ -36,7 +36,6 @@ vcs import --input https://raw.githubusercontent.com/sunava/pycram/ageaware/pycr
 #install python packages
 pip install -r pycram/requirements.txt
 
-rosdep install --from-paths pycram --ignore-src -r -y
 
 # source setup
 source /opt/ros/noetic/setup.bash
@@ -44,10 +43,9 @@ source /opt/ros/noetic/setup.bash
 # build catkin workspace
 echo "Building ROS packages"
 cd $WORKDIR
-git submodule init
-git submodule update
 
-PACKAGE_DIR=$WORKDIR/src/pycram  # Package directory
+
+PACKAGE_DIR=$WORKDIR/src/cognitive_archi/pycram  # Package directory
 LAUNCH_DIR=$PACKAGE_DIR/launch  # Launch directory
 PYTHON_SCRIPT_PATH=$PACKAGE_DIR/demos/frontiers/interrupt_demo.py  # Path to your Python script
 LAUNCH_FILE_NAME=run_interrupt_demo.launch  # Name of your launch file
