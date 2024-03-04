@@ -240,7 +240,7 @@ cat "$PYTHON_SCRIPT_PATH" >> "$TEMP_FILE"
 
 mv "$TEMP_FILE" "$PYTHON_SCRIPT_PATH"
 
-sudo chmod +x src/pycram/demos/frontiers/interrupt_demo.py
+sudo chmod +x src/cognitive_archi/pycram/demos/frontiers/interrupt_demo.py
 sudo chmod +x run_robot_demo.sh
 
 source ~/.arvenv/bin/activate
