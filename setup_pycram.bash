@@ -30,7 +30,8 @@ source ~/.$VIRTUALENVDIR/bin/activate
 git submodule init
 git submodule update
 cd src
-vcs import --input https://raw.githubusercontent.com/sunava/pycram/suturo/pycram.rosinstall --recursive
+cd cognitive_archi
+vcs import --input https://raw.githubusercontent.com/sunava/pycram/ageaware/pycram.rosinstall --recursive
 
 #install python packages
 pip install -r pycram/requirements.txt
