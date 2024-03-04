@@ -1,0 +1,4 @@
+[submodule "src/cognitive_archi/pycram"]
+	path = src/cognitive_archi/pycram
+	url = https://github.com/sunava/pycram.git
+	branch = ageaware
