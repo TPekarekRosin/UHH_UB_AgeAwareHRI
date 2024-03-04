@@ -28,7 +28,7 @@ echo "Activating virtualenv"
 source ~/.$VIRTUALENVDIR/bin/activate
 
 git submodule init
-git submodule update
+#git submodule update
 cd src
 cd cognitive_archi
 vcs import --input https://raw.githubusercontent.com/sunava/pycram/ageaware/pycram.rosinstall --recursive
@@ -246,6 +246,7 @@ sudo chmod +x run_robot_demo.sh
 source ~/.arvenv/bin/activate
 
 sudo apt-get install python3-catkin-tools
+sudo apt install ros-noetic-pr2-arm-kinematics
 catkin clean -y && catkin build
 source $WORKDIR/devel/setup.bash
 
