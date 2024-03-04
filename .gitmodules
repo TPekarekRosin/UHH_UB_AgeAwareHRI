@@ -1,4 +1,4 @@
-[submodule "src/pycram"]
+[submodule "src/cognitive_architecture/pycram"]
 	path = src/cognitive_architecture/pycram
 	url = https://github.com/sunava/pycram
 	branch = suturo
