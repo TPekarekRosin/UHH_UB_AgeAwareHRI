@@ -245,6 +245,12 @@ sudo chmod +x run_robot_demo.sh
 
 source ~/.arvenv/bin/activate
 
+sudo apt update
+sudo apt install python3-rosdep
+sudo rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+
 sudo apt-get install python3-catkin-tools
 sudo apt install ros-noetic-pr2-arm-kinematics
 catkin clean -y && catkin build
