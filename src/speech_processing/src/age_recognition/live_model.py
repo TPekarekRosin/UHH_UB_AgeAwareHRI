@@ -3,6 +3,7 @@ import time
 import threading
 import webrtcvad
 import sys
+import sounddevice as sd
 
 import numpy as np
 import pyaudio as pa
@@ -78,12 +79,11 @@ class ASRLiveModel:
         pa_format = pa.paInt16
         n_channels = self.config['n_channels']
         sample_rate = self.config['sample_rate']
-        chunk_size = int(sample_rate/10)
         
         microphones = list_microphones(audio)
         selected_input_device_id = get_input_device_id(device_name, microphones)
         
-        # check if the defined sample rate works with the device, and if not
+        """# check if the defined sample rate works with the device, and if not
         try:
             is_supported = audio.is_format_supported(sample_rate,
                                                      input_device=selected_input_device_id,
@@ -91,6 +91,20 @@ class ASRLiveModel:
         except ValueError:
             print("Config sample rate doesn't work, setting sample rate to 16000.")
             sample_rate = 16000
+
+        try:
+            is_supported = audio.is_format_supported(sample_rate,
+                                                     input_device=selected_input_device_id,
+                                                     input_channels=n_channels, input_format=pa_format)
+        except ValueError:
+            print("16000 as sample rate doesn't work, setting sample rate to 48000.")
+            sample_rate = 48000"""
+
+        chunk_size = int(sample_rate / 10)
+
+        print("Sample rate ", sample_rate)
+        print("Chunk size ", chunk_size)
+        sd.check_input_settings(selected_input_device_id, samplerate=sample_rate)
 
         stream = audio.open(input_device_index=selected_input_device_id,
                             format=pa_format,
