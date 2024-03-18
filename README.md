@@ -41,11 +41,11 @@ During installation console will ask for sudo password.
     ```bash
    rosrun speech_processing speech_processing_client.py
    ```
-   Start the dummy dialogue manager:
+   Start the dialogue manager:
     ```bash
    rosrun speech_processing dialogue_system_node.py
    ```
-   Start the dummy speech synthesis:
+   Start the speech synthesis:
     ```bash
    rosrun speech_processing speech_synthesis.py
    ```
