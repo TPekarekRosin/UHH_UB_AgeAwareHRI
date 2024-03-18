@@ -49,10 +49,7 @@ During installation console will ask for sudo password.
     ```bash
    rosrun speech_processing speech_synthesis.py
    ```
-   Start the dummy robot:
-    ```bash
-   rosrun robot robot.py
-   ```
+ 
 5) To start the pycram, first make sure you initialized pycram as outlined in 3) of the installation. Open another terminal and source the workspace:
    ```bash
    source ./devel/setup.bash
@@ -70,7 +67,7 @@ During installation console will ask for sudo password.
    ./clean_pycram.sh 
    ```
    
-### Instructions to interrupting the PR2's actions
+### Instructions to interrupting the PR2's actions per hand
 Open up a new terminal in your workspace, and source the workspace using ```./setup.bash```
 The Interrupt Client can be tested injecting the following rostopic pub command at various points in the demo, whenever the robot prints "I am now interruptable for 5 seconds":
    ```bash
