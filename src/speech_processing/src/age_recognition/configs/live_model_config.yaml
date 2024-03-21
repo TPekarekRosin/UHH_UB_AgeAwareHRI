@@ -1,6 +1,6 @@
 gpu: 0
-# sample_rate: 16000
-sample_rate: 44100
+sample_rate: 16000
+# sample_rate: 44100
 
 ar_checkpoint: 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
 n_mfcc: 24

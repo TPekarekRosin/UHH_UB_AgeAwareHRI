@@ -3,6 +3,9 @@ import time
 import threading
 import webrtcvad
 import sys
+import sounddevice as sd
+import signal
+from scipy.signal import resample
 
 import numpy as np
 import pyaudio as pa
@@ -32,6 +35,9 @@ class ASRLiveModel:
         
         self.asr_output_queue = Queue()
         self.asr_input_queue = Queue()
+
+        # Register the signal handler for SIGINT (Ctrl+C)
+        signal.signal(signal.SIGINT, self.signal_handler)
         
         self.asr_process = threading.Thread(target=self.asr_process,
                                             args=(self.asr_input_queue,
@@ -49,6 +55,7 @@ class ASRLiveModel:
         self.asr_model = WhisperModel(self.config['model_name'], device=device,
                                       compute_type="float16" if device == "cuda" else "int8")
         self.asr_output = True
+        self.sample_rate = 16000
         
         # age recognition
         self.ar_model = AgeEstimation(self.config)
@@ -76,26 +83,27 @@ class ASRLiveModel:
     def vad_process(self, device_name, asr_input_queue):
         audio = pa.PyAudio()
         pa_format = pa.paInt16
-        n_channels = self.config['n_channels']
-        sample_rate = self.config['sample_rate']
-        chunk_size = int(sample_rate/10)
         
         microphones = list_microphones(audio)
         selected_input_device_id = get_input_device_id(device_name, microphones)
-        
-        # check if the defined sample rate works with the device, and if not
-        try:
-            is_supported = audio.is_format_supported(sample_rate,
-                                                     input_device=selected_input_device_id,
-                                                     input_channels=n_channels, input_format=pa_format)
-        except ValueError:
-            print("Config sample rate doesn't work, setting sample rate to 16000.")
-            sample_rate = 16000
+        dev_info = audio.get_device_info_by_index(selected_input_device_id)
+        print(f"Device {selected_input_device_id}: {dev_info['name']}")
+        print(f"\t- Input channels: {dev_info['maxInputChannels']}")
+        print(f"\t- Supported sampling rates: {dev_info['defaultSampleRate']}")
+
+        # n_channels = dev_info['maxInputChannels']
+        n_channels = 1
+        self.sample_rate = int(dev_info['defaultSampleRate'])
+
+        chunk_size = 2048 if self.sample_rate == 16000 else 4096     # round(sample_rate / 16000) * 2048    # int(sample_rate / 10)
+
+        print("Sample rate ", self.sample_rate)
+        print("Chunk size ", chunk_size)
 
         stream = audio.open(input_device_index=selected_input_device_id,
                             format=pa_format,
                             channels=n_channels,
-                            rate=sample_rate,
+                            rate=self.sample_rate,
                             input=True,
                             frames_per_buffer=chunk_size)
 
@@ -108,40 +116,46 @@ class ASRLiveModel:
 
         self.asr_output = True
         frames = b''
+        pause_buffer = 0
         speech_started = False
+        print('\nSpeak!\n')
         while not rospy.is_shutdown():
             audio_chunk = stream.read(chunk_size, exception_on_overflow=False)
-            audio_int16 = np.frombuffer(audio_chunk, np.int16)
-            audio_float32 = self.int2float(audio_int16)
+            audio_float32 = self.convert_to_float(audio_chunk)
+            audio_float32_resampled = self.resample_audio(audio_float32, self.sample_rate, 16000)
 
-            new_confidence = self.vad_model(torch.from_numpy(audio_float32), 16000).item()
-
-            # todo increase tolerance for pauses
+            new_confidence = self.vad_model(torch.from_numpy(audio_float32_resampled), 16000).item()
             if new_confidence > 0.5 and self.asr_output:
                 if not speech_started:
                     speech_started = True
                 frames += audio_chunk
                 self.confidences.append(new_confidence)
             else:
-                if speech_started:
+                # print(new_confidence)
+                if speech_started and pause_buffer >= 5:
                     speech_started = False
-                    print("FRAMES", len(frames))
-                    if len(frames) > 1 and self.asr_output:
+                    # print("FRAMES", len(frames))
+                    if self.asr_output:  # and len(frames) > 1
                         asr_input_queue.put(frames)
-                frames = b''
+                elif speech_started and pause_buffer < 5:
+                    pause_buffer += 1
+                    continue
+                elif not speech_started:
+                    frames = b''
+                    pause_buffer = 0
+
         stream.stop_stream()
         stream.close()
         audio.terminate()
     
     def asr_process(self, in_queue, output_queue):
-        print("\nSpeak!\n")
         while not rospy.is_shutdown():
             audio_frames = in_queue.get()
+            audio_float32 = self.convert_to_float(audio_frames)
+            audio_float32_resampled = self.resample_audio(audio_float32, self.sample_rate, 16000)
 
-            audio_int16 = np.frombuffer(audio_frames, np.int16)
-            audio_float32 = self.int2float(audio_int16)
             # speech recognition
-            segments, _ = self.asr_model.transcribe(audio_float32)
+            segments, _ = self.asr_model.transcribe(audio_float32_resampled)
             s = list(segments)
             
             if len(s) != 0:
@@ -178,13 +192,35 @@ class ASRLiveModel:
         elif msg.data == "off" and self.asr_output:
             rospy.loginfo("ASR deactivated.")
             self.asr_output = False
-        
-    def int2float(self, sound):
-        abs_max = np.abs(sound).max()
-        sound = sound.astype('float32')
-        if abs_max > 0:
-            sound *= 1 / 32768
-        sound = sound.squeeze()  # depends on the use case
-        return sound
 
+    def convert_to_float(self, audio_chunk):
+        audio_int16 = np.frombuffer(audio_chunk, dtype=np.int16)
+        return audio_int16.astype(np.float32) / 32768.0
 
+    def signal_handler(self, sig, frame):
+        # Perform cleanup actions here, if needed
+        print("Ctrl+C detected. Exiting gracefully.")
+        # Optionally, you can raise SystemExit to exit the program
+        raise SystemExit
+
+    def resample_audio(self, audio_data, original_rate, target_rate):
+        # Resample audio data to the target sampling rate in real-time
+        ratio = target_rate / original_rate
+        num_samples = int(len(audio_data) * ratio)
+        resampled_audio = resample(audio_data, num_samples)
+        return resampled_audio
+
+    def resample_audio_linear(self, audio_data, original_rate, target_rate):
+        # Calculate resampling ratio
+        ratio = target_rate / original_rate
+
+        # Determine the number of samples for resampling
+        num_samples = int(len(audio_data) * ratio)
+
+        # Generate new indices for resampling
+        indices = np.arange(num_samples) / ratio
+
+        # Perform linear interpolation
+        resampled_audio = np.interp(indices, np.arange(len(audio_data)), audio_data).astype(np.float32)
+
+        return resampled_audio
