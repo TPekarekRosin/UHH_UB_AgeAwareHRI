@@ -219,7 +219,7 @@ EOF
 cat <<EOF >$WORKDIR/run_robot_demo.sh
 #!/bin/bash
 
-source /home/me/.arvenv_pycram/bin/activate
+source ~/.$VIRTUALENVDIR/bin/activate
 
 source /opt/ros/noetic/setup.bash
 

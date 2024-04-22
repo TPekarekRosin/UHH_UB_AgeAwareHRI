@@ -64,7 +64,6 @@ class SocialBrain:
             system_transcript = "the output is wrong"
         else:
             system_transcript = parsed["system_transcript"]
-            
             response_to_robot["command"] = parsed["command"]
             response_to_robot["add_type"] = parsed["add_type"]
             response_to_robot["add_color"] = parsed["add_color"]
@@ -77,8 +76,7 @@ class SocialBrain:
             response_to_robot["del_location"] = parsed["del_location"]
             response_to_robot["del_location"] = parsed["del_location"]
             response_to_robot["del_size"] = parsed["del_size"]
-        
-            
+         
         self.message_history.append(act_message)
         print("-----------------------------last--------------------------")
         print("system_transcript: ", system_transcript)

@@ -16,3 +16,4 @@ openai
 faster_whisper
 numpy==1.21.6
 empy==3.3.4
+scipy

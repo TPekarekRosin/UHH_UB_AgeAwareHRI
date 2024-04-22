@@ -29,3 +29,6 @@ openai_api_key.txt
 /src/pr2_common
 /src/pr2_kinematics
 /src/pycram/launchs
+
+# add by XW
+system_transcript.mp3

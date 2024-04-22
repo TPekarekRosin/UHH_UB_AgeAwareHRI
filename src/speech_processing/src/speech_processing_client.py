@@ -4,6 +4,7 @@ import pyaudio as pa
 from std_msgs.msg import String
 from speech_processing.msg import *
 from age_recognition.live_model import ASRLiveModel
+import sounddevice as sd
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -27,6 +28,8 @@ def speech_publisher(transcript, age, confidence):
 if __name__ == "__main__":
     rospy.init_node('speech_engine', anonymous=True)
 
+    print(sd.query_devices())
+
     # choose audio device
     p = pa.PyAudio()
     print('Available audio input devices:')
@@ -42,6 +45,7 @@ if __name__ == "__main__":
         while dev_idx not in input_devices:
             print('Please type input device ID:')
             dev_idx = int(input())
+
     device = p.get_device_info_by_index(dev_idx)
     asr = ASRLiveModel(device.get('name'))
     sub_speech = rospy.Subscriber("asr_activation", String, asr.callback)

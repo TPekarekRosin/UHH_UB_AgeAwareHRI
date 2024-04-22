@@ -33,26 +33,36 @@ class DialogueSystem:
         # utterance_user, 
         # age, 
         # confidence_of_age, 
+        step = str
+        interruptible = str
+        dict_object = dict()
+        move_arm = str
+        move_base = str
+        current_location = str
+        destination_location = str
+        objects_in_use = list()
         print("robot data", self.robot_data)
-        
-        step = self.robot_data["step"]
-        interruptible = self.robot_data["interruptable"]
-        dict_object_test = self.robot_data["object"]
-        print("dict_object_test: ", dict_object_test)
-        dict_object = {}
-        dict_object["type"] = self.robot_data["object"][0].type
-        dict_object["color"] = self.robot_data["object"][0].color
-        dict_object["name"] = self.robot_data["object"][0].name
-        dict_object["location"] = self.robot_data["object"][0].location
-        dict_object["size"] = self.robot_data["object"][0].size
-        print("dict_object: ", dict_object)
-        
-        self.robot_data["object"]
-        move_arm = self.robot_data["move_arm"]
-        move_base = self.robot_data["move_base"]
-        current_location = self.robot_data["current_location"]
-        destination_location = self.robot_data["destination_location"]
-        objects_in_use = []
+        if not self.robot_data:
+            system_transcript = "i have issues getting the robot status"
+            return '', (), system_transcript
+        else:
+            step = self.robot_data["step"]
+            interruptible = self.robot_data["interruptable"]
+            # dict_object_test = self.robot_data["object"]
+            # print("dict_object_test: ", dict_object_test)
+            
+            dict_object["type"] = self.robot_data["object"][0].type
+            dict_object["color"] = self.robot_data["object"][0].color
+            dict_object["name"] = self.robot_data["object"][0].name
+            dict_object["location"] = self.robot_data["object"][0].location
+            dict_object["size"] = self.robot_data["object"][0].size
+            print("dict_object: ", dict_object)
+            
+            # self.robot_data["object"]
+            move_arm = self.robot_data["move_arm"]
+            move_base = self.robot_data["move_base"]
+            current_location = self.robot_data["current_location"]
+            destination_location = self.robot_data["destination_location"]
         print("transcript", transcript)
         
         # todo: define minor interruptions
@@ -80,13 +90,13 @@ class DialogueSystem:
                             move_arm, move_base, current_loc, destination_loc):
         # todo process the message from the robot to create speech output
         self.robot_step = step
-        print("step", step)
-        print("interruptable", interruptable)
-        print("object_info", object_info)
-        print("move_arm", move_arm)
-        print("move_base", move_base)
-        print("current_loc", current_loc)
-        print("destination_loc", destination_loc)
+        # print("step", step)
+        # print("interruptable", interruptable)
+        # print("object_info", object_info)
+        # print("move_arm", move_arm)
+        # print("move_base", move_base)
+        # print("current_loc", current_loc)
+        # print("destination_loc", destination_loc)
 
         self.robot_interruptable = interruptable
         string_for_synthesizer = f"I am {step}"
@@ -110,13 +120,12 @@ class DialogueSystem:
         age = self.user_data["age"]
         confidence_of_age = self.user_data["confidence"]
        
-
-        string_for_synthesizer, response_to_robot = self.agent.information_process(
+        system_transcript, response_to_robot = self.agent.information_process(
                                                         utterance_user, age, confidence_of_age, self.robot_step, 
                                                         self.robot_interruptable, dict_object, move_arm, move_base, 
                                                         current_location, destination_location, objects_in_use)
         
-        return string_for_synthesizer
+        return system_transcript
 
     def get_objects_in_use(self):
         # looks at state of rosparam \objects_in_use and return list of objects
