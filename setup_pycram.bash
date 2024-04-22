@@ -67,6 +67,21 @@ cat <<EOF >$LAUNCH_DIR/$LAUNCH_FILE_NAME
 </launch>
 EOF
 
+BASH_FILE="update_pycram.sh"
+
+# Create the Bash script
+cat <<EOF >$BASH_FILE
+#!/bin/bash
+
+cd src/cognitive_archi/pycram
+git pull
+
+echo "Updated pycram"
+EOF
+
+# Make the Bash script executable
+chmod +x $BASH_FILE
+
 cat <<EOF >$LAUNCH_DIR/$CONFIG_FILE_NAME
 Panels:
   - Class: rviz/Displays
@@ -137,7 +152,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: simulated/map
     Frame Rate: 30
   Name: root
   Tools:
