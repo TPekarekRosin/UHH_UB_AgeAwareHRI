@@ -22,6 +22,10 @@ Requires **Python >= 3.8**.
     ```bash
    ./setup_pycram.bash
     ```
+6) If the pycram branch was updated pull all changes using
+   ```bash
+   ./update_pycram.bash
+    ```
 
 During installation console will ask for sudo password.
 
