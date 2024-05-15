@@ -62,6 +62,10 @@ During installation console will ask for sudo password.
    ```bash
    source ~/.arvenv_pycram/bin/activate
    ```
+   Manually make the demo file executable:
+   ```
+   chmod +x src/cognitive_archi/pycram/demos/frontiers/interrupt_demo.py
+   ```
    Start the pycram demo using (Note: this will launch rviz with an appropriate config, and the demo will start as soon as everything has loaded):
    ```bash
    ./run_robot_demo.sh 
