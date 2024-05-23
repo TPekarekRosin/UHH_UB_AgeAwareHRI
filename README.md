@@ -46,7 +46,7 @@ During installation console will ask for sudo password.
    rosrun speech_processing speech_processing_client.py
    ```
    Start the dialogue manager:
-   Tips: To use Open API key, you need to create a file name with "openai_api_key.txt" in our project folder. Copy-paste the key to this file is ok.
+   (Tips: In this work, we use ChatGPT as the dialog manager, therefore you need an OpenAI key to run the code. To use OpenAI key, you need to create a file named "openai_api_key.txt" in our project foldera and paste the key into this file.)
     ```bash
    rosrun speech_processing dialogue_system_node.py
    ```
