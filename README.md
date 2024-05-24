@@ -26,19 +26,15 @@ During installation console will ask for sudo password.
 
 ### IF PYCRAM WAS UPDATED
 
-1) Clean
-    ```bash
-   ./clean_pycram.sh 
-   ``` 
-2) If the pycram branch was updated, pull all changes using
+1) If the pycram branch was updated, pull all changes using
    ```bash
    ./update_pycram.sh
     ```
-3) install
-   ```bash
-   ./setup_pycram.bash
-    ```
-During installation console will ask for sudo password.
+   If the script fails because there are uncommited changes, please make sure to
+   restore any changes not staged for commit inside the pycram repository.
+   Please note that this will only occur if you make changes to the pycram code on your side
+   
+During installation console may ask for sudo password.
 
 
 ### Start-up
@@ -68,38 +64,46 @@ During installation console will ask for sudo password.
    source ~/.arvenv_pycram/bin/activate && source ./devel/setup.bash
    ```
   
-   Manually make the demo file and the robot bash script executable:
-   ```
-   chmod +x run_robot_demo.sh && chmod +x src/cognitive_archi/pycram/demos/frontiers/interrupt_demo.py
-   ```
    Start the pycram demo using (Note: this will launch rviz with an appropriate config, and the demo will start as soon as everything has loaded):
    ```bash
    ./run_robot_demo.sh 
    ```
+
+6) Below is a list of objects and their attributes that are currently available.
+   
+   Two milks:
+   1. milk1 has type "milk", color "blue", size "Normal"
+   2. milk2 has type "milk", color "red", size "Big"
+
+   One Bowl:
+   1. bowl has type "bowl", color "white", size "Normal"
+
+   One Cereal:
+   1. cereal has type "cereal", color "green", size "Normal"
   
    
 ### Instructions to interrupting the PR2's actions per hand (testing per hand)
 Open up a new terminal in your workspace, and source the workspace using ```./setup.bash```
-The Interrupt Client can be tested injecting the following rostopic pub command at various points in the demo, whenever the robot prints "I am now interruptable for 5 seconds":
+The Interrupt Client can be tested injecting the following rostopic pub command at various points in the demo, whenever the robot prints "I am now interruptable for *X* seconds":
    ```bash
-   rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: ''
+   rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'bring_me'
    age: 0
    confidence: 0.0
    add_object:
-   - {type: 'cereal', color: 'red', name: '', location: '', size: ''}
+   - {type: 'cereal', color: 'green', name: '', location: '', size: 'Normal'}
    del_object:
-   - {type: 'milk', color: 'blue', name: '', location: '', size: ''}" 
+   - {type: 'milk', color: 'red', name: '', location: '', size: 'Big'}" 
    ``` 
    
 If you want to switch from cereal back to the milk, after interrupting once use:
    ```bash
-   rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: ''
+   rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'bring_me'
    age: 0
    confidence: 0.0
    add_object:
-   - {type: 'milk', color: 'blue', name: '', location: '', size: ''}
+   - {type: 'milk', color: 'red', name: '', location: '', size: 'Big'}
    del_object:
-   - {type: 'cereal', color: 'red', name: '', location: '', size: ''}"
+   - {type: 'cereal', color: 'green', name: '', location: '', size: 'Normal'}"
    ```
  
   
