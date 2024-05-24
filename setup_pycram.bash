@@ -76,7 +76,12 @@ cat <<EOF >$BASH_FILE
 cd src/cognitive_archi/pycram
 git pull
 
-echo "Updated pycram"
+echo "Updated pycram, building now"
+
+cd $WORKDIR
+
+catkin clean -y && catkin build
+source $WORKDIR/devel/setup.bash
 EOF
 
 # Make the Bash script executable
@@ -232,28 +237,7 @@ roslaunch pycram run_interrupt_demo.launch
 deactivate
 EOF
 
-cat <<EOF >$WORKDIR/clean_pycram.sh
-#!/bin/bash
-
-cd $PACKAGE_DIR
-
-git restore "$PYTHON_SCRIPT_PATH"
-
-rm $LAUNCH_DIR/$LAUNCH_FILE_NAME
-rm $LAUNCH_DIR/$CONFIG_FILE_NAME
-
-EOF
-
 cd $WORKDIR
-
-sudo chmod +x clean_pycram.sh
-
-TEMP_FILE=$(mktemp)
-
-echo "#!/usr/bin/env python3" > "$TEMP_FILE"
-cat "$PYTHON_SCRIPT_PATH" >> "$TEMP_FILE"
-
-mv "$TEMP_FILE" "$PYTHON_SCRIPT_PATH"
 
 sudo chmod +x src/cognitive_archi/pycram/demos/frontiers/interrupt_demo.py
 sudo chmod +x run_robot_demo.sh
@@ -270,4 +254,3 @@ sudo apt-get install python3-catkin-tools
 sudo apt install ros-noetic-pr2-arm-kinematics
 catkin clean -y && catkin build
 source $WORKDIR/devel/setup.bash
-
