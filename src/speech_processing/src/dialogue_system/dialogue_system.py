@@ -24,7 +24,7 @@ class DialogueSystem:
             self.api_key = fapi.read()
         self.env = SocialEnv()
         self.model_version = "gpt-3.5-turbo-1106"
-        self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=256, openai_api_key=self.api_key)
+        self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
         self.agent = SocialBrain(model=self.chat, env=self.env)
         self.agent.reset()
         

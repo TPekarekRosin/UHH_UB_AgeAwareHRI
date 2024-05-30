@@ -54,21 +54,21 @@ class DialogueNode:
             response.age = data.age
             response.confidence = data.confidence
             if not response_to_robot:
-                response.command = 'null'
+                response.command = ""
                 # properties of added object
                 response.add_object.append(dict_object())
-                response.add_object[0].type = 'null'
-                response.add_object[0].color = 'null'
-                response.add_object[0].name = 'null'
-                response.add_object[0].location = 'null'
-                response.add_object[0].size = 'null'
+                response.add_object[0].type = ""
+                response.add_object[0].color = ""
+                response.add_object[0].name = ""
+                response.add_object[0].location = ""
+                response.add_object[0].size = ""
                 # properties of deleted object
                 response.del_object.append(dict_object())
-                response.del_object[0].type = 'null'
-                response.del_object[0].color = 'null'
-                response.del_object[0].name = 'null'
-                response.del_object[0].location = 'null'
-                response.del_object[0].size = 'null'
+                response.del_object[0].type = ""
+                response.del_object[0].color = ""
+                response.del_object[0].name = ""
+                response.del_object[0].location = ""
+                response.del_object[0].size = ""
             else:
                 response.command = response_to_robot["command"]
                 # properties of added object
