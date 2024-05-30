@@ -28,7 +28,7 @@ source ~/.$VIRTUALENVDIR/bin/activate
 
 #install python packages
 pip install wget
-sudo apt-get install sox libsndfile1 ffmpeg  portaudio19-dev swig
+sudo apt-get install sox libsndfile1 ffmpeg  portaudio19-dev swig pulseaudio
 pip install -r requirements.txt
 
 # source setup

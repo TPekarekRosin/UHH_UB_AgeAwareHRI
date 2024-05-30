@@ -4,6 +4,7 @@ torchaudio==2.0.2
 pyyaml
 pyaudio
 soundfile
+sounddevice
 sentencepiece
 transformers
 editdistance
