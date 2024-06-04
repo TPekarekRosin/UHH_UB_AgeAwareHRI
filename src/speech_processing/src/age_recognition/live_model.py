@@ -59,16 +59,6 @@ class ASRLiveModel:
         
         # age recognition
         self.ar_model = AgeEstimation(self.config)
-        filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs',
-                                self.config['ar_checkpoint'])
-        pretrained_dict = torch.load(filepath)
-        model_dict = self.ar_model.state_dict()
-        # 1. filter out unnecessary keys
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-        # 2. overwrite entries in the existing state dict
-        model_dict.update(pretrained_dict)
-        # 3. load the new state dict
-        self.ar_model.load_state_dict(pretrained_dict)
 
         self.confidences = []
         self.age_estimations = []

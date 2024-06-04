@@ -57,6 +57,3 @@ def levenshtein(a, b):
 def min_levenshtein(input_seq, list_of_seqs):
     best_matching = np.argmin([levenshtein(input_seq, comp_seq) for comp_seq in list_of_seqs])
     return best_matching
-
-
-
