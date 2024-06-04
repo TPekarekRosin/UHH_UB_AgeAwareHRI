@@ -2,7 +2,9 @@ gpu: 0
 sample_rate: 16000
 # sample_rate: 44100
 
-ar_checkpoint: 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
+ar_checkpoint: 'openai/whisper-small' # 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
+num_classification_layers: 1
+num_classifier_attention_heads: 4
 n_mfcc: 24
 win_length: 400
 hop_length: 160
