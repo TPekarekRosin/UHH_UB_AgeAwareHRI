@@ -5,11 +5,9 @@ from torchvision.transforms import Normalize
 import torchaudio.transforms as T
 from typing import Optional, Tuple, Union
 import logging
-from transformers import WhisperFeatureExtractor, WhisperPreTrainedModel, WhisperConfig
+from transformers import WhisperProcessor, WhisperPreTrainedModel, WhisperConfig
 from transformers.models.whisper.modeling_whisper import WhisperEncoder, WhisperDecoderLayer
 
-from .ar_components import ModifiedXVector
-from .utils import SequenceClassifierOutput
 from .attention_network import MHAClassifier, MultiHeadAttentionLayer
 
 logger = logging.getLogger('Age-Estimator-Log')
@@ -21,18 +19,18 @@ class AgeEstimation(nn.Module):
         super().__init__()
         self.config = config
         whisper_config = WhisperConfig.from_pretrained("openai/whisper-small",
-                                                       num_labels=self.config['model']['num_classes'])
+                                                       num_labels=self.config['num_classes'])
         whisper_config.num_classification_layers = self.config['num_classification_layers']
         whisper_config.num_classifier_attention_heads = self.config['num_classifier_attention_heads']
 
-        self.feature_extractor = WhisperFeatureExtractor.from_pretrained()
+        self.processor = WhisperProcessor.from_pretrained("openai/whisper-small")
         self.classification_model = ClassificationWhisperModel.from_pretrained(self.config['ar_model'],
                                                                               config=whisper_config)
 
     def forward(self, waveform):
-        input_features = self.feature_extractor(waveform, sampling_rate=16000)
-        outputs = self.classification_model(input_features)
-        return outputs.logits
+        input_features = self.processor(waveform, sampling_rate=16000, return_tensors="pt").input_features
+        logits = self.classification_model(input_features)
+        return logits
 
 
 class ClassificationWhisperModel(WhisperPreTrainedModel):
@@ -77,13 +75,10 @@ class ClassificationWhisperModel(WhisperPreTrainedModel):
             output_attentions: Optional[bool] = None,
             output_hidden_states: Optional[bool] = None,
             return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[torch.Tensor], SequenceClassifierOutput]:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        ```"""
+    ):
+        """
+        foward function taken from whisperforaudioclassification, reduced functionality for setting
+        """
 
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
@@ -118,21 +113,4 @@ class ClassificationWhisperModel(WhisperPreTrainedModel):
 
         logits = self.classifier(pooled_output)
 
-        loss = None
-
-        if labels is not None:
-            loss_fct = CrossEntropyLoss()
-            # move labels to correct device to enable PP
-            labels = labels.to(logits.device)
-            loss = loss_fct(logits.view(-1, self.config.num_labels), labels.view(-1))
-
-        if not return_dict:
-            output = (logits,) + encoder_outputs[1:]
-            return ((loss,) + output) if loss is not None else output
-
-        return SequenceClassifierOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=encoder_outputs.hidden_states,
-            attentions=encoder_outputs.attentions,
-        )
+        return logits
