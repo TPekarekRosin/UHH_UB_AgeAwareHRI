@@ -1,8 +1,5 @@
 import torch
 from torch import nn
-from torch.nn import CrossEntropyLoss
-from torchvision.transforms import Normalize
-import torchaudio.transforms as T
 from typing import Optional, Tuple, Union
 import logging
 from transformers import WhisperProcessor, WhisperPreTrainedModel, WhisperConfig

@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 import os
-import torch
 import soundfile as sf
 import editdistance
 import numpy as np
 import sentencepiece as spm
-from dataclasses import dataclass
-from typing import Optional, Tuple
-
-from transformers.modeling_outputs import ModelOutput
 
 
 def get_input_device_id(device_name, microphones):
