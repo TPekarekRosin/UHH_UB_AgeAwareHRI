@@ -3,6 +3,7 @@ import yaml
 import logging
 
 import torch
+from torch.utils import data
 from faster_whisper import WhisperModel
 from transformers import WhisperFeatureExtractor, WhisperTokenizer
 
@@ -34,7 +35,6 @@ def eval_asr_ar():
         new_batch = {}
         new_batch["label"] = batch["label"]
 
-        # load and resample audio data from 48 to 16kHz
         audio = batch["audio"]
         sentence = [preprocess(batch['sentence'][x]) for x in range(len(batch['sentence']))]
 
@@ -47,6 +47,7 @@ def eval_asr_ar():
         new_batch["labels"] = tokenizer(sentence, padding=True).input_ids
         return new_batch
     test = test.with_transform(_prepare_ds_input)
+    test_dataloader = data.DataLoader(test, batch_size=1, shuffle=False)
 
     # create asr model
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -58,6 +59,17 @@ def eval_asr_ar():
     # todo create metric logging: wer, cer, accuracy, confusion matrix, inference time
 
     # todo create inference loop over dataset
+    for it, batch in enumerate(test_dataloader):
+        input_features = batch['input_features'] # todo check if input_features works as well or if waveform is needed
+        sentence_labels = batch['labels']
+        age_label = batch['label']
+
+        segments, _ = asr_model.transcribe(input_features)
+        s = list(segments)
+        text = s[0].text
+        ar_out = ar_model(torch.from_numpy(audio_float32))
+        age_estimation = torch.argmax(ar_out, dim=-1)
+
 
 
 if __name__ == '__main__':
