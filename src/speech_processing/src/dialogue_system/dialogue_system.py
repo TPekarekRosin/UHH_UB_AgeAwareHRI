@@ -3,8 +3,8 @@ import rospy
 
 from langchain.chat_models import ChatOpenAI
 from dialogue_system.social_brain import SocialBrain
-from dialogue_system.social_env import SocialEnv
 import ast
+from dialogue_system.prompts import prompt_1
 
 class DialogueSystem:
     def __init__(self):
@@ -22,10 +22,11 @@ class DialogueSystem:
         self.robot_data = dict()
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
-        self.env = SocialEnv()
+        # self.env = SocialEnv()
         self.model_version = "gpt-3.5-turbo-1106"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
-        self.agent = SocialBrain(model=self.chat, env=self.env)
+        self.prompt = prompt_1
+        self.agent = SocialBrain(model=self.chat, prompt=self.prompt)
         self.agent.reset()
         
     def process_speech_input(self, transcript, age, confidence):

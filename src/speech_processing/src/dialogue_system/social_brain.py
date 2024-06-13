@@ -1,4 +1,3 @@
-import gtts
 from playsound import playsound
 from langchain.schema import (
     AIMessage,
@@ -6,11 +5,10 @@ from langchain.schema import (
     SystemMessage,
 )
 from langchain.output_parsers import RegexParser
-
-from dialogue_system.social_env import SocialEnv
-# from social_env import SocialEnv
 from langchain.chat_models import ChatOpenAI
 import re
+from dialogue_system.prompts import prompt_1
+# from prompts import prompt_1
 
 #      ___       _______  _______ .__   __. .___________.
 #     /   \     /  _____||   ____||  \ |  | |           |
@@ -21,14 +19,14 @@ import re
 
 class SocialBrain:
     
-    @classmethod
-    def get_docs(cls, env):
-        return env.unwrapped.__doc__
+    # @classmethod
+    # def get_docs(cls, env):
+    #     return env.unwrapped.__doc__
     
     # def __init__(self):
-    def __init__(self, model, env):
+    def __init__(self, model, prompt):
         self.model = model
-        self.docs = self.get_docs(env)
+        self.prompt = prompt
         self.action_parser = RegexParser( 
             regex=r"^system_transcript:(,*)command: (,*)add_type: (,*)add_color: (,*)add_name: (,*)add_location: (,*)add_size: (,*)del_type: (,*)del_color: (,*)del_name: (,*)del_location: (,*)del_size",
             output_keys=["system_transcript","command","add_type","add_color","add_name","add_location","add_size","del_type","del_color","del_name","del_location","del_size"],
@@ -84,7 +82,7 @@ class SocialBrain:
         return system_transcript, response_to_robot
     def reset(self):
         self.message_history = [
-            SystemMessage(content=self.docs),
+            SystemMessage(content=self.prompt),
         ]
         return
     
@@ -93,11 +91,13 @@ if __name__ == '__main__':
 
     with open("openai_api_key.txt") as fapi:
         api_key = fapi.read()
-    env = SocialEnv()
+    # env = SocialEnv()
+    # print("env:", env)
     # model_version = "gpt-3.5-turbo-instruct"
     model_version = "gpt-3.5-turbo-1106"
+    prompt = prompt_1
     chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=model_version, max_tokens=256, openai_api_key=api_key)
-    agent = SocialBrain(model=chat, env=env)
+    agent = SocialBrain(model=chat, prompt=prompt)
     agent.reset()
    
     while True:
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         # elder or young
         age = input("age: ")
         confidence_of_age = input("confidence_of_age: ")
-        # set_parameters, transporting_search, transporting_fetch, and transporting_deliver.
+        # already_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver.
         step = input("step: ")
         # False or True
         interruptible= input("interruptible: ")
