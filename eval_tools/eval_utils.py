@@ -11,9 +11,6 @@ from collections import Counter
 from datasets import load_dataset, DatasetDict, Audio, interleave_datasets, Dataset, concatenate_datasets
 from transformers import WhisperFeatureExtractor, WhisperTokenizer, WhisperProcessor
 
-from corpora.audio_dataset import AudioDataset
-from corpora.text_dataset import KeywordDataset
-
 logger = logging.getLogger('Eval-Utils-Log')
 
 
@@ -27,7 +24,7 @@ def load_test_dataset_hf(config, keep_in_memory=True):
     split = load_dataset("csv", data_files=os.path.join(path, train_meta), split='train',
                          delimiter="\t" if train_meta.split('.')[-1] == 'tsv' else ",")
 
-    ds_splits = split.train_test_split(test_size=0.3, seed=config['training']['seed'])
+    ds_splits = split.train_test_split(test_size=0.3, seed=config['seed'])
     dataset['test'] = ds_splits['test']
 
     def change_to_server_path(batch):
@@ -47,13 +44,13 @@ def load_test_dataset_hf(config, keep_in_memory=True):
 
     dataset['test'] = dataset['test'].map(lambda batch: change_to_server_path(batch))
 
+    dataset['test'] = dataset['test'].cast_column("path", Audio(sampling_rate=16000))
+    dataset['test'] = dataset['test'].rename_column('path', 'audio')
+
     column_names = dataset['test'].column_names
-    if 'audio' not in column_names:
-        dataset['test'] = dataset['test'].cast_column("path", Audio(sampling_rate=16000))
-        dataset['test'] = dataset['test'].rename_column('path', 'audio')
 
     removable_column_names = [x for x in column_names if x not in
-                              ['audio', 'sentence', config['model']['classification']]]
+                              ['audio', 'sentence', config['dataset']['classification']]]
 
     dataset['test'] = dataset['test'].remove_columns(removable_column_names)
     if config['dataset']['classification'] != "label":

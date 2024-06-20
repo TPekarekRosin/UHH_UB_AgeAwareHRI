@@ -1,11 +1,15 @@
 import os
 import yaml
 import logging
+from tqdm import tqdm
 
+import numpy as np
+from sklearn.metrics import confusion_matrix
 import torch
 from torch.utils import data
 from faster_whisper import WhisperModel
 from transformers import WhisperFeatureExtractor, WhisperTokenizer
+import evaluate
 
 from src.speech_processing.src.age_recognition.age_recognition_model import AgeEstimation
 from eval_tools.eval_utils import load_test_dataset_hf, preprocess
@@ -31,23 +35,7 @@ def eval_asr_ar():
     feature_extractor = WhisperFeatureExtractor.from_pretrained('openai/whisper-small')
     tokenizer = WhisperTokenizer.from_pretrained('openai/whisper-small', task="transcribe")
 
-    def _prepare_ds_input(batch):
-        new_batch = {}
-        new_batch["label"] = batch["label"]
-
-        audio = batch["audio"]
-        sentence = [preprocess(batch['sentence'][x]) for x in range(len(batch['sentence']))]
-
-        # compute log-Mel input features from input audio array
-        new_batch["input_features"] = \
-            [feature_extractor(audio[x]["array"], sampling_rate=audio[x]["sampling_rate"]).input_features[0]
-             for x in range(len(audio))]
-
-        # encode target text to label ids
-        new_batch["labels"] = tokenizer(sentence, padding=True).input_ids
-        return new_batch
-    test = test.with_transform(_prepare_ds_input)
-    test_dataloader = data.DataLoader(test, batch_size=1, shuffle=False)
+    test_dataloader = data.DataLoader(test['test'], batch_size=1, shuffle=False)
 
     # create asr model
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -56,20 +44,41 @@ def eval_asr_ar():
     # create ar model
     ar_model = AgeEstimation(config)
 
+    # load metrics
+    wer_metric = evaluate.load("wer")
+    cer_metric = evaluate.load("cer")
+
     # todo create metric logging: wer, cer, accuracy, confusion matrix, inference time
 
-    # todo create inference loop over dataset
-    for it, batch in enumerate(test_dataloader):
-        input_features = batch['input_features'] # todo check if input_features works as well or if waveform is needed
-        sentence_labels = batch['labels']
-        age_label = batch['label']
-
-        segments, _ = asr_model.transcribe(input_features)
+    age_accuracies, age_true, age_pred, wers, cers = [], [], [], [], []
+    for it, batch in tqdm(enumerate(test_dataloader)):
+        audio_path = batch['audio']['path'][0]
+        audio_array = batch['audio']['array']
+        sentence = batch['sentence'][0]
+        age_label = batch['label'].item()
+        segments, _ = asr_model.transcribe(audio_path)
         s = list(segments)
         text = s[0].text
-        ar_out = ar_model(torch.from_numpy(audio_float32))
-        age_estimation = torch.argmax(ar_out, dim=-1)
+        ar_out = ar_model(audio_array.numpy())
+        age_estimation = torch.argmax(ar_out, dim=-1).item()
+        if age_estimation == age_label:
+            age_accuracies.append(1)
+        else:
+            age_accuracies.append(0)
 
+        wers.append(100 * wer_metric.compute(predictions=[text], references=[sentence]))
+        cers.append(100 * cer_metric.compute(predictions=[text], references=[sentence]))
+
+        age_true.append(age_label)
+        age_pred.append(age_estimation)
+        # print(text, sentence)
+        # print(age_estimation, age_label)
+
+    print("ACCURACY: {0}, WER: {1}, CER: {2}".format(np.mean(age_accuracies),
+                                                     np.mean(wers),
+                                                     np.mean(cers)))
+    cm = confusion_matrix(y_true=age_true, y_pred=age_pred)
+    print("CONFUSION MATRIX ", cm)
 
 
 if __name__ == '__main__':

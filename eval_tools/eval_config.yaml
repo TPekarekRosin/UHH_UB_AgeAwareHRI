@@ -1,3 +1,5 @@
+seed: 42
+
 dataset:
   folder_path: '/informatik3/wtm/datasets/External Datasets/speech_and_language/common_voice/cv-corpus-11.0-2022-09-21/en'
   server_folder_path: '/home/pekarek/pekarek/cv/'
