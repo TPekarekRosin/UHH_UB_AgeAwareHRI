@@ -32,6 +32,8 @@ class ASRLiveModel:
         filepath = os.path.join(os.path.dirname(folder), 'age_recognition', 'configs', 'live_model_config.yaml')
         with open(filepath) as f:
             self.config = yaml.safe_load(f)
+            
+        self.evaluation_mode = self.config['eval_mode']
         
         self.asr_output_queue = Queue()
         self.asr_input_queue = Queue()
@@ -153,14 +155,16 @@ class ASRLiveModel:
                 confidence = np.mean(self.confidences)
                 # age recognition
                 ar_out = self.ar_model(torch.from_numpy(audio_float32))
-                age_estimation = torch.argmax(ar_out, dim=-1) / 100.0
+                age_estimation = torch.argmax(ar_out, dim=-1) / 9.0
                 # Publish binary age, recognized text, assumed command and confidence
                 if confidence > 0.5:
                     self.age_estimations.insert(0, age_estimation.item())
                     if len(self.age_estimations) > 5:
                         self.age_estimations.pop()
                     age_estimation_mean = np.mean(self.age_estimations)
-                    age = 0 if age_estimation <= 0.5 else 1
+                    age = 0 if age_estimation_mean <= 0.5 else 1
+                    if self.evaluation_mode:
+                        self.log_results(age, age_estimation, text)
                     try:
                         if self.asr_output:
                             import speech_processing_client as spc
@@ -214,3 +218,12 @@ class ASRLiveModel:
         resampled_audio = np.interp(indices, np.arange(len(audio_data)), audio_data).astype(np.float32)
 
         return resampled_audio
+    
+    def log_results(self, age, age_estimation, text):
+        folder, _ = os.path.split(__file__)
+        path = os.path.dirname(folder)
+        
+        file_path = ""
+        if not os.path.exists(file_path):
+            os.make
+            
