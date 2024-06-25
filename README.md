@@ -64,7 +64,7 @@ During installation console may ask for sudo password.
 5) To start the pycram, first make sure you initialized pycram as outlined in 3) of the installation. Open another terminal and source the workspace:
    Navigate to UHH_UB_AgeAwareHRI Git repository and source the catkin workspace: (this has do be done for all terminals you are opening)
    ```bash
-   source ~/.arvenv_pycram/bin/activate && source ./devel/setup.bash
+   source ./devel/setup.bash
    ```
   
    Start the pycram demo using (Note: this will launch rviz with an appropriate config, and the demo will start as soon as everything has loaded):
