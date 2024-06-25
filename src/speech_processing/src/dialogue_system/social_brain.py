@@ -1,14 +1,13 @@
-from playsound import playsound
 from langchain.schema import (
     AIMessage,
     HumanMessage,
     SystemMessage,
 )
 from langchain.output_parsers import RegexParser
-from langchain.chat_models import ChatOpenAI
 import re
-from dialogue_system.prompts import prompt_1
-# from prompts import prompt_1
+from prompts import prompt_1
+from langchain.chat_models import ChatOpenAI
+
 
 #      ___       _______  _______ .__   __. .___________.
 #     /   \     /  _____||   ____||  \ |  | |           |
@@ -85,12 +84,10 @@ class SocialBrain:
             SystemMessage(content=self.prompt),
         ]
         return
-    
-    
 if __name__ == '__main__':
-
+    
     with open("openai_api_key.txt") as fapi:
-        api_key = fapi.read()
+            api_key = fapi.read()
     # env = SocialEnv()
     # print("env:", env)
     # model_version = "gpt-3.5-turbo-instruct"

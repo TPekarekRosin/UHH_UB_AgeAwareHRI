@@ -1,0 +1,4 @@
+pip install urllib3
+pip install openai
+pip install --upgrade langchain
+pip install --force-reinstall typing-extensions==4.5.0
