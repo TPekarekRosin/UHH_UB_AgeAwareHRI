@@ -30,6 +30,9 @@ During installation console will ask for sudo password.
    ```bash
    ./update_pycram.sh
     ```
+   ```bash
+   ./setup_pycram.bash
+    ```
    If the script fails because there are uncommited changes, please make sure to
    restore any changes not staged for commit inside the pycram repository.
    Please note that this will only occur if you make changes to the pycram code on your side
