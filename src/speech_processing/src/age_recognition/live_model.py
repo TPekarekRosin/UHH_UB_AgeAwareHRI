@@ -220,10 +220,19 @@ class ASRLiveModel:
         return resampled_audio
     
     def log_results(self, age, age_estimation, text):
+        # get source folder
         folder, _ = os.path.split(__file__)
-        path = os.path.dirname(folder)
-        
-        file_path = ""
+        path = os.path.dirname(folder).split('/src')[0]
+
+        # create file if not already existing and log results
+        file_path = os.path.join(path, 'evaluation_results.csv')
+        results_string = "{0},{1},{2}".format(age, age_estimation, text)
         if not os.path.exists(file_path):
-            os.make
+            with open('evaluation_results.csv', 'w+') as file:
+                file.write('age_binary,age_p,transcript')
+                file.write(results_string)
+        else:
+            with open('evaluation_results.csv', 'a') as file:
+                file.write(results_string)
+
             
