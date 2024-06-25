@@ -1,0 +1,11 @@
+seed: 42
+
+dataset:
+  folder_path: '/informatik3/wtm/datasets/External Datasets/speech_and_language/common_voice/cv-corpus-11.0-2022-09-21/en'
+  server_folder_path: '/home/pekarek/pekarek/cv/'
+  train_ds: 'ar_reduced_9groups_lesser_5_train.tsv' #'ar_reduced_9groups_5_train.tsv'
+  audio_folder: 'clips'
+  audio_format: '.wav'
+  language: 'English'
+  classification: 'age'
+  keep_in_memory: False
