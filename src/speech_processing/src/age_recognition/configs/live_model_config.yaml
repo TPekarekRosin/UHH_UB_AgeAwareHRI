@@ -2,7 +2,7 @@ gpu: 0
 sample_rate: 16000
 # sample_rate: 44100
 
-ar_model: 'TPekarekRosin/uhh_ub_cv_ar_small_ds' # 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
+ar_model: 'TPekarekRosin/uhh_ub_cv_ar_big_ds' # 'ar_s5217_be_CEclassification_e4_lr3e-5.pth'
 num_classification_layers: 1
 num_classifier_attention_heads: 4
 n_mfcc: 24
