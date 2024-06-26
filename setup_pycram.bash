@@ -58,12 +58,13 @@ cat <<EOF >$LAUNCH_DIR/$LAUNCH_FILE_NAME
     <include file="$PACKAGE_DIR/launch/ik_and_description.launch"/>
     
     <node name="rviz" pkg="rviz" type="rviz" args="-d $PACKAGE_DIR/launch/pycram_rviz_config.rviz" required="true"/>
-    
-    <node name="interrupt_demo_node"
-          pkg="pycram"
-          type="interrupt_demo.py"
-          output="screen">
-    </node>
+
+       <node name="interrupt_demo_node"
+        pkg="pycram"
+        type="interrupt_demo.py"
+        output="screen">
+    <param name="workdir" value=$WORKDIR />
+  </node>
 </launch>
 EOF
 
