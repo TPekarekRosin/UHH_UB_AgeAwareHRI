@@ -63,7 +63,7 @@ cat <<EOF >$LAUNCH_DIR/$LAUNCH_FILE_NAME
         pkg="pycram"
         type="interrupt_demo.py"
         output="screen">
-    <param name="workdir" value=$WORKDIR />
+    <param name="workdir" value="$WORKDIR" />
   </node>
 </launch>
 EOF
