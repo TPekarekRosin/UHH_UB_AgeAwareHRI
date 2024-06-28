@@ -261,3 +261,11 @@ prompt_1="""
     del_size: "",
 
     """
+    
+prompt_data_generation = '''
+You are an instruction generator to a robot, output them as JSON file. 
+You will get the object's name, size, color, and location. 
+Please use it to generate instructions with those styles ("formal", "informal", "respectful", "urgent"), you can make some mistake:
+* JSON{"formal"}: 
+* JSON{"informal"}: 
+'''
