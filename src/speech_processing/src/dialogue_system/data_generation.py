@@ -85,7 +85,7 @@ if __name__ == '__main__':
     
     combinations = list(itertools.product(objects, colors, size, locations))
     print(F"The length of combinations is {len(combinations)}.")
-    dataset_path = ""
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/instructions.json"
 
     for combo in combinations:
         object_name = combo[0]
@@ -98,41 +98,50 @@ if __name__ == '__main__':
         # model_version = "gpt-3.5-turbo"
         # model_version ="gpt-4-vision-preview"
         model_version ="gpt-4o-2024-05-13"
-        instructions_json = instruction_generate(model_version, prompt_data_generation, object_name, object_color, object_size, object_location)
-        formal_instruction = instructions_json['formal']
-        informal_instruction = instructions_json['informal']
+        # instructions_json = instruction_generate(model_version, prompt_data_generation, object_name, object_color, object_size, object_location)
+        # formal_instruction = instructions_json['formal']
+        # informal_instruction = instructions_json['informal']
+        if object_color != "null" and object_size != "null" and object_location != "null":
+            system_transcript = 'I will bring you a ' + object_size + " " + object_color + " " + object_name + " from " + object_location
+        elif object_color == "null" and object_size == "null" and object_location != "null": 
+            system_transcript = 'I will bring you a ' + object_name + " from " + object_location
+        elif object_color == "null" and object_size != "null" and object_location == "null": 
+            system_transcript = 'I will bring you a ' + object_size + " " + object_name
+        elif object_color != "null" and object_size == "null" and object_location == "null": 
+                system_transcript = 'I will bring you a ' + object_color + " " + object_name
+        elif object_color == "null" and object_size == "null" and object_location == "null":
+            system_transcript = 'I will bring you a '+ " " + object_name
+        print("system_transcript: ", system_transcript)
+        formal_instruction = "bring me a cup"
         new_data = {
-            "input":{
-                "user_utterance": formal_instruction,
-                "age": "young",
-                "confidence_of_age": 75,
-                "step": "transporting_deliver",
-                "interruptible": True,
-                "dict_object": {"type": "cup", "color": "red", "name": "", "location": "", "size": ""},
-                "move_arm": False,
-                "move_base": False,
-                "current_location": "kitchen",
-                "destination": "dining area",
-                "objects_in_use": []
-                },
-            "annotation":{
-                "system_transcript": "Sure, I will move from the kitchen to the dining area.",
-                "command": "change_location",
-                "add_type": "", 
-                "add_color": "", 
-                "add_name": "", 
-                "add_location": "", 
-                "add_size": "",
-                "del_type": "", 
-                "del_color": "", 
-                "del_name": "", 
-                "del_location": "", 
-                "del_size": "",
+                "input":{
+                    "user_utterance": formal_instruction,
+                    "age": 'young',
+                    "confidence_of_age": 75,
+                    "step": '',
+                    "interruptible": True,
+                    "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+                    "move_arm": False,
+                    "move_base": False,
+                    "current_location": 'kitchen',
+                    "destination": 'dining area',
+                    "objects_in_use": []
+                    },
+                "annotation":{
+                    "system_transcript": system_transcript,
+                    "command": 'change_location',
+                    "add_type": object_name, 
+                    "add_color": object_color, 
+                    "add_name": '', 
+                    "add_location": object_location, 
+                    "add_size": '',
+                    "del_type": '', 
+                    "del_color": '', 
+                    "del_name": '', 
+                    "del_location": '', 
+                    "del_size": '',
+                }
             }
-        }
-        
-      
-
         current_data.append(new_data)
         write_data(dataset_path, current_data)
         
