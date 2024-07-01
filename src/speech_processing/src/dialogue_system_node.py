@@ -71,6 +71,8 @@ class DialogueNode:
                 response.del_object[0].size = ""
             else:
                 response.command = response_to_robot["command"]
+                response.age = data.age 
+                response.confidence = data.confidence
                 # properties of added object
                 response.add_object.append(dict_object())
                 response.add_object[0].type = response_to_robot["add_type"]

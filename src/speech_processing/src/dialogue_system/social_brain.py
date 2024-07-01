@@ -35,8 +35,11 @@ class SocialBrain:
         # self.ret = 0
         
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use):
-        
-        human_message = f"user_utterance: {utterance_user} age: {age} confidence_of_age: {confidence_of_age} step: {step} interruptible: {interruptible} dict_object :{dict_object} move_arm:{move_arm} move_base:{move_base} current_location:{current_location} destination_location:{destination_location} objects_in_use:{objects_in_use}"
+        if age == 0:
+            age_string = "young"
+        else:
+            age_string = "elder"   
+        human_message = f"user_utterance: {utterance_user} age: {age_string} confidence_of_age: {confidence_of_age} step: {step} interruptible: {interruptible} dict_object :{dict_object} move_arm:{move_arm} move_base:{move_base} current_location:{current_location} destination_location:{destination_location} objects_in_use:{objects_in_use}"
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
@@ -109,7 +112,6 @@ if __name__ == '__main__':
         step = input("step: ")
         # False or True
         interruptible= input("interruptible: ")
-        # "{type: null, color: null, name: null, location: null, size: null}"
         # {type: '', color: '', name: '', location: '', size: ''}
         dict_object = input("dict_object: ")
         # False or True

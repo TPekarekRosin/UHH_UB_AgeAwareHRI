@@ -10,9 +10,9 @@ prompt_1="""
 
     Here are the rules that you need to follow.
     For the system_transcript items:
-    First, we distinguish two types of people young and elder, you can generate different tones for each type of person.
+    First, we distinguish two types of people young and elder, you should generate different tones for each type of person.
     Second, we have 5 steps: already_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver. You need to generate a sentence to announce your current steps.
-    Third, If the interruptible is False, you need to generate a sentence, e.g., the current step cannot be interrupted.
+    Third, if the interruptible is False, you need to generate a sentence, e.g., the current step cannot be interrupted.
     Fourth, if the values of move_arm is True and the age is elder, you need to generate a sentence, e.g., Be careful, I am moving my arm now.
     Fifth, if the values of move_base is True and the age is elder, you need to use current_location and destination to generate a sentence, e.g., Be careful, I am moving from the current_location to the destination.
 
