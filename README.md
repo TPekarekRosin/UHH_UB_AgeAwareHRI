@@ -108,6 +108,18 @@ If you want to switch from cereal back to the milk, after interrupting once use:
    del_object:
    - {type: 'cereal', color: 'green', name: '', location: '', size: 'Normal'}"
    ```
+If you want to change location:
+```bash
+rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'change_location'
+age: 0
+confidence: 0.0
+add_object:
+
+{type: '', color: '', name: '', location: 'table', size: ''}
+del_object:
+{type: '', color: '', name: '', location: '', size: ''}"
+```
+
  
   
    
