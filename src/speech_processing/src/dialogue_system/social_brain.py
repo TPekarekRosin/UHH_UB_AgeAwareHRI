@@ -1,3 +1,4 @@
+import json
 from langchain.schema import (
     AIMessage,
     HumanMessage,
@@ -39,45 +40,39 @@ class SocialBrain:
             age_string = "young"
         else:
             age_string = "elder"   
-        human_message = f"user_utterance: {utterance_user} age: {age_string} confidence_of_age: {confidence_of_age} step: {step} interruptible: {interruptible} dict_object :{dict_object} move_arm:{move_arm} move_base:{move_base} current_location:{current_location} destination_location:{destination_location} objects_in_use:{objects_in_use}"
+        human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination_location:{destination_location}, objects_in_use:{objects_in_use}."
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
         )
-        # Use LLM to process the user's utterance or robot status, and then generate a transcript for the user or command for robot
+        print("self.message_history",self.message_history)
+        # Use LLM to process the user's utterance or robot state, and then generate a response for the user or command for robot
         act_message = self.model(self.message_history)
+        self.message_history.append(act_message)
+        
         print("-----------------------------after model--------------------------")
         print("act_message:", act_message)
         print("act_message content:", act_message.content)
-        # parsed = self.action_parser.parse(act_message.content)
-        # Define a regular expression pattern to match key-value pairs
-        pattern = re.compile(r'(\w+):\s*"([^"]*)"')
-        # Find all matches in the input string
-        matches = pattern.findall(act_message.content)
-        # Create a dictionary from the matches
-        parsed = dict(matches)
+        
+        # results = json.loads(act_message.content)
+        results = json.loads(act_message.content[8:-4])
+        
         system_transcript = str
         response_to_robot = dict()
-        # print("parsed:", parsed)
-        if len(parsed) == 0:
-            print("the output is wrong")
-            system_transcript = "the output is wrong"
-        else:
-            system_transcript = parsed["system_transcript"]
-            response_to_robot["command"] = parsed["command"]
-            response_to_robot["add_type"] = parsed["add_type"]
-            response_to_robot["add_color"] = parsed["add_color"]
-            response_to_robot["add_name"] = parsed["add_name"]
-            response_to_robot["add_location"] = parsed["add_location"]
-            response_to_robot["add_size"] = parsed["add_size"]
-            response_to_robot["del_type"] = parsed["del_type"]
-            response_to_robot["del_color"] = parsed["del_color"]
-            response_to_robot["del_name"] = parsed["del_name"]
-            response_to_robot["del_location"] = parsed["del_location"]
-            response_to_robot["del_location"] = parsed["del_location"]
-            response_to_robot["del_size"] = parsed["del_size"]
+        system_transcript = results["system_transcript"]
+        response_to_robot["command"] = results["command"]
+        response_to_robot["add_type"] = results["add_type"]
+        response_to_robot["add_color"] = results["add_color"]
+        response_to_robot["add_name"] = results["add_name"]
+        response_to_robot["add_location"] = results["add_location"]
+        response_to_robot["add_size"] = results["add_size"]
+        response_to_robot["del_type"] = results["del_type"]
+        response_to_robot["del_color"] = results["del_color"]
+        response_to_robot["del_name"] = results["del_name"]
+        response_to_robot["del_location"] = results["del_location"]
+        response_to_robot["del_location"] = results["del_location"]
+        response_to_robot["del_size"] = results["del_size"]
          
-        self.message_history.append(act_message)
         print("-----------------------------last--------------------------")
         print("system_transcript: ", system_transcript)
         print("response_to_robot: ", response_to_robot)
@@ -95,13 +90,14 @@ if __name__ == '__main__':
     # print("env:", env)
     # model_version = "gpt-3.5-turbo-instruct"
     model_version = "gpt-3.5-turbo-1106"
+    # model_version = "gpt-3.5-turbo-0125"
+    # model_version = "gpt-4o"
     prompt = prompt_1
     chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=model_version, max_tokens=256, openai_api_key=api_key)
     agent = SocialBrain(model=chat, prompt=prompt)
     agent.reset()
    
     while True:
-        
         user_utterance = input("user_utterance: ")
         if user_utterance == "exit" or user_utterance == "stop" or user_utterance == "break":
             break

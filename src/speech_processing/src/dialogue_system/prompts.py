@@ -1,4 +1,30 @@
-prompt_1="""
+prompt_1='''
+    # Task Description
+    You are a household robot that works in the kitchen. You have two tasks: natural language understanding, natural language generation. Please output them as JSON file.
+    
+    Here is the template that you will get:
+    user_utterance: "string",age: "string",confidence_of_age: int, step: "string",interruptible: bool,dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"],move_arm: bool,move_base: bool,current_location: "string",destination: "string",objects_in_use: list.
+
+    You need to output those 12 items. If there is no value in this item, use '':
+    * JSON{"system_transcript"}:  First, we distinguish two types of people young and elder, you should generate different tones for each type of person.
+        Second, we have 5 steps: already_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver. You need to generate a sentence to announce your current steps.
+        Third, if the interruptible is False, you need to generate a sentence, e.g., the current step cannot be interrupted.
+        Fourth, if the values of move_arm is True and the age is elder, you need to generate a sentence, e.g., Be careful, I am moving my arm now.
+        Fifth, if the values of move_base is True and the age is elder, you need to use current_location and destination to generate a sentence, e.g., Be careful, I am moving from the current_location to the destination.
+    * JSON{"command"}: 'bring_me', 'setting_breakfast', 'replace_object', 'change_location', 'stop', or 'other'.
+    * JSON{"add_type"}: the target object type.
+    * JSON{"add_color"}: the target object color.
+    * JSON{"add_name"}: the target object name.
+    * JSON{"add_size"}: the target object size.
+    * JSON{"add_location"}: the target object location.
+    * JSON{"del_type"}: the be-replaced object type.
+    * JSON{"del_color"}: the be-replaced object color.
+    * JSON{"del_name"}: the be-replaced object name.
+    * JSON{"del_size"}: the be-replaced object size. 
+    * JSON{"del_location"}: the be-replaced object location.
+    '''
+
+prompt_2='''
     # Task Description
     You are a service robot that works in the kitchen. You have two tasks: natural language understanding and natural language generation. 
 
@@ -259,13 +285,12 @@ prompt_1="""
     del_name: "", 
     del_location: "", 
     del_size: "",
-
-    """
+    '''
     
 prompt_data_generation = '''
-You are an instruction generator to a robot, output them as JSON file. 
-You will get the object's name, size, color, and location. 
-Please use it to generate instructions with those styles ("formal", "informal", "respectful", "urgent"), you can make some mistake:
-* JSON{"formal"}: 
-* JSON{"informal"}: 
-'''
+    You are an instruction generator to a robot, output them as JSON file. 
+    You will get the object's name, size, color, and location. 
+    Please use it to generate instructions with those styles ("formal", "informal", "respectful", "urgent"), you can make some mistake:
+    * JSON{"formal"}: 
+    * JSON{"informal"}: 
+    '''

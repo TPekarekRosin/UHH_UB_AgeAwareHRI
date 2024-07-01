@@ -63,6 +63,7 @@ def instruction_generate(model_version, prompt_data_generation, object_name, obj
                                         temperature=0,
                                     )
     instructions = response.choices[0].message.content
+    
     instructions_json = json.loads(instructions[8:-4])
     print(instructions_json)
     return instructions_json
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     
     combinations = list(itertools.product(objects, colors, size, locations))
     print(F"The length of combinations is {len(combinations)}.")
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/instructions.json"
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
     for combo in combinations:
         object_name = combo[0]
         object_color = combo[1]

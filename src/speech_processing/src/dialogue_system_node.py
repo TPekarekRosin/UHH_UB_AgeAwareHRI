@@ -54,21 +54,21 @@ class DialogueNode:
             response.age = data.age
             response.confidence = data.confidence
             if not response_to_robot:
-                response.command = ""
+                response.command = ''
                 # properties of added object
                 response.add_object.append(dict_object())
-                response.add_object[0].type = ""
-                response.add_object[0].color = ""
-                response.add_object[0].name = ""
-                response.add_object[0].location = ""
-                response.add_object[0].size = ""
+                response.add_object[0].type = ''
+                response.add_object[0].color = ''
+                response.add_object[0].name = ''
+                response.add_object[0].location = ''
+                response.add_object[0].size = ''
                 # properties of deleted object
                 response.del_object.append(dict_object())
-                response.del_object[0].type = ""
-                response.del_object[0].color = ""
-                response.del_object[0].name = ""
-                response.del_object[0].location = ""
-                response.del_object[0].size = ""
+                response.del_object[0].type = ''
+                response.del_object[0].color = ''
+                response.del_object[0].name = ''
+                response.del_object[0].location = ''
+                response.del_object[0].size = ''
             else:
                 response.command = response_to_robot["command"]
                 response.age = data.age 
@@ -91,7 +91,7 @@ class DialogueNode:
             print('now in the minor interruption')
         elif minor_or_major == 'major':
             response = message_to_robot()
-            response.command = "stop"
+            response.command = 'stop'
             response.age = data.age
             response.confidence = data.confidence
             # # properties of added object
