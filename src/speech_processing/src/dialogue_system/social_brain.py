@@ -7,6 +7,7 @@ from langchain.schema import (
 from langchain.output_parsers import RegexParser
 import re
 from prompts import prompt_1
+# from dialogue_system.prompts import prompt_1
 from langchain.chat_models import ChatOpenAI
 
 
@@ -34,13 +35,27 @@ class SocialBrain:
         )
         self.message_history = []
         # self.ret = 0
+    
+    def read_current_data(self, path):
+        try:
+            with open(path, 'r') as file:
+                return json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+    def write_data(self, path, data):
+        with open(path, 'w') as file:
+            json.dump(data, file, indent=4)
         
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use):
         if age == 0:
             age_string = "young"
         else:
             age_string = "elder"   
+        dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/dialog_results.json"
+        current_data = self.read_current_data(dataset_path)
+        
         human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination_location:{destination_location}, objects_in_use:{objects_in_use}."
+        current_data.append(human_message) 
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
@@ -76,6 +91,9 @@ class SocialBrain:
         print("-----------------------------last--------------------------")
         print("system_transcript: ", system_transcript)
         print("response_to_robot: ", response_to_robot)
+        current_data.append(system_transcript)
+        current_data.append(response_to_robot)
+        self.write_data(dataset_path, current_data)
         return system_transcript, response_to_robot
     def reset(self):
         self.message_history = [
