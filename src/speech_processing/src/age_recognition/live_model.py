@@ -136,8 +136,8 @@ class ASRLiveModel:
                     #audio_float32_resampled = audio_float32_resampled.view(-1, 512)
                     audio_float32_resampled = audio_float32_resampled[0:512]
 
-            new_confidence = self.vad_model(audio_float32_resampled, 16000).item()
-            # new_confidence = torch.mean(new_confidence_tensor).item()
+            new_confidence_tensor = self.vad_model(audio_float32_resampled, 16000)
+            new_confidence = torch.mean(new_confidence_tensor).item()
 
             if new_confidence > 0.5 and self.asr_output:
                 if not speech_started:
