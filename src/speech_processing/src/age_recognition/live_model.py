@@ -6,6 +6,7 @@ import sys
 import sounddevice as sd
 import signal
 from scipy.signal import resample
+# import librosa
 
 import numpy as np
 import pyaudio as pa
@@ -87,7 +88,16 @@ class ASRLiveModel:
         n_channels = 1
         self.sample_rate = int(dev_info['defaultSampleRate'])
 
-        chunk_size = 2048 if self.sample_rate == 16000 else 4096     # round(sample_rate / 16000) * 2048    # int(sample_rate / 10)
+        # chunk size fixed at 512 due to silero vad changes, temporary fix
+        chunk_size = 512 if self.sample_rate == 16000 else 4096
+        """if self.sample_rate == 16000:
+            chunk_size = 512
+        elif self.sample_rate == 8000:
+            chunk_size = 256
+        elif self.sample_rate == 48000 or self.sample_rate == 44100:
+            chunk_size = 4096
+        else:
+            chunk_size = 512"""
 
         print("Sample rate ", self.sample_rate)
         print("Chunk size ", chunk_size)
@@ -114,9 +124,21 @@ class ASRLiveModel:
         while not rospy.is_shutdown():
             audio_chunk = stream.read(chunk_size, exception_on_overflow=False)
             audio_float32 = self.convert_to_float(audio_chunk)
+            # audio_float32_resampled = librosa.resample(audio_float32, orig_sr=self.sample_rate, target_sr=16000)
             audio_float32_resampled = self.resample_audio(audio_float32, self.sample_rate, 16000)
 
-            new_confidence = self.vad_model(torch.from_numpy(audio_float32_resampled), 16000).item()
+            audio_float32_resampled = torch.from_numpy(audio_float32_resampled)
+            # print(audio_float32_resampled.shape)
+            if audio_float32_resampled.shape[0] != 512:
+                try:
+                    audio_float32_resampled = audio_float32_resampled.view(-1, 512)
+                except RuntimeError:
+                    #audio_float32_resampled = audio_float32_resampled.view(-1, 512)
+                    audio_float32_resampled = audio_float32_resampled[0:512]
+
+            new_confidence = self.vad_model(audio_float32_resampled, 16000).item()
+            # new_confidence = torch.mean(new_confidence_tensor).item()
+
             if new_confidence > 0.5 and self.asr_output:
                 if not speech_started:
                     speech_started = True
