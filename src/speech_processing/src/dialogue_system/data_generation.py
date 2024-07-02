@@ -16,6 +16,64 @@ def read_current_data(path):
 def write_data(path, data):
     with open(path, 'w') as file:
         json.dump(data, file, indent=4)
+        
+# Formal: "Could you please bring me a cup?"
+# Informal: "Hey, can you get me a cup?"
+# Polite: "Would you mind bringing me a cup?"
+# Commanding: "Bring me a cup now."
+# Friendly: "Would you grab me a cup?"
+# Old-fashioned: "Fetch me a cup, please."
+# Professional: "Could you provide me with a cup?"
+# Casual: "Can you hand me a cup?"
+# Respectful: "May I request a cup from you?"
+# Urgent: "I need a cup immediately."
+
+# Two Milks
+# Milk1
+#     "Can you bring me the blue milk?"
+#     "I need the normal-sized blue milk, could you get it for me?"
+#     "Could you hand me the milk that's blue and normal-sized?"
+#     "Please fetch me the blue milk."
+#     "Can you get me the blue milk with a normal size?"
+# Milk2
+#     "Can you bring me the red milk?"
+#     "I need the big red milk, could you get it for me?"
+#     "Could you hand me the milk that's red and big?"
+#     "Please fetch me the red milk."
+#     "Can you get me the red milk with a big size?"
+# One Bowl
+#     "Can you bring me the white bowl?"
+#     "I need the normal-sized white bowl, could you get it for me?"
+#     "Could you hand me the bowl that's white and normal-sized?"
+#     "Please fetch me the white bowl."
+#     "Can you get me the white bowl with a normal size?"
+# One Cereal
+#     "Can you bring me the green cereal?"
+#     "I need the normal-sized green cereal, could you get it for me?"
+#     "Could you hand me the cereal that's green and normal-sized?"
+#     "Please fetch me the green cereal."
+#     "Can you get me the green cereal with a normal size?"
+# One Spoon
+#     "Can you bring me the blue spoon?"
+#     "I need the normal-sized blue spoon, could you get it for me?"
+#     "Could you hand me the spoon that's blue and normal-sized?"
+#     "Please fetch me the blue spoon."
+#     "Can you get me the blue spoon with a normal size?"
+# One Cup
+#     "Can you bring me the white cup?"
+#     "I need the normal-sized white cup, could you get it for me?"
+#     "Could you hand me the cup that's white and normal-sized?"
+#     "Please fetch me the white cup."
+#     "Can you get me the white cup with a normal size?"
+
+# Can you bring me a cup?
+# Would you please put the big container of milk on the table?
+# I need a spoon to eat my cereal. Could you fetch me one?
+# This is the wrong container of milk, please bring me the blue one.
+# Could you please bring me the cereal in the green box?
+ 
+
+
 
 def bring_me_instruction_generation(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location):
     prompts = [{"role": "system", "content": prompt_bring_me_data_generation},
@@ -261,6 +319,27 @@ def setting_breakfast():
     utterance20 = "Can you handle breakfast today?"
     utterance21 = "You make the best breakfast! Can you make it today?"
     system_transcript = "I will prepare the table for your breakfast"
+    
+    # Polite Request: "Could you please prepare breakfast for me?"
+    # Casual Ask: "Can you make breakfast for me?"
+    # Indirect Request: "I'm feeling hungry, could you help me with breakfast?"
+    # Formal: "Would it be possible for you to prepare breakfast for me?"
+    # Friendly: "Hey, would you mind making breakfast for me?"
+    # Urgent: "I really need breakfast soon; could you make it for me?"
+    # Indirect Hint: "It would be great to have some breakfast prepared."
+    # Respectful: "May I ask you to prepare breakfast for me?"
+    # Grateful Tone: "I would really appreciate it if you could make breakfast for me."
+    # Straightforward: "Can you prepare breakfast for me, please?"
+    # Playful: "How about you whip up some breakfast for me?"
+    # Request with Reason: "I'm running late; could you make breakfast for me?"
+    # Affectionate: "Could you make breakfast for me, sweetheart?"
+    # Commanding (if appropriate): "Please prepare breakfast for me."
+    # Colloquial: "Can you fix me some breakfast?"
+    # Collaborative: "Shall we make breakfast together? Can you start it for me?"
+    # Professional: "Would you be able to arrange breakfast for me?"
+    # Expressing Need: "I need some breakfast; can you help me out?"
+    # Hinting: "I would love some breakfast if you have the time."
+    # Request with Praise: "Your breakfasts are always the best; could you make one for me?"
     
     dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
     current_data = read_current_data(dataset_path)
