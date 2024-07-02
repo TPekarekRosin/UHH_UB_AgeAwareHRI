@@ -291,7 +291,9 @@ prompt_2='''
 prompt_bring_me_data_generation = '''
     You are an instruction generator to a robot, output them as JSON file. 
     You will get the object's name, size, color, and location. 
-    Please use it to generate instructions with those styles ("formal", "informal"), you can make some mistake:
+    You can make some mistakes.
+    You can use the synonyms of words to express the same meaning.
+    Please use it to generate instructions with those styles ("formal", "informal"):
     * JSON{"formal"}: 
     * JSON{"informal"}: 
     '''
@@ -299,7 +301,7 @@ prompt_bring_me_data_generation = '''
 prompt_replace_object_generation = '''
     You are an instruction generator to a robot, output them as JSON file. 
     You will get the target object's name, size, color and the delete object's name, size, color. 
-    You can make some mistake.
+    You can make some mistakes.
     You can use the synonyms of words to express the same meaning.
     For example: I'd rather have a little blue cup than a small red bowl.
     Please use it to generate instructions with those styles ("formal", "informal"):
@@ -308,17 +310,13 @@ prompt_replace_object_generation = '''
     '''
 
 # Currently, one can trigger the change location command as follows:
-
-# `rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'change_location'
+# rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'change_location'
 # age: 0
 # confidence: 0.0
 # add_object:
-
 # {type: '', color: '', name: '', location: 'table', size: ''}
 # del_object:
 # {type: '', color: '', name: '', location: '', size: ''}"
-# `
 # The two locations available are "table", and "countertop"
-
 # The relevant parameters in this command are the "location" field inside the "add_object" field.
 

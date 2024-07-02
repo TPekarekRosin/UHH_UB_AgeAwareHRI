@@ -17,22 +17,11 @@ def write_data(path, data):
     with open(path, 'w') as file:
         json.dump(data, file, indent=4)
 
-
-'''
-Can you bring me a cup?
-Would you please put the big container of milk on the table?
-I need a spoon to eat my cereal. Could you fetch me one?
-This is the wrong container of milk, please bring me the blue one.
-Could you please bring me the cereal in the green box?
-Please bring me a bowl and a spoon.
-Can you get me another cup?
-Would you please bring me a spoon for my tea?
-I just need a bowl, no cereal today.
-Can you set a cup and spoon on the table for lunch?
-'''
 def bring_me_instruction_generation(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location):
-    prompts = [{"role": "system", "content": prompt_bring_me_data_generation},]
-    object = " object name: " + object_name + ", object color: " + object_color + ", object size: " + object_size + ", object_location: " + object_location
+    prompts = [{"role": "system", "content": prompt_bring_me_data_generation},
+                {"role": "user", "content": "object name: cup, object color: blue, object size: small, object location: cupboard"},
+               {"role": "assistant", "content": "{'formal': 'I would like a small red cup from cupboard.', 'informal': ' Can I get a small red cup from cupboard.'"},]
+    object = " object name: " + object_name + ", object color: " + object_color + ", object size: " + object_size + ", object location: " + object_location
     object_prompts = [{"role": "user", "content": object}]
     messages = prompts + object_prompts
     response = client.chat.completions.create(
@@ -61,9 +50,9 @@ def bring_me_command(objects, colors, size, locations):
         # model_version = "gpt-3.5-turbo"
         # model_version ="gpt-4-vision-preview"
         model_version ="gpt-4o-2024-05-13" 
-        # instructions_json = instruction_generate(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location)
-        # formal_instruction = instructions_json['formal']
-        # informal_instruction = instructions_json['informal']
+        instructions_json = bring_me_instruction_generation(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location)
+        formal_instruction = instructions_json['formal']
+        informal_instruction = instructions_json['informal']
         if object_color != "null" and object_size != "null" and object_location != "null":
             system_transcript = 'I will bring you a ' + object_size + " " + object_color + " " + object_name + " from " + object_location
         elif object_color == "null" and object_size == "null" and object_location != "null": 
@@ -74,25 +63,23 @@ def bring_me_command(objects, colors, size, locations):
                 system_transcript = 'I will bring you a ' + object_color + " " + object_name
         elif object_color == "null" and object_size == "null" and object_location == "null":
             system_transcript = 'I will bring you a '+ " " + object_name
-        formal_instruction = "bring me a cup"
-        informal_instruction = "bring me a cup"
         new_data1 = {
                         "input":{
                             "user_utterance": formal_instruction,
                             "age": 'young',
-                            "confidence_of_age": 75,
+                            "confidence_of_age": 90,
                             "step": '',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
                             "move_base": False,
-                            "current_location": 'kitchen',
-                            "destination": 'kitchen',
+                            "current_location": '',
+                            "destination": '',
                             "objects_in_use": []
                             },
                         "annotation":{
                             "system_transcript": system_transcript,
-                            "command": '',
+                            "command": 'bring_me',
                             "add_type": object_name, 
                             "add_color": object_color, 
                             "add_name": '', 
@@ -109,19 +96,19 @@ def bring_me_command(objects, colors, size, locations):
                         "input":{
                             "user_utterance": informal_instruction,
                             "age": 'young',
-                            "confidence_of_age": 75,
+                            "confidence_of_age": 90,
                             "step": '',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
                             "move_base": False,
-                            "current_location": 'kitchen',
-                            "destination": 'kitchen',
+                            "current_location": '',
+                            "destination": '',
                             "objects_in_use": []
                             },
                         "annotation":{
                             "system_transcript": system_transcript,
-                            "command": '',
+                            "command": 'bring_me',
                             "add_type": object_name, 
                             "add_color": object_color, 
                             "add_name": '', 
@@ -187,23 +174,20 @@ def replace_object(objects, colors, size):
         instructions_json = replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2)
         formal_instruction = instructions_json['formal']
         informal_instruction = instructions_json['informal']
-        
         system_transcript = 'ok, wait moment, I will bring you a ' + object_size1 + " " + object_color1 + " " + object_name1
         
-        formal_instruction = "bring me a cup"
-        informal_instruction = "bring me a cup"
         new_data1 = {
                         "input":{
                             "user_utterance": formal_instruction,
                             "age": 'young',
-                            "confidence_of_age": 75,
+                            "confidence_of_age": 90,
                             "step": '',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
                             "move_base": False,
-                            "current_location": 'kitchen',
-                            "destination": 'kitchen',
+                            "current_location": '',
+                            "destination": '',
                             "objects_in_use": []
                             },
                         "annotation":{
@@ -225,14 +209,14 @@ def replace_object(objects, colors, size):
                         "input":{
                             "user_utterance": informal_instruction,
                             "age": 'young',
-                            "confidence_of_age": 75,
+                            "confidence_of_age": 90,
                             "step": '',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
                             "move_base": False,
-                            "current_location": 'kitchen',
-                            "destination": 'kitchen',
+                            "current_location": '',
+                            "destination": '',
                             "objects_in_use": []
                             },
                         "annotation":{
@@ -254,7 +238,64 @@ def replace_object(objects, colors, size):
         current_data.append(new_data2)
         write_data(dataset_path, current_data)
         
-        
+def setting_breakfast():
+    utterance1 = "Could you please make breakfast?"
+    utterance2 = "Can you whip up some breakfast?"
+    utterance3 = "Would you be so kind as to prepare breakfast?"
+    utterance4 = "Make breakfast, please."
+    utterance5 = "I am really hungry. Breakfast sounds good right now."
+    utterance6 = "It would be great to have breakfast ready soon."
+    utterance7 = "I could really use some breakfast. Do you mind making it?"
+    utterance8 = "How about we prepare breakfast together?"
+    utterance9 = "Could you make breakfast today?"
+    utterance10 = "Would you mind making us breakfast?"
+    utterance11 = "Can you make breakfast this time?"
+    utterance12 = "I would really appreciate it if you could make breakfast."
+    utterance13 = "Thank you in advance for making breakfast."
+    utterance14 = "Could you make some breakfast?"
+    utterance15 = "Hey, can you make breakfast?"
+    utterance16 = "Mind making breakfast?"
+    utterance17 = "Can you be the breakfast chef today?"
+    utterance18 = "It is morning! How about some breakfast?"
+    utterance19 = "Could you have breakfast ready by 8 AM?"
+    utterance20 = "Can you handle breakfast today?"
+    utterance21 = "You make the best breakfast! Can you make it today?"
+    system_transcript = "I will prepare the table for your breakfast"
+    
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
+    current_data = read_current_data(dataset_path)
+    new_data = {
+                    "input":{
+                        "user_utterance": utterance1,
+                        "age": 'young',
+                        "confidence_of_age": 90,
+                        "step": '',
+                        "interruptible": True,
+                        "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+                        "move_arm": False,
+                        "move_base": False,
+                        "current_location": '',
+                        "destination": '',
+                        "objects_in_use": []
+                        },
+                    "annotation":{
+                        "system_transcript": system_transcript,
+                        "command": 'setting_breakfast',
+                        "add_type": '', 
+                        "add_color": '', 
+                        "add_name": '', 
+                        "add_location": '',
+                        "add_size": '',
+                        "del_type": '', 
+                        "del_color": '', 
+                        "del_name": '', 
+                        "del_location": '', 
+                        "del_size": '',
+                        }
+                }
+    current_data.append(new_data)
+    write_data(dataset_path, current_data)
+    
 
 if __name__ == '__main__':
     objects = ["milk", "bowl", "cereal", "spoon", "cup"]
@@ -264,24 +305,27 @@ if __name__ == '__main__':
     
     colors2 = ["green", "blue", "red", "white"]
     size2 = ["big", "normal", "small"]
-    locations2 = ["cupboard", "countertop", "dishwasher"]
     
-    #bring_me_command(objects, colors1, size1, locations1)
+    bring_me_command(objects, colors1, size1, locations1)
     
     # replace_object(objects, colors2, size2)
     
-    # target object
-    object_name1 = 'cup'
-    object_color1 = 'blue'
-    object_size1 = 'small'
-    # delete object
-    object_name2 = 'cup'
-    object_color2 = 'blue'
-    object_size2 = 'big'
-    model_version = "gpt-4o-2024-05-13" 
-    replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2)
-        
+    # setting_breakfast()
     
+    # # # target object
+    # object_name1 = 'cup'
+    # object_color1 = 'blue'
+    # object_size1 = 'small'
+    # object_location = 'cupboard'
+    # # # delete object
+    # # object_name2 = 'cup'
+    # # object_color2 = 'blue'
+    # # object_size2 = 'big'
+    # model_version = "gpt-4o-2024-05-13" 
+    # # replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2)
+        
+    # bring_me_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_location)
+        
             
         
 
