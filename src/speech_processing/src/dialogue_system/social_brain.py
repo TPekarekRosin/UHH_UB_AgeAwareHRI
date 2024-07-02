@@ -6,8 +6,8 @@ from langchain.schema import (
 )
 from langchain.output_parsers import RegexParser
 import re
-from prompts import prompt_1
-# from dialogue_system.prompts import prompt_1
+# from prompts import prompt_1
+from dialogue_system.prompts import prompt_1
 from langchain.chat_models import ChatOpenAI
 
 
