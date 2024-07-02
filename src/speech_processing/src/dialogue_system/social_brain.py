@@ -55,7 +55,20 @@ class SocialBrain:
         current_data = self.read_current_data(dataset_path)
         
         human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination_location:{destination_location}, objects_in_use:{objects_in_use}."
-        current_data.append(human_message) 
+        inputs = {
+            'user_utterance': utterance_user, 
+            'age': age_string, 
+            'confidence_of_age': confidence_of_age, 
+            'step': step, 
+            'interruptible': interruptible, 
+            'dict_object': dict_object, 
+            'move_arm': move_arm, 
+            'move_base': move_base, 
+            'current_location': current_location, 
+            'destination_location': destination_location, 
+            'objects_in_use': objects_in_use
+        }
+        current_data.append(inputs) 
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
