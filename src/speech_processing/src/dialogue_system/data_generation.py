@@ -17,81 +17,21 @@ def write_data(path, data):
     with open(path, 'w') as file:
         json.dump(data, file, indent=4)
         
-# Formal: "Could you please bring me a cup?"
-# Informal: "Hey, can you get me a cup?"
-# Polite: "Would you mind bringing me a cup?"
-# Commanding: "Bring me a cup now."
-# Friendly: "Would you grab me a cup?"
-# Old-fashioned: "Fetch me a cup, please."
-# Professional: "Could you provide me with a cup?"
-# Casual: "Can you hand me a cup?"
-# Respectful: "May I request a cup from you?"
-# Urgent: "I need a cup immediately."
 
-# Two Milks
-# Milk1
-#     "Can you bring me the blue milk?"
-#     "I need the normal-sized blue milk, could you get it for me?"
-#     "Could you hand me the milk that's blue and normal-sized?"
-#     "Please fetch me the blue milk."
-#     "Can you get me the blue milk with a normal size?"
-# Milk2
-#     "Can you bring me the red milk?"
-#     "I need the big red milk, could you get it for me?"
-#     "Could you hand me the milk that's red and big?"
-#     "Please fetch me the red milk."
-#     "Can you get me the red milk with a big size?"
-# One Bowl
-#     "Can you bring me the white bowl?"
-#     "I need the normal-sized white bowl, could you get it for me?"
-#     "Could you hand me the bowl that's white and normal-sized?"
-#     "Please fetch me the white bowl."
-#     "Can you get me the white bowl with a normal size?"
-# One Cereal
-#     "Can you bring me the green cereal?"
-#     "I need the normal-sized green cereal, could you get it for me?"
-#     "Could you hand me the cereal that's green and normal-sized?"
-#     "Please fetch me the green cereal."
-#     "Can you get me the green cereal with a normal size?"
-# One Spoon
-#     "Can you bring me the blue spoon?"
-#     "I need the normal-sized blue spoon, could you get it for me?"
-#     "Could you hand me the spoon that's blue and normal-sized?"
-#     "Please fetch me the blue spoon."
-#     "Can you get me the blue spoon with a normal size?"
-# One Cup
-#     "Can you bring me the white cup?"
-#     "I need the normal-sized white cup, could you get it for me?"
-#     "Could you hand me the cup that's white and normal-sized?"
-#     "Please fetch me the white cup."
-#     "Can you get me the white cup with a normal size?"
-
-# Can you bring me a cup?
-# Would you please put the big container of milk on the table?
-# I need a spoon to eat my cereal. Could you fetch me one?
-# This is the wrong container of milk, please bring me the blue one.
-# Could you please bring me the cereal in the green box?
- 
-
-
-
-def bring_me_instruction_generation(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location):
-    prompts = [{"role": "system", "content": prompt_bring_me_data_generation},
-                {"role": "user", "content": "object name: cup, object color: blue, object size: small, object location: cupboard"},
-               {"role": "assistant", "content": "{'formal': 'I would like a small red cup from cupboard.', 'informal': ' Can I get a small red cup from cupboard.'"},]
-    object = " object name: " + object_name + ", object color: " + object_color + ", object size: " + object_size + ", object location: " + object_location
-    object_prompts = [{"role": "user", "content": object}]
-    messages = prompts + object_prompts
-    response = client.chat.completions.create(
-                                        model=model_version,
-                                        messages=messages,
-                                        temperature=0,
-                                    )
-    instructions = response.choices[0].message.content
+    # template1 = "Could you please bring me a cup?"
+    # template2 = "Hey, can you get me a cup?"
     
-    instructions_json = json.loads(instructions[8:-4])
-    print(instructions_json)
-    return instructions_json
+    # template3 = "Would you mind bringing me a cup?"
+    # template4 = "Bring me a cup now."
+    
+    # template5 = "Would you grab me a cup?"
+    # template6 = "Fetch me a cup, please."
+    
+    # template7 = "Could you provide me with a cup?"
+    # template8 = "Can you hand me a cup?"
+    
+    # template9 = "May I request a cup from you?"
+    # template10 = "I need a cup immediately."
 
 def bring_me_command(objects, colors, size, locations):
     combinations = list(itertools.product(objects, colors, size, locations))
@@ -103,27 +43,31 @@ def bring_me_command(objects, colors, size, locations):
         object_size = combo[2]
         object_location = combo[3]
         current_data = read_current_data(dataset_path)
-    
-        # Example OpenAI Python library request
-        # model_version = "gpt-3.5-turbo"
-        # model_version ="gpt-4-vision-preview"
-        model_version ="gpt-4o-2024-05-13" 
-        instructions_json = bring_me_instruction_generation(model_version, prompt_bring_me_data_generation, object_name, object_color, object_size, object_location)
-        formal_instruction = instructions_json['formal']
-        informal_instruction = instructions_json['informal']
+        
         if object_color != "null" and object_size != "null" and object_location != "null":
-            system_transcript = 'I will bring you a ' + object_size + " " + object_color + " " + object_name + " from " + object_location
+            instruction1 = f"Could you please bring me a {object_size} {object_color} {object_name} from {object_location}?"
+            instruction2 = f"Hey, can you get me a {object_size} {object_color} {object_name} from {object_location}?"
+            
         elif object_color == "null" and object_size == "null" and object_location != "null": 
-            system_transcript = 'I will bring you a ' + object_name + " from " + object_location
+            instruction1 = f"Would you mind bringing me a {object_name} from {object_location}?"
+            instruction2 = f"Bring me a {object_name} from {object_location} now."
+            
         elif object_color == "null" and object_size != "null" and object_location == "null": 
-            system_transcript = 'I will bring you a ' + object_size + " " + object_name
+            instruction1 = f"Would you grab me a {object_size} {object_name}?"
+            instruction2 = f"Fetch me a {object_size} {object_name}, please."
+            
         elif object_color != "null" and object_size == "null" and object_location == "null": 
-                system_transcript = 'I will bring you a ' + object_color + " " + object_name
+            instruction1 = f"Could you provide me with a {object_color} {object_name}?"
+            instruction2 = f"Can you hand me a {object_color} {object_name}?"
+            
         elif object_color == "null" and object_size == "null" and object_location == "null":
-            system_transcript = 'I will bring you a '+ " " + object_name
+            instruction1 = f"May I request a {object_name} from you?"
+            instruction2 = f"I need a {object_name} immediately."
+            
+        system_transcript = "ok, wait a moment"
         new_data1 = {
                         "input":{
-                            "user_utterance": formal_instruction,
+                            "user_utterance": instruction1,
                             "age": 'young',
                             "confidence_of_age": 90,
                             "step": '',
@@ -152,7 +96,7 @@ def bring_me_command(objects, colors, size, locations):
                     }
         new_data2 = {
                         "input":{
-                            "user_utterance": informal_instruction,
+                            "user_utterance": instruction2,
                             "age": 'young',
                             "confidence_of_age": 90,
                             "step": '',
@@ -183,25 +127,6 @@ def bring_me_command(objects, colors, size, locations):
         current_data.append(new_data2)
         write_data(dataset_path, current_data)
 
-def replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2):
-    prompts = [{"role": "system", "content": prompt_replace_object_generation},
-               {"role": "user", "content": "target object name: cup, target object color: blue, target object size: small, delete object name: bowl, delete object color: red, delete object size: small"},
-               {"role": "assistant", "content": "{'formal': 'I would prefer a small blue cup rather than a small red bowl', 'informal': 'Can I get a small blue cup instead of a small red bowl?'"},]
-    objects = "target object name: " + object_name1 + ", target object color: " + object_color1 + ", target object size: " + object_size1 + ", delete object name: " + object_name2 + ", delete object color: " + object_color2 + ", delete object size: " + object_size2
-    object_prompts = [{"role": "user", "content": objects}]
-    messages = prompts + object_prompts
-    # print(f"messages is {messages}")
-    response = client.chat.completions.create(
-                                            model=model_version,
-                                            messages=messages,
-                                            temperature=0,
-                                        )
-    instructions = response.choices[0].message.content
-    
-    instructions_json = json.loads(instructions[8:-4])
-    print(instructions_json)
-    return instructions_json
-
 def replace_object(objects, colors, size):
     
     # Generate all possible combinations
@@ -209,7 +134,7 @@ def replace_object(objects, colors, size):
     print(F"The length of combinations is {len(combinations)}.")
     # Generate all possible pairs of combinations
     pair_combinations = list(itertools.combinations(combinations, 2))
-    print(f"the length of pairs is {pair_combinations}")
+    print(f"the length of pairs is {len(pair_combinations)}")
     dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
     
     # Print the pairs of combinations
@@ -225,76 +150,91 @@ def replace_object(objects, colors, size):
         
         current_data = read_current_data(dataset_path)
         
-        # Example OpenAI Python library request
-        # model_version = "gpt-3.5-turbo"
-        # model_version ="gpt-4-vision-preview"
-        model_version = "gpt-4o-2024-05-13" 
-        instructions_json = replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2)
-        formal_instruction = instructions_json['formal']
-        informal_instruction = instructions_json['informal']
-        system_transcript = 'ok, wait moment, I will bring you a ' + object_size1 + " " + object_color1 + " " + object_name1
+         
+        instruction1 = f"I would prefer a {object_size1} {object_color1} {object_name1} over a {object_size2} {object_color2} {object_name2}"
+        instruction2 = f"Could I have a {object_size1} {object_color1} {object_name1} instead of a {object_size2} {object_color2} {object_name2}?"
+        instruction3 = f"I would like a {object_size1} {object_color1} {object_name1} rather than a {object_size2} {object_color2} {object_name2}."
+        # 
+        # I would like to have a cup in place of a bowl.
+        # I would choose a cup over a bowl.
+        # I want to switch the bowl for a cup.
+        # Please give me a cup instead of a bowl.
+        # Can you substitute a cup for the bowl?
+        # I need a cup, not a bowl.
+        # I would prefer to have a cup instead of a bowl.
+        # I want a cup rather than a bowl.
+        # I want a cup in place of a bowl.
+        # I want a cup over a bowl.
+        # I want a cup in lieu of a bowl.
+        # I want a cup in preference to a bowl.
+
+
         
-        new_data1 = {
-                        "input":{
-                            "user_utterance": formal_instruction,
-                            "age": 'young',
-                            "confidence_of_age": 90,
-                            "step": '',
-                            "interruptible": True,
-                            "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
-                            "move_arm": False,
-                            "move_base": False,
-                            "current_location": '',
-                            "destination": '',
-                            "objects_in_use": []
-                            },
-                        "annotation":{
-                            "system_transcript": system_transcript,
-                            "command": 'replace_object',
-                            "add_type": object_name1, 
-                            "add_color": object_color1, 
-                            "add_name": '', 
-                            "add_location": '',
-                            "add_size": object_size1,
-                            "del_type": '', 
-                            "del_color": '', 
-                            "del_name": '', 
-                            "del_location": '', 
-                            "del_size": '',
-                            }
-                    }
-        new_data2 = {
-                        "input":{
-                            "user_utterance": informal_instruction,
-                            "age": 'young',
-                            "confidence_of_age": 90,
-                            "step": '',
-                            "interruptible": True,
-                            "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
-                            "move_arm": False,
-                            "move_base": False,
-                            "current_location": '',
-                            "destination": '',
-                            "objects_in_use": []
-                            },
-                        "annotation":{
-                            "system_transcript": system_transcript,
-                            "command": 'replace_object',
-                            "add_type": object_name1, 
-                            "add_color": object_color1, 
-                            "add_name": '', 
-                            "add_location": '', 
-                            "add_size": object_size1,
-                            "del_type": '', 
-                            "del_color": '', 
-                            "del_name": '', 
-                            "del_location": '', 
-                            "del_size": '',
-                            }
-                    }
-        current_data.append(new_data1)
-        current_data.append(new_data2)
-        write_data(dataset_path, current_data)
+       
+        
+        # system_transcript = 'ok, wait moment.'
+        
+        # new_data1 = {
+        #                 "input":{
+        #                     "user_utterance": instruction1,
+        #                     "age": 'young',
+        #                     "confidence_of_age": 90,
+        #                     "step": '',
+        #                     "interruptible": True,
+        #                     "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+        #                     "move_arm": False,
+        #                     "move_base": False,
+        #                     "current_location": '',
+        #                     "destination": '',
+        #                     "objects_in_use": []
+        #                     },
+        #                 "annotation":{
+        #                     "system_transcript": system_transcript,
+        #                     "command": 'replace_object',
+        #                     "add_type": object_name1, 
+        #                     "add_color": object_color1, 
+        #                     "add_name": '', 
+        #                     "add_location": '',
+        #                     "add_size": object_size1,
+        #                     "del_type": '', 
+        #                     "del_color": '', 
+        #                     "del_name": '', 
+        #                     "del_location": '', 
+        #                     "del_size": '',
+        #                     }
+        #             }
+        # new_data2 = {
+        #                 "input":{
+        #                     "user_utterance": instruction2,
+        #                     "age": 'young',
+        #                     "confidence_of_age": 90,
+        #                     "step": '',
+        #                     "interruptible": True,
+        #                     "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+        #                     "move_arm": False,
+        #                     "move_base": False,
+        #                     "current_location": '',
+        #                     "destination": '',
+        #                     "objects_in_use": []
+        #                     },
+        #                 "annotation":{
+        #                     "system_transcript": system_transcript,
+        #                     "command": 'replace_object',
+        #                     "add_type": object_name1, 
+        #                     "add_color": object_color1, 
+        #                     "add_name": '', 
+        #                     "add_location": '', 
+        #                     "add_size": object_size1,
+        #                     "del_type": '', 
+        #                     "del_color": '', 
+        #                     "del_name": '', 
+        #                     "del_location": '', 
+        #                     "del_size": '',
+        #                     }
+        #             }
+        # current_data.append(new_data1)
+        # current_data.append(new_data2)
+        # write_data(dataset_path, current_data)
         
 def setting_breakfast():
     utterance1 = "Could you please make breakfast?"
@@ -385,27 +325,12 @@ if __name__ == '__main__':
     colors2 = ["green", "blue", "red", "white"]
     size2 = ["big", "normal", "small"]
     
-    bring_me_command(objects, colors1, size1, locations1)
+    # bring_me_command(objects, colors1, size1, locations1)
     
-    # replace_object(objects, colors2, size2)
+    replace_object(objects, colors2, size2)
     
     # setting_breakfast()
     
-    # # # target object
-    # object_name1 = 'cup'
-    # object_color1 = 'blue'
-    # object_size1 = 'small'
-    # object_location = 'cupboard'
-    # # # delete object
-    # # object_name2 = 'cup'
-    # # object_color2 = 'blue'
-    # # object_size2 = 'big'
-    # model_version = "gpt-4o-2024-05-13" 
-    # # replace_object_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_name2, object_color2, object_size2)
-        
-    # bring_me_instruction_generation(model_version, prompt_replace_object_generation, object_name1, object_color1, object_size1, object_location)
-        
-            
         
 
 
