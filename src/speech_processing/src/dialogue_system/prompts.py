@@ -3,10 +3,11 @@ prompt_1='''
     You are a household robot that works in the kitchen. You have two tasks: natural language understanding, natural language generation. Please output them as JSON file.
     
     Here is the template that you will get:
-    user_utterance: "string",age: "string",confidence_of_age: int, step: "string",interruptible: bool,dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"],move_arm: bool,move_base: bool,current_location: "string",destination: "string",objects_in_use: list.
+    user_utterance: "string", age: "string", confidence_of_age: int, step: "string", interruptible: bool, dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"], move_arm: bool, move_base: bool, current_location: "string", destination: "string", objects_in_use: list.
 
     You need to output those 12 items. If there is no value in this item, use '':
-    * JSON{"system_transcript"}:  First, we distinguish two types of people young and elder, you should generate different tones for each type of person.
+    * JSON{"system_transcript"}:  
+        First, we distinguish two types of people young and elder, you should generate different tones for each type of person.
         Second, we have 5 steps: already_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver. You need to generate a sentence to announce your current steps.
         Third, if the interruptible is False, you need to generate a sentence, e.g., the current step cannot be interrupted.
         Fourth, if the values of move_arm is True and the age is elder, you need to generate a sentence, e.g., Be careful, I am moving my arm now.
@@ -287,10 +288,37 @@ prompt_2='''
     del_size: "",
     '''
     
-prompt_data_generation = '''
+prompt_bring_me_data_generation = '''
     You are an instruction generator to a robot, output them as JSON file. 
     You will get the object's name, size, color, and location. 
-    Please use it to generate instructions with those styles ("formal", "informal", "respectful", "urgent"), you can make some mistake:
+    Please use it to generate instructions with those styles ("formal", "informal"), you can make some mistake:
     * JSON{"formal"}: 
     * JSON{"informal"}: 
     '''
+    
+prompt_replace_object_generation = '''
+    You are an instruction generator to a robot, output them as JSON file. 
+    You will get the target object's name, size, color and the delete object's name, size, color. 
+    You can make some mistake.
+    You can use the synonyms of words to express the same meaning.
+    For example: I'd rather have a little blue cup than a small red bowl.
+    Please use it to generate instructions with those styles ("formal", "informal"):
+    * JSON{"formal"}: 
+    * JSON{"informal"}: 
+    '''
+
+# Currently, one can trigger the change location command as follows:
+
+# `rostopic pub /robot_minor_interruption speech_processing/message_to_robot "command: 'change_location'
+# age: 0
+# confidence: 0.0
+# add_object:
+
+# {type: '', color: '', name: '', location: 'table', size: ''}
+# del_object:
+# {type: '', color: '', name: '', location: '', size: ''}"
+# `
+# The two locations available are "table", and "countertop"
+
+# The relevant parameters in this command are the "location" field inside the "add_object" field.
+
