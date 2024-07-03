@@ -1,7 +1,8 @@
 import json
 import os
 from collections import OrderedDict
-
+from datetime import datetime
+now = datetime.now()
 
 def read_json_file(file_path):
     with open(file_path, 'r') as file:
@@ -56,10 +57,10 @@ def write_json_file(data, file_path):
 
     with open(file_path, 'w') as file:
         json.dump(ordered_data, file, indent=4)
-
+short_str = now.strftime("-%d-%m-%y-%H:%M")
 
 directory_path = '../robot_logs/'  # specify your directory path here
-output_file = 'robot_combined_statistics.json'
+output_file = 'robot_combined_statistics' + short_str + '.json'
 print(f"Combined robot statistics")
 combined_statistics = combine_statistics_from_directory(directory_path)
 write_json_file(combined_statistics, output_file)
