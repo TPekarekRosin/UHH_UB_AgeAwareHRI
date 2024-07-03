@@ -22,7 +22,6 @@ class DialogueSystem:
         self.robot_data = dict()
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
-        # self.env = SocialEnv()
         self.model_version = "gpt-3.5-turbo-1106"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
         self.prompt = prompt_1
@@ -65,7 +64,7 @@ class DialogueSystem:
             current_location = self.robot_data["current_location"]
             destination_location = self.robot_data["destination_location"]
         print("transcript", transcript)
-        
+        objects_in_use = self.objects_in_use
         # todo: define minor interruptions
         if "stop" not in transcript.lower() and confidence > 0.5:
             # todo: generate valid response for minor interruptions
@@ -114,7 +113,7 @@ class DialogueSystem:
         move_base = move_base
         current_location = current_loc
         destination_location = destination_loc
-        objects_in_use = []
+        objects_in_use = self.objects_in_use
        
         print("user data", self.user_data)
         utterance_user = self.user_data["transcript"]

@@ -45,6 +45,21 @@ class SocialBrain:
     def write_data(self, path, data):
         with open(path, 'w') as file:
             json.dump(data, file, indent=4)
+    def parse_json_from_string(self, data_string):
+        # Attempt to load the JSON directly
+        try:
+            json_data = json.loads(data_string)
+            return json_data
+        except json.JSONDecodeError:
+            # If direct loading fails, try to strip extraneous characters and then load
+            try:
+                stripped_data = data_string.strip()[8:-4]  # Adjust slice based on your specific needs
+                json_data = json.loads(stripped_data)
+                return json_data
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                return None
+
         
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use):
         if age == 0:
@@ -73,8 +88,6 @@ class SocialBrain:
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message)
         )
-        print("self.message_history",self.message_history)
-        # Use LLM to process the user's utterance or robot state, and then generate a response for the user or command for robot
         act_message = self.model(self.message_history)
         self.message_history.append(act_message)
         
@@ -82,9 +95,7 @@ class SocialBrain:
         print("act_message:", act_message)
         print("act_message content:", act_message.content)
         
-        # results = json.loads(act_message.content)
-        results = json.loads(act_message.content[8:-4])
-        
+        results = self.parse_json_from_string(act_message.content)
         system_transcript = str
         response_to_robot = dict()
         system_transcript = results["system_transcript"]
