@@ -81,7 +81,7 @@ echo "Updated pycram, building now"
 
 cd $WORKDIR
 
-catkin clean -y && catkin build
+catkin build
 source $WORKDIR/devel/setup.bash
 EOF
 
