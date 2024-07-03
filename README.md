@@ -1,5 +1,5 @@
 # UHH_UB_AgeAwareHRI
-Collaboration between UHH and UB for age aware HRI.
+This framework offers an adaptive approach to human-robot interaction. We use age as a modulating variable for the interaction and allow the user to interrupt and change the robot's actions during the interaction itself.
 
 ### Installation
 *setup.bash* installs the necessary python packages in a virtual environment *~/.arvenv*.
@@ -115,6 +115,16 @@ add_object:
 del_object:
 {type: '', color: '', name: '', location: '', size: ''}"
 ```
+
+## Possible Installation Errors
+### Compatibility between CUDA version and faster-whisper
+- Solution 1: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/{path to home repository}/.arvenv/lib/python3.8/site-packages/nvidia/cudnn/lib
+- Solution 2: Downgrade faster-whisper to version 0.10.1 for CUDA
+    ```bash
+    pip uninstall faster-whisper
+    pip install faster-whisper==0.10.1
+    pip install transformers -U
+    ```
 
  
 ## Appreciation
