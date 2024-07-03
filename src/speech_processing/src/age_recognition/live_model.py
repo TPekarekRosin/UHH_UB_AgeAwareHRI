@@ -50,7 +50,7 @@ class ASRLiveModel:
                                                   self.asr_input_queue,))
 
         # voice activity detection
-        self.vad_model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
+        self.vad_model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad:v4.0stable',
                                                model='silero_vad',
                                                force_reload=True)
         # speech recognition
@@ -89,15 +89,7 @@ class ASRLiveModel:
         self.sample_rate = int(dev_info['defaultSampleRate'])
 
         # chunk size fixed at 512 due to silero vad changes, temporary fix
-        chunk_size = 512 if self.sample_rate == 16000 else 4096
-        """if self.sample_rate == 16000:
-            chunk_size = 512
-        elif self.sample_rate == 8000:
-            chunk_size = 256
-        elif self.sample_rate == 48000 or self.sample_rate == 44100:
-            chunk_size = 4096
-        else:
-            chunk_size = 512"""
+        chunk_size = 2048 if self.sample_rate == 16000 else 4096
 
         print("Sample rate ", self.sample_rate)
         print("Chunk size ", chunk_size)
@@ -128,13 +120,6 @@ class ASRLiveModel:
             audio_float32_resampled = self.resample_audio(audio_float32, self.sample_rate, 16000)
 
             audio_float32_resampled = torch.from_numpy(audio_float32_resampled)
-            # print(audio_float32_resampled.shape)
-            if audio_float32_resampled.shape[0] != 512:
-                try:
-                    audio_float32_resampled = audio_float32_resampled.view(-1, 512)
-                except RuntimeError:
-                    #audio_float32_resampled = audio_float32_resampled.view(-1, 512)
-                    audio_float32_resampled = audio_float32_resampled[0:512]
 
             new_confidence_tensor = self.vad_model(audio_float32_resampled, 16000)
             new_confidence = torch.mean(new_confidence_tensor).item()
