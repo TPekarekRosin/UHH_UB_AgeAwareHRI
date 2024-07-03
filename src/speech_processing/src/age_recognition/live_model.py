@@ -171,7 +171,7 @@ class ASRLiveModel:
                     age_estimation_mean = np.mean(self.age_estimations)
                     age = 0 if age_estimation_mean <= 0.5 else 1
                     if self.evaluation_mode:
-                        self.log_results(age, age_estimation, text)
+                        self.log_results(age, age_estimation, text, confidence)
                     try:
                         if self.asr_output:
                             import speech_processing_client as spc
@@ -226,17 +226,17 @@ class ASRLiveModel:
 
         return resampled_audio
     
-    def log_results(self, age, age_estimation, text):
+    def log_results(self, age, age_estimation, text, confidence):
         # get source folder
         folder, _ = os.path.split(__file__)
         path = os.path.dirname(folder).split('/src')[0]
 
         # create file if not already existing and log results
         file_path = os.path.join(path, 'evaluation_results.csv')
-        results_string = "{0},{1},{2}".format(age, age_estimation.item(), text)
+        results_string = "{0},{1},{2},{3}".format(age, age_estimation.item(), text, confidence)
         if not os.path.exists(file_path):
             with open('evaluation_results.csv', 'w+') as file:
-                file.write('age_binary,age_p,transcript\n')
+                file.write('age_binary,age_p,transcript,confidence\n')
                 file.write(results_string + '\n')
         else:
             with open('evaluation_results.csv', 'a') as file:
