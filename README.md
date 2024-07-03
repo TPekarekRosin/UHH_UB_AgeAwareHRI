@@ -117,7 +117,11 @@ del_object:
 ```
 
  
-  
+## Appreciation
+- [Faster Whisper](https://github.com/SYSTRAN/faster-whisper/tree/master): ASR model speed-up.
+- [Live Wav2Vec2](https://github.com/oliverguhr/wav2vec2-live/tree/main): Inspiration for the setup with multi-thread VAD and ASR for Transformers.
+- [Silero VAD](https://github.com/snakers4/silero-vad): Fast and reliable VAD, we specifically used version 4.0 for processing of larger audio-chunks.
+
    
    
    
