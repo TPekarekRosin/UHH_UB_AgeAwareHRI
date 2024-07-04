@@ -69,7 +69,7 @@ class SocialBrain:
         dataset_path = "dialog_results.json"
         current_data = self.read_current_data(dataset_path)
         
-        human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination_location:{destination_location}, objects_in_use:{objects_in_use}."
+        human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination:{destination}, objects_in_use:{objects_in_use}."
         print(f"objects in use {objects_in_use}")
         inputs = {
             'user_utterance': utterance_user, 
@@ -159,10 +159,10 @@ if __name__ == '__main__':
         move_base = input("move_base: ")
         # cupboard, fridge, countertop, dishwasher, drawer, table
         current_location = input("current_location: ")
-        destination_location = input("destination_location: ")
+        destination = input("destination: ")
         objects_in_use = input("objects_in_use: ")
         
-        system_transcript, response_to_robot = agent.information_process(user_utterance, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use)
+        system_transcript, response_to_robot = agent.information_process(user_utterance, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination, objects_in_use)
          
         print("start next turn")
     
