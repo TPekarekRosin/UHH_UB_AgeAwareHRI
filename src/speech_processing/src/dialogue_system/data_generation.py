@@ -31,7 +31,7 @@ def write_data(path, data):
 def bring_me_command(objects, colors, size, locations):
     combinations = list(itertools.product(objects, colors, size, locations))
     print(F"The length of combinations is {len(combinations)}.")
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_bringme.json"
+    dataset_path = "/home/sun/Projects_Learning/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_bringme.json"
     for combo in combinations:
         object_name = combo[0]
         object_color = combo[1]
@@ -130,7 +130,7 @@ def replace_object(objects, colors, size):
     # Generate all possible pairs of combinations
     pair_combinations = list(itertools.combinations(combinations, 2))
     print(f"the length of pairs is {len(pair_combinations)}")
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_replace.json"
+    dataset_path = "/home/sun/Projects_Learning/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_replace.json"
     
     # Print the pairs of combinations
     for pair in pair_combinations:
@@ -240,7 +240,7 @@ def setting_breakfast():
     print(f"the length of utterence is {len(utterances)}")
     
     system_transcript = "I will prepare the table for your breakfast"
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_breakfast.json"
+    dataset_path = "/home/sun/Projects_Learning/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_breakfast.json"
     
     for utterance in utterances:
         current_data = read_current_data(dataset_path)
@@ -286,9 +286,9 @@ if __name__ == '__main__':
     colors2 = ["green", "blue", "red", "white"]
     size2 = ["big", "normal", "small"]
     
-    # bring_me_command(objects, colors1, size1, locations1)
+    bring_me_command(objects, colors1, size1, locations1)
     # replace_object(objects, colors2, size2)
-    setting_breakfast()
+    # setting_breakfast()
    
     
     
