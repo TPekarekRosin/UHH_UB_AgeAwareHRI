@@ -3,18 +3,7 @@ from prompts import prompt_1
 from langchain.chat_models import ChatOpenAI
 import json
 from social_brain import SocialBrain
-
-
-
-
-
-
-
-
-
-
-
-
+import random
 
 
 def read_current_data(path):
@@ -42,31 +31,60 @@ if __name__ == '__main__':
     dataset1 = read_current_data(dataset_path1)
     dataset2 = read_current_data(dataset_path2)
     dataset3 = read_current_data(dataset_path3)
+    datasets = dataset1 + dataset2 + dataset3
+    
+    random.shuffle(datasets)
    
-    while True:
+    for dataset in datasets:
         
-        user_utterance = input("user_utterance: ")
-        if user_utterance == "exit" or user_utterance == "stop" or user_utterance == "break":
-            break
-        # elder or young
-        age = input("age: ")
-        confidence_of_age = input("confidence_of_age: ")
+        user_utterance = dataset["input"]["user_utterance"]
+        age = dataset["input"]["age"]
+        confidence_of_age = dataset["input"]["confidence_of_age"]
         # already_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver.
-        step = input("step: ")
+        step = dataset["input"]["step"]
         # False or True
-        interruptible= input("interruptible: ")
+        interruptible= dataset["input"]["interruptible"]
         # "{type: null, color: null, name: null, location: null, size: null}"
         # {type: '', color: '', name: '', location: '', size: ''}
-        dict_object = input("dict_object: ")
+        dict_object = dataset["input"]["dict_object"]
         # False or True
-        move_arm = input("move_arm: ")
+        move_arm = dataset["input"]["move_arm"]
         # False or True
-        move_base = input("move_base: ")
+        move_base = dataset["input"]["move_base"]
         # cupboard, fridge, countertop, dishwasher, drawer, table
-        current_location = input("current_location: ")
-        destination_location = input("destination_location: ")
-        objects_in_use = input("objects_in_use: ")
+        current_location = dataset["input"]["current_location"]
+        destination_location = dataset["input"]["destination"]
+        objects_in_use = dataset["input"]["objects_in_use"]
         
         system_transcript, response_to_robot = agent.information_process(user_utterance, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use)
          
+        pred_command = response_to_robot["command"]
+        
+        pred_add_type = response_to_robot["add_type"]
+        pred_add_color = response_to_robot["add_color"]
+        pred_add_name = response_to_robot["add_name"]
+        pred_add_size = response_to_robot["add_size"]
+        pred_add_location = response_to_robot["add_location"]
+
+        pred_del_type = response_to_robot["del_type"]
+        pred_del_color = response_to_robot["del_color"]
+        pred_del_name = response_to_robot["del_name"]
+        pred_del_size = response_to_robot["del_size"]
+        pred_del_location = response_to_robot["del_location"]
+        
+        
+        ann_command = dataset["annotation"]["command"]
+        
+        ann_add_type = dataset["annotation"]["add_type"]
+        ann__add_color = dataset["annotation"]["add_color"]
+        ann__add_name = dataset["annotation"]["add_name"]
+        ann__add_size = dataset["annotation"]["add_size"]
+        ann__add_location = dataset["annotation"]["add_location"]
+
+        ann__del_type = dataset["annotation"]["del_type"]
+        ann__del_color = dataset["annotation"]["del_color"]
+        ann__del_name = dataset["annotation"]["del_name"]
+        ann__del_size = dataset["annotation"]["del_size"]
+        ann__del_location = dataset["annotation"]["del_location"]
+
         print("start next turn")

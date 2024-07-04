@@ -23,7 +23,7 @@ class DialogueSystem:
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
         # self.model_version = "gpt-3.5-turbo-1106"
-        model_version = "gpt-4o"
+        self.model_version = "gpt-4o"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
         self.prompt = prompt_1
         self.agent = SocialBrain(model=self.chat, prompt=self.prompt)
