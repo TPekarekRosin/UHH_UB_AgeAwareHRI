@@ -5,7 +5,7 @@ prompt_1='''
     Here is the template that you will get:
     user_utterance: "string", age: "string", confidence_of_age: int, step: "string", interruptible: bool, dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"], move_arm: bool, move_base: bool, current_location: "string", destination: "string", objects_in_use: list.
 
-    There are rules that you need to follow.
+    There are rules that you need to follow to generate sentence for system_transcript.
     First, we distinguish two types of people young and elder, you should generate different tones for each type of person.
     Second, we have 6 steps: already_done, task_done, set_parameters, transporting_search, transporting_fetch, and transporting_deliver. For the elder people, you need to generate a sentence to announce your current steps.
     Third, if the interruptible is false, you need to generate a sentence, e.g., the current step cannot be interrupted.

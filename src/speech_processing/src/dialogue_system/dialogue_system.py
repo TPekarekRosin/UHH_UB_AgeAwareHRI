@@ -11,7 +11,7 @@ class DialogueSystem:
         self.robot_step = None
         self.robot_interruptable = False
         
-        self.objects_in_use = []
+        self.objects_in_use = dict()
         self.user_data = dict()
         # string transcript
         # int32 age
@@ -20,9 +20,18 @@ class DialogueSystem:
         self.user_data["age"] = "young"
         self.user_data["confidence"] = 90
         self.robot_data = dict()
+        
+        self.last_robot_step = None
+        self.last_robot_interruptable = None
+        self.last_robot_move_arm = None
+        self.last_robot_move_base = None
+        self.last_robot_current_location = None
+        self.last_robot_destination = None
+        
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
-        self.model_version = "gpt-3.5-turbo-1106"
+        # self.model_version = "gpt-3.5-turbo-1106"
+        self.model_version = "gpt-4o"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
         self.prompt = prompt_1
         self.agent = SocialBrain(model=self.chat, prompt=self.prompt)
@@ -30,17 +39,14 @@ class DialogueSystem:
         
     def process_speech_input(self, transcript, age, confidence):
         
-        # utterance_user, 
-        # age, 
-        # confidence_of_age, 
         step = str
         interruptible = str
         dict_object = dict()
         move_arm = str
         move_base = str
         current_location = str
-        destination_location = str
-        objects_in_use = list()
+        destination = str
+        objects_in_use = dict()
         print("robot data", self.robot_data)
         if not self.robot_data:
             system_transcript = "i have issues getting the robot status"
@@ -62,7 +68,7 @@ class DialogueSystem:
             move_arm = self.robot_data["move_arm"]
             move_base = self.robot_data["move_base"]
             current_location = self.robot_data["current_location"]
-            destination_location = self.robot_data["destination_location"]
+            destination = self.robot_data["destination"]
         print("transcript", transcript)
         objects_in_use = self.objects_in_use
         # todo: define minor interruptions
@@ -71,7 +77,7 @@ class DialogueSystem:
             system_transcript, response_to_robot = self.agent.information_process(
                                                     transcript, age, confidence, step, interruptible, 
                                                     dict_object, move_arm, move_base, current_location, 
-                                                    destination_location, objects_in_use)
+                                                    destination, objects_in_use)
             
             
             return 'minor', response_to_robot, system_transcript
@@ -86,18 +92,9 @@ class DialogueSystem:
             print('Command was not recognized.')
             return '', (), system_transcript
 
-    def process_robot_input(self, step, interruptable, object_info,
-                            move_arm, move_base, current_loc, destination_loc):
+    def process_robot_input(self, step, interruptable, object_info, move_arm, move_base, current_location, destination):
         # todo process the message from the robot to create speech output
         self.robot_step = step
-        # print("step", step)
-        # print("interruptable", interruptable)
-        # print("object_info", object_info)
-        # print("move_arm", move_arm)
-        # print("move_base", move_base)
-        # print("current_loc", current_loc)
-        # print("destination_loc", destination_loc)
-
         self.robot_interruptable = interruptable
         string_for_synthesizer = f"I am {step}"
         
@@ -108,30 +105,35 @@ class DialogueSystem:
         dict_object["location"] = object_info[0].location
         dict_object["size"] = object_info[0].size
         print("dict_object: ", dict_object)
-        
-        move_arm = move_arm
-        move_base = move_base
-        current_location = current_loc
-        destination_location = destination_loc
-        objects_in_use = self.objects_in_use
        
         print("user data", self.user_data)
         utterance_user = self.user_data["transcript"]
         age = self.user_data["age"]
         confidence_of_age = self.user_data["confidence"]
-       
-        system_transcript, response_to_robot = self.agent.information_process(
-                                                        utterance_user, age, confidence_of_age, self.robot_step, 
-                                                        self.robot_interruptable, dict_object, move_arm, move_base, 
-                                                        current_location, destination_location, objects_in_use)
-        
-        return system_transcript
+        if self.last_robot_step == self.robot_step and self.last_robot_interruptable == interruptable and self.last_robot_move_arm == move_arm and self.last_robot_move_base == move_base and self.last_robot_current_location == current_location and self.last_robot_destination == destination:
+            print("the robot states have not changed.")
+            return    
+        else:
+            system_transcript, response_to_robot = self.agent.information_process(
+                                                            utterance_user, age, confidence_of_age, self.robot_step, 
+                                                            self.robot_interruptable, dict_object, move_arm, move_base, 
+                                                            current_location, destination, self.objects_in_use)
+            self.last_robot_step = self.robot_step
+            self.last_robot_interruptable = self.robot_interruptable
+            self.last_robot_move_arm = move_arm
+            self.last_robot_move_base = move_base
+            self.last_robot_current_location = current_location
+            self.last_robot_destination = destination
+            
+            return system_transcript
 
     def get_objects_in_use(self):
         # looks at state of rosparam \objects_in_use and return list of objects
         param_name = rospy.search_param('object_in_use')
         object_str = rospy.get_param(param_name)
         self.objects_in_use = object_str.split(',')
+        
+        print("self objects in use", self.objects_in_use)
 
     def get_robot_states(self):
         return self.robot_step, self.robot_interruptable

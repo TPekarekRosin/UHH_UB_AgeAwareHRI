@@ -30,8 +30,8 @@ class DialogueNode:
         self.dialogue_system = DialogueSystem()
 
     def callback_obj_in_use(self, data):
-
-        # rospy.loginfo(data)
+        print("objects in use")
+        rospy.loginfo(data)
         self.dialogue_system.objects_in_use = data
               
     def callback_from_asr(self, data):
@@ -122,7 +122,7 @@ class DialogueNode:
         self.dialogue_system.robot_data["move_arm"] = data.move_arm
         self.dialogue_system.robot_data["move_base"] = data.move_base
         self.dialogue_system.robot_data["current_location"] = data.current_location                                                        
-        self.dialogue_system.robot_data["destination_location"] = data.destination_location
+        self.dialogue_system.robot_data["destination"] = data.destination_location
 
         system_transcript = self.dialogue_system.process_robot_input(data.step, data.interruptable, data.object,
                                                                data.move_arm, data.move_base, data.current_location,
