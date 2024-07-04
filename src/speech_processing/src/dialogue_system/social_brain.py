@@ -61,7 +61,7 @@ class SocialBrain:
                 return None
 
         
-    def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination_location, objects_in_use):
+    def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination, objects_in_use):
         if age == 0:
             age_string = "young"
         else:
@@ -81,7 +81,7 @@ class SocialBrain:
             'move_arm': move_arm, 
             'move_base': move_base, 
             'current_location': current_location, 
-            'destination_location': destination_location, 
+            'destination': destination, 
             'objects_in_use': []
         }
         current_data.append(inputs) 
