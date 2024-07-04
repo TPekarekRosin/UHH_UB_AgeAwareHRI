@@ -27,11 +27,13 @@ During installation console will ask for sudo password.
 ### IF PYCRAM WAS UPDATED
 
 1) If the pycram branch was updated, pull all changes using
+
+
+   
+
    ```bash
+    source ~/.arvenv/bin/activate && source ./devel/setup.bash
    ./update_pycram.sh
-    ```
-   ```bash
-   ./setup_pycram.bash
     ```
    If the script fails because there are uncommited changes, please make sure to
    restore any changes not staged for commit inside the pycram repository.

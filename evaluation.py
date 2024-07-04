@@ -50,21 +50,28 @@ def eval_asr_ar():
 
     # todo create metric logging: wer, cer, accuracy, confusion matrix, inference time
 
-    age_accuracies, age_true, age_pred, wers, cers = [], [], [], [], []
+    age_accuracies, binary_age_accuracies, age_true, age_pred, wers, cers = [], [], [], [], [], []
     for it, batch in tqdm(enumerate(test_dataloader)):
         audio_path = batch['audio']['path'][0]
         audio_array = batch['audio']['array']
         sentence = batch['sentence'][0]
         age_label = batch['label'].item()
+        binary_age_label = 0 if age_label <= 5 else 1
         segments, _ = asr_model.transcribe(audio_path)
         s = list(segments)
         text = s[0].text
         ar_out = ar_model(audio_array.numpy())
         age_estimation = torch.argmax(ar_out, dim=-1).item()
+        binary_age_estimation  = 0 if age_estimation <= 5 else 1
         if age_estimation == age_label:
             age_accuracies.append(1)
         else:
             age_accuracies.append(0)
+
+        if binary_age_estimation == binary_age_label:
+            binary_age_accuracies.append(1)
+        else:
+            binary_age_accuracies.append(0)
 
         wers.append(100 * wer_metric.compute(predictions=[text], references=[sentence]))
         cers.append(100 * cer_metric.compute(predictions=[text], references=[sentence]))
@@ -74,7 +81,8 @@ def eval_asr_ar():
         # print(text, sentence)
         # print(age_estimation, age_label)
 
-    print("ACCURACY: {0}, WER: {1}, CER: {2}".format(np.mean(age_accuracies),
+    print("ACCURACY: {0}, BINARY ACCURACY: {1}, WER: {2}, CER: {3}".format(np.mean(age_accuracies),
+                                                                           np.mean(binary_age_accuracies),
                                                      np.mean(wers),
                                                      np.mean(cers)))
     cm = confusion_matrix(y_true=age_true, y_pred=age_pred)
