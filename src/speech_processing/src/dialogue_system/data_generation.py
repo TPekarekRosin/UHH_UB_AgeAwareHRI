@@ -1,11 +1,6 @@
 import itertools
-from openai import OpenAI
 import json
-from prompts import prompt_bring_me_data_generation, prompt_replace_object_generation
-
-with open("openai_api_key.txt") as fapi:
-        api_key = fapi.read()
-client = OpenAI(api_key=api_key)
+import random
 
 def read_current_data(path):
         try:
@@ -36,7 +31,7 @@ def write_data(path, data):
 def bring_me_command(objects, colors, size, locations):
     combinations = list(itertools.product(objects, colors, size, locations))
     print(F"The length of combinations is {len(combinations)}.")
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_bringme.json"
     for combo in combinations:
         object_name = combo[0]
         object_color = combo[1]
@@ -70,7 +65,7 @@ def bring_me_command(objects, colors, size, locations):
                             "user_utterance": instruction1,
                             "age": 'young',
                             "confidence_of_age": 90,
-                            "step": '',
+                            "step": 'set_parameters',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
@@ -99,7 +94,7 @@ def bring_me_command(objects, colors, size, locations):
                             "user_utterance": instruction2,
                             "age": 'young',
                             "confidence_of_age": 90,
-                            "step": '',
+                            "step": 'set_parameters',
                             "interruptible": True,
                             "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
                             "move_arm": False,
@@ -107,7 +102,7 @@ def bring_me_command(objects, colors, size, locations):
                             "current_location": '',
                             "destination": '',
                             "objects_in_use": []
-                            },
+                        },
                         "annotation":{
                             "system_transcript": system_transcript,
                             "command": 'bring_me',
@@ -121,7 +116,7 @@ def bring_me_command(objects, colors, size, locations):
                             "del_name": '', 
                             "del_location": '', 
                             "del_size": '',
-                            }
+                        }
                     }
         current_data.append(new_data1)
         current_data.append(new_data2)
@@ -135,7 +130,7 @@ def replace_object(objects, colors, size):
     # Generate all possible pairs of combinations
     pair_combinations = list(itertools.combinations(combinations, 2))
     print(f"the length of pairs is {len(pair_combinations)}")
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_replace.json"
     
     # Print the pairs of combinations
     for pair in pair_combinations:
@@ -148,172 +143,138 @@ def replace_object(objects, colors, size):
         object_color2 = pair[1][1]
         object_size2 = pair[1][2]
         
-        current_data = read_current_data(dataset_path)
-        
-         
-        instruction1 = f"I would prefer a {object_size1} {object_color1} {object_name1} over a {object_size2} {object_color2} {object_name2}"
-        instruction2 = f"Could I have a {object_size1} {object_color1} {object_name1} instead of a {object_size2} {object_color2} {object_name2}?"
-        instruction3 = f"I would like a {object_size1} {object_color1} {object_name1} rather than a {object_size2} {object_color2} {object_name2}."
-        # 
-        # I would like to have a cup in place of a bowl.
-        # I would choose a cup over a bowl.
-        # I want to switch the bowl for a cup.
-        # Please give me a cup instead of a bowl.
-        # Can you substitute a cup for the bowl?
-        # I need a cup, not a bowl.
-        # I would prefer to have a cup instead of a bowl.
-        # I want a cup rather than a bowl.
-        # I want a cup in place of a bowl.
-        # I want a cup over a bowl.
-        # I want a cup in lieu of a bowl.
-        # I want a cup in preference to a bowl.
-
-
-        
-       
-        
-        # system_transcript = 'ok, wait moment.'
-        
-        # new_data1 = {
-        #                 "input":{
-        #                     "user_utterance": instruction1,
-        #                     "age": 'young',
-        #                     "confidence_of_age": 90,
-        #                     "step": '',
-        #                     "interruptible": True,
-        #                     "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
-        #                     "move_arm": False,
-        #                     "move_base": False,
-        #                     "current_location": '',
-        #                     "destination": '',
-        #                     "objects_in_use": []
-        #                     },
-        #                 "annotation":{
-        #                     "system_transcript": system_transcript,
-        #                     "command": 'replace_object',
-        #                     "add_type": object_name1, 
-        #                     "add_color": object_color1, 
-        #                     "add_name": '', 
-        #                     "add_location": '',
-        #                     "add_size": object_size1,
-        #                     "del_type": '', 
-        #                     "del_color": '', 
-        #                     "del_name": '', 
-        #                     "del_location": '', 
-        #                     "del_size": '',
-        #                     }
-        #             }
-        # new_data2 = {
-        #                 "input":{
-        #                     "user_utterance": instruction2,
-        #                     "age": 'young',
-        #                     "confidence_of_age": 90,
-        #                     "step": '',
-        #                     "interruptible": True,
-        #                     "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
-        #                     "move_arm": False,
-        #                     "move_base": False,
-        #                     "current_location": '',
-        #                     "destination": '',
-        #                     "objects_in_use": []
-        #                     },
-        #                 "annotation":{
-        #                     "system_transcript": system_transcript,
-        #                     "command": 'replace_object',
-        #                     "add_type": object_name1, 
-        #                     "add_color": object_color1, 
-        #                     "add_name": '', 
-        #                     "add_location": '', 
-        #                     "add_size": object_size1,
-        #                     "del_type": '', 
-        #                     "del_color": '', 
-        #                     "del_name": '', 
-        #                     "del_location": '', 
-        #                     "del_size": '',
-        #                     }
-        #             }
-        # current_data.append(new_data1)
-        # current_data.append(new_data2)
-        # write_data(dataset_path, current_data)
+        current_data = read_current_data(dataset_path)      
+        instructions = [f"I would prefer a {object_size1} {object_color1} {object_name1} over a {object_size2} {object_color2} {object_name2}",
+        f"Could I have a {object_size1} {object_color1} {object_name1} instead of a {object_size2} {object_color2} {object_name2}?",
+        f"I would like a {object_size1} {object_color1} {object_name1} rather than a {object_size2} {object_color2} {object_name2}.",
+        f"I would like to have a {object_size1} {object_color1} {object_name1}  in place of a {object_size2} {object_color2} {object_name2}.",
+        f"I would choose a {object_size1} {object_color1} {object_name1} over a {object_size2} {object_color2} {object_name2}.",
+        f"I want to switch the {object_size1} {object_color1} {object_name1} for a {object_size2} {object_color2} {object_name2}.",
+        f"Please give me a {object_size1} {object_color1} {object_name1} instead of a {object_size2} {object_color2} {object_name2}.",
+        f"Can you substitute a {object_size1} {object_color1} {object_name1} for the {object_size2} {object_color2} {object_name2}?",
+        f"I need a {object_size1} {object_color1} {object_name1}, not a {object_size2} {object_color2} {object_name2}.",
+        f"I would prefer to have a {object_size1} {object_color1} {object_name1}  instead of a {object_size2} {object_color2} {object_name2}.",
+        f"I want a {object_size1} {object_color1} {object_name1} rather than a {object_size2} {object_color2} {object_name2}.",
+        f"I want a {object_size1} {object_color1} {object_name1} in place of a {object_size2} {object_color2} {object_name2}.",
+        f"I want a {object_size1} {object_color1} {object_name1} over a {object_size2} {object_color2} {object_name2}.",
+        f"I want a {object_size1} {object_color1} {object_name1} in lieu of a {object_size2} {object_color2} {object_name2}.",
+        f"I want a {object_size1} {object_color1} {object_name1} in preference to a {object_size2} {object_color2} {object_name2}."]
+        system_transcript = 'ok, wait moment.'
+        random_number = random.randint(0, 14)
+        new_data = {
+                        "input":{
+                            "user_utterance": instructions[random_number],
+                            "age": 'young',
+                            "confidence_of_age": 90,
+                            "step": 'set_parameters',
+                            "interruptible": True,
+                            "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+                            "move_arm": False,
+                            "move_base": False,
+                            "current_location": '',
+                            "destination": '',
+                            "objects_in_use": []
+                            },
+                        "annotation":{
+                            "system_transcript": system_transcript,
+                            "command": 'replace_object',
+                            "add_type": object_name1, 
+                            "add_color": object_color1, 
+                            "add_name": '', 
+                            "add_location": '',
+                            "add_size": object_size1,
+                            "del_type": object_name2, 
+                            "del_color": object_color2, 
+                            "del_name": '', 
+                            "del_location": '', 
+                            "del_size": object_size2,
+                            }
+                    }
+        current_data.append(new_data)
+        write_data(dataset_path, current_data)
         
 def setting_breakfast():
-    utterance1 = "Could you please make breakfast?"
-    utterance2 = "Can you whip up some breakfast?"
-    utterance3 = "Would you be so kind as to prepare breakfast?"
-    utterance4 = "Make breakfast, please."
-    utterance5 = "I am really hungry. Breakfast sounds good right now."
-    utterance6 = "It would be great to have breakfast ready soon."
-    utterance7 = "I could really use some breakfast. Do you mind making it?"
-    utterance8 = "How about we prepare breakfast together?"
-    utterance9 = "Could you make breakfast today?"
-    utterance10 = "Would you mind making us breakfast?"
-    utterance11 = "Can you make breakfast this time?"
-    utterance12 = "I would really appreciate it if you could make breakfast."
-    utterance13 = "Thank you in advance for making breakfast."
-    utterance14 = "Could you make some breakfast?"
-    utterance15 = "Hey, can you make breakfast?"
-    utterance16 = "Mind making breakfast?"
-    utterance17 = "Can you be the breakfast chef today?"
-    utterance18 = "It is morning! How about some breakfast?"
-    utterance19 = "Could you have breakfast ready by 8 AM?"
-    utterance20 = "Can you handle breakfast today?"
-    utterance21 = "You make the best breakfast! Can you make it today?"
+    
+    utterances = ["Could you please make breakfast?",
+    "Can you whip up some breakfast?",
+    "Would you be so kind as to prepare breakfast?",
+    "Make breakfast, please.",
+    "I am really hungry. Breakfast sounds good right now.",
+    "It would be great to have breakfast ready soon.",
+    "I could really use some breakfast. Do you mind making it?",
+    "How about we prepare breakfast together?",
+    "Could you make breakfast today?",
+    "Would you mind making us breakfast?",
+    "Can you make breakfast this time?",
+    "I would really appreciate it if you could make breakfast.",
+    "Thank you in advance for making breakfast.",
+    "Could you make some breakfast?",
+    "Hey, can you make breakfast?",
+    "Mind making breakfast?",
+    "Can you be the breakfast chef today?",
+    "It is morning! How about some breakfast?",
+    "Could you have breakfast ready by 8 AM?",
+    "Can you handle breakfast today?",
+    "You make the best breakfast! Can you make it today?",
+    "Could you please prepare breakfast for me?",
+    "Can you make breakfast for me?",
+    "I'm feeling hungry, could you help me with breakfast?",
+    "Would it be possible for you to prepare breakfast for me?",
+    "Hey, would you mind making breakfast for me?",
+    "I really need breakfast soon; could you make it for me?",
+    "It would be great to have some breakfast prepared.",
+    "May I ask you to prepare breakfast for me?",
+    "I would really appreciate it if you could make breakfast for me.",
+    "Can you prepare breakfast for me, please?",
+    "How about you whip up some breakfast for me?",
+    "I'm running late, could you make breakfast for me?",
+    "Could you make breakfast for me, sweetheart?",
+    "Please prepare breakfast for me.",
+    "Can you fix me some breakfast?",
+    "Shall we make breakfast together? Can you start it for me?",
+    "Would you be able to arrange breakfast for me?",
+    "I need some breakfast, can you help me out?",
+    "I would love some breakfast if you have the time.",
+    "Your breakfasts are always the best, could you make one for me?"]
+    
+    print(f"the length of utterence is {len(utterances)}")
+    
     system_transcript = "I will prepare the table for your breakfast"
+    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set_breakfast.json"
     
-    # Polite Request: "Could you please prepare breakfast for me?"
-    # Casual Ask: "Can you make breakfast for me?"
-    # Indirect Request: "I'm feeling hungry, could you help me with breakfast?"
-    # Formal: "Would it be possible for you to prepare breakfast for me?"
-    # Friendly: "Hey, would you mind making breakfast for me?"
-    # Urgent: "I really need breakfast soon; could you make it for me?"
-    # Indirect Hint: "It would be great to have some breakfast prepared."
-    # Respectful: "May I ask you to prepare breakfast for me?"
-    # Grateful Tone: "I would really appreciate it if you could make breakfast for me."
-    # Straightforward: "Can you prepare breakfast for me, please?"
-    # Playful: "How about you whip up some breakfast for me?"
-    # Request with Reason: "I'm running late; could you make breakfast for me?"
-    # Affectionate: "Could you make breakfast for me, sweetheart?"
-    # Commanding (if appropriate): "Please prepare breakfast for me."
-    # Colloquial: "Can you fix me some breakfast?"
-    # Collaborative: "Shall we make breakfast together? Can you start it for me?"
-    # Professional: "Would you be able to arrange breakfast for me?"
-    # Expressing Need: "I need some breakfast; can you help me out?"
-    # Hinting: "I would love some breakfast if you have the time."
-    # Request with Praise: "Your breakfasts are always the best; could you make one for me?"
-    
-    dataset_path = "/home/sun/Projects_HRD/UHH_UB_AgeAwareHRI/src/speech_processing/src/dialogue_system/one_turn_set.json"
-    current_data = read_current_data(dataset_path)
-    new_data = {
-                    "input":{
-                        "user_utterance": utterance1,
-                        "age": 'young',
-                        "confidence_of_age": 90,
-                        "step": '',
-                        "interruptible": True,
-                        "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
-                        "move_arm": False,
-                        "move_base": False,
-                        "current_location": '',
-                        "destination": '',
-                        "objects_in_use": []
-                        },
-                    "annotation":{
-                        "system_transcript": system_transcript,
-                        "command": 'setting_breakfast',
-                        "add_type": '', 
-                        "add_color": '', 
-                        "add_name": '', 
-                        "add_location": '',
-                        "add_size": '',
-                        "del_type": '', 
-                        "del_color": '', 
-                        "del_name": '', 
-                        "del_location": '', 
-                        "del_size": '',
-                        }
-                }
-    current_data.append(new_data)
-    write_data(dataset_path, current_data)
+    for utterance in utterances:
+        current_data = read_current_data(dataset_path)
+        new_data = {
+                        "input":{
+                            "user_utterance": utterance,
+                            "age": 'young',
+                            "confidence_of_age": 90,
+                            "step": 'set_parameters',
+                            "interruptible": True,
+                            "dict_object": {"type": '', "color": '', "name": '', "location": '', "size": ''},
+                            "move_arm": False,
+                            "move_base": False,
+                            "current_location": '',
+                            "destination": '',
+                            "objects_in_use": []
+                            },
+                        "annotation":{
+                            "system_transcript": system_transcript,
+                            "command": 'setting_breakfast',
+                            "add_type": '', 
+                            "add_color": '', 
+                            "add_name": '', 
+                            "add_location": '',
+                            "add_size": '',
+                            "del_type": '', 
+                            "del_color": '', 
+                            "del_name": '', 
+                            "del_location": '', 
+                            "del_size": '',
+                            }
+                    }
+        current_data.append(new_data)
+        write_data(dataset_path, current_data)
     
 
 if __name__ == '__main__':
@@ -326,10 +287,11 @@ if __name__ == '__main__':
     size2 = ["big", "normal", "small"]
     
     # bring_me_command(objects, colors1, size1, locations1)
+    # replace_object(objects, colors2, size2)
+    setting_breakfast()
+   
     
-    replace_object(objects, colors2, size2)
     
-    # setting_breakfast()
     
         
 
