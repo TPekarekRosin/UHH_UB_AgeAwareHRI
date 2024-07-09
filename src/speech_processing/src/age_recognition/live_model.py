@@ -4,6 +4,7 @@ import threading
 import webrtcvad
 import sys
 import sounddevice as sd
+from datetime import datetime
 import signal
 from scipy.signal import resample
 # import librosa
@@ -231,12 +232,15 @@ class ASRLiveModel:
         folder, _ = os.path.split(__file__)
         path = os.path.dirname(folder).split('/src')[0]
 
+        now = datetime.now()
+        time_stamp = now.strftime("%m%d%Y_%H%M")
+
         # create file if not already existing and log results
         file_path = os.path.join(path, 'evaluation_results.csv')
-        results_string = "{0},{1},{2},{3}".format(age, age_estimation.item(), text, confidence)
+        results_string = "{0},{1},{2},{3},{4}".format(age, age_estimation.item(), text, confidence, time_stamp)
         if not os.path.exists(file_path):
             with open('evaluation_results.csv', 'w+') as file:
-                file.write('age_binary,age_p,transcript,confidence\n')
+                file.write('age_binary,age_p,transcript,confidence,time_stamp\n')
                 file.write(results_string + '\n')
         else:
             with open('evaluation_results.csv', 'a') as file:
