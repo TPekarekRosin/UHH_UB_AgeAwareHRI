@@ -1,4 +1,6 @@
 import json
+
+import yaml
 from langchain.schema import (
     AIMessage,
     HumanMessage,
@@ -7,9 +9,9 @@ from langchain.schema import (
 from langchain.output_parsers import RegexParser
 import re
 # from prompts import prompt_1
-from dialogue_system.prompts import prompt_1
+# from dialogue_system.prompts import prompt_1
 from langchain.chat_models import ChatOpenAI
-
+from datetime import datetime
 
 #      ___       _______  _______ .__   __. .___________.
 #     /   \     /  _____||   ____||  \ |  | |           |
@@ -57,20 +59,18 @@ class SocialBrain:
                 json_data = json.loads(stripped_data)
                 return json_data
             except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                return None
-
+                raise ValueError(f"Error decoding JSON: {e}")
+          
         
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination, objects_in_use):
         if age == 0:
             age_string = "young"
         else:
             age_string = "elder"   
-        dataset_path = "dialog_results.json"
+        dataset_path = "dialog_results_1.json"
         current_data = self.read_current_data(dataset_path)
         
-        human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination:{destination}, objects_in_use:{objects_in_use}."
-        print(f"objects in use {objects_in_use}")
+        human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination:{destination}, objects_in_use:{objects_in_use}." 
         inputs = {
             'user_utterance': utterance_user, 
             'age': age_string, 
@@ -82,13 +82,18 @@ class SocialBrain:
             'move_base': move_base, 
             'current_location': current_location, 
             'destination': destination, 
-            'objects_in_use': []
+            'objects_in_use': objects_in_use
         }
+        now = datetime.now()
+        # print("Current date and time:", now)
+        # If you just need the current time
+        current_time = now.strftime("%H:%M:%S")
+        current_data.append(current_time)
         current_data.append(inputs) 
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
-        self.message_history.append(HumanMessage(content=human_message)
-        )
+        self.message_history.append(HumanMessage(content=human_message))
+        print(f"self.message_history is {self.message_history}")
         act_message = self.model(self.message_history)
         self.message_history.append(act_message)
         
@@ -96,7 +101,16 @@ class SocialBrain:
         print("act_message:", act_message)
         print("act_message content:", act_message.content)
         
-        results = self.parse_json_from_string(act_message.content)
+        try:
+            results = self.parse_json_from_string(act_message.content)
+            if results is None:
+                print("No valid JSON data could be parsed.")
+            else:
+                print("JSON data parsed successfully:", results)
+        except ValueError as e:
+            print(e)
+            return
+        
         system_transcript = str
         response_to_robot = dict()
         system_transcript = results["system_transcript"]
@@ -128,13 +142,10 @@ class SocialBrain:
 if __name__ == '__main__':
     
     with open("openai_api_key.txt") as fapi:
-            api_key = fapi.read()
-    # env = SocialEnv()
-    # print("env:", env)
-    # model_version = "gpt-3.5-turbo-instruct"
-    model_version = "gpt-3.5-turbo-1106"
+        api_key = fapi.read()
+    # model_version = "gpt-3.5-turbo-1106"
     # model_version = "gpt-3.5-turbo-0125"
-    # model_version = "gpt-4o"
+    model_version = "gpt-4o"
     prompt = prompt_1
     chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=model_version, max_tokens=256, openai_api_key=api_key)
     agent = SocialBrain(model=chat, prompt=prompt)

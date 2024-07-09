@@ -6,18 +6,18 @@ from dialogue_system.social_brain import SocialBrain
 import ast
 from dialogue_system.prompts import prompt_1
 
+
 class DialogueSystem:
     def __init__(self):
         self.robot_step = None
         self.robot_interruptable = False
-        
-        self.objects_in_use = dict()
+        self.objects_in_use = []
         self.user_data = dict()
         # string transcript
         # int32 age
         # float32 confidence
-        self.user_data["transcript"] = "please ready to serve"
-        self.user_data["age"] = "young"
+        self.user_data["transcript"] = ""
+        self.user_data["age"] = "elder"
         self.user_data["confidence"] = 90
         self.robot_data = dict()
         
@@ -30,8 +30,8 @@ class DialogueSystem:
         
         with open("openai_api_key.txt") as fapi:
             self.api_key = fapi.read()
-        # self.model_version = "gpt-3.5-turbo-1106"
-        self.model_version = "gpt-4o"
+        self.model_version = "gpt-3.5-turbo-1106"
+        # self.model_version = "gpt-4o"
         self.chat = ChatOpenAI(temperature=0.1, verbose=True, model_name=self.model_version, max_tokens=1000, openai_api_key=self.api_key)
         self.prompt = prompt_1
         self.agent = SocialBrain(model=self.chat, prompt=self.prompt)
@@ -46,7 +46,6 @@ class DialogueSystem:
         move_base = str
         current_location = str
         destination = str
-        objects_in_use = dict()
         print("robot data", self.robot_data)
         if not self.robot_data:
             system_transcript = "i have issues getting the robot status"
@@ -70,15 +69,17 @@ class DialogueSystem:
             current_location = self.robot_data["current_location"]
             destination = self.robot_data["destination"]
         print("transcript", transcript)
-        objects_in_use = self.objects_in_use
         # todo: define minor interruptions
         if "stop" not in transcript.lower() and confidence > 0.5:
             # todo: generate valid response for minor interruptions
             system_transcript, response_to_robot = self.agent.information_process(
                                                     transcript, age, confidence, step, interruptible, 
                                                     dict_object, move_arm, move_base, current_location, 
-                                                    destination, objects_in_use)
-            
+                                                    destination, self.objects_in_use)
+            self.user_data["transcript"] = ""
+            self.user_data["age"] = ""
+            self.user_data["confidence"] = 0
+                
             
             return 'minor', response_to_robot, system_transcript
         
@@ -126,14 +127,6 @@ class DialogueSystem:
             self.last_robot_destination = destination
             
             return system_transcript
-
-    def get_objects_in_use(self):
-        # looks at state of rosparam \objects_in_use and return list of objects
-        param_name = rospy.search_param('object_in_use')
-        object_str = rospy.get_param(param_name)
-        self.objects_in_use = object_str.split(',')
-        
-        print("self objects in use", self.objects_in_use)
 
     def get_robot_states(self):
         return self.robot_step, self.robot_interruptable

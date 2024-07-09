@@ -30,17 +30,29 @@ class DialogueNode:
         self.dialogue_system = DialogueSystem()
 
     def callback_obj_in_use(self, data):
-        print("objects in use")
-        rospy.loginfo(data)
-        self.dialogue_system.objects_in_use = data
+        # print("objects in use")
+        # rospy.loginfo(data)
+        length = len(data.objects)
+        for i in range(length):    
+            type = data.objects[i].type
+            color = data.objects[i].color
+            name = data.objects[i].name
+            location = data.objects[i].location
+            size = data.objects[i].size
+            current_object = {'type': type,
+                                'color': color,
+                                'name': name,
+                                'location': location,
+                                'size': size,              
+                            }
+            self.dialogue_system.objects_in_use.append(current_object)
               
     def callback_from_asr(self, data):
         # rospy.loginfo(data)
-        
         self.dialogue_system.user_data["transcript"] = data.transcript
         self.dialogue_system.user_data["age"] = data.age
         self.dialogue_system.user_data["confidence"] = data.confidence
-        print("CONTROL PRINT", self.dialogue_system.user_data)
+        # print("CONTROL PRINT", self.dialogue_system.user_data)
 
         minor_or_major, response_to_robot, system_transcript= self.dialogue_system.process_speech_input(data.transcript,
                                                                              data.age,
