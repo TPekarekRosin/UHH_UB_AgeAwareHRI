@@ -239,11 +239,11 @@ class ASRLiveModel:
         file_path = os.path.join(path, 'evaluation_results.csv')
         results_string = "{0},{1},{2},{3},{4}".format(age, age_estimation.item(), text, confidence, time_stamp)
         if not os.path.exists(file_path):
-            with open('evaluation_results.csv', 'w+') as file:
+            with open(file_path, 'w+') as file:
                 file.write('age_binary,age_p,transcript,confidence,time_stamp\n')
                 file.write(results_string + '\n')
         else:
-            with open('evaluation_results.csv', 'a') as file:
+            with open(file_path, 'a') as file:
                 file.write(results_string + '\n')
 
             
