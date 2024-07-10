@@ -33,6 +33,7 @@ class DialogueNode:
         # print("objects in use")
         # rospy.loginfo(data)
         length = len(data.objects)
+        self.dialogue_system.objects_in_use.clear()
         for i in range(length):    
             type = data.objects[i].type
             color = data.objects[i].color
