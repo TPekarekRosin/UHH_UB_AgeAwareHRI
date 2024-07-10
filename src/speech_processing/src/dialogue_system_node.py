@@ -48,7 +48,7 @@ class DialogueNode:
             self.dialogue_system.objects_in_use.append(current_object)
               
     def callback_from_asr(self, data):
-        # rospy.loginfo(data)
+        rospy.loginfo(data)
         self.dialogue_system.user_data["transcript"] = data.transcript
         self.dialogue_system.user_data["age"] = data.age
         self.dialogue_system.user_data["confidence"] = data.confidence

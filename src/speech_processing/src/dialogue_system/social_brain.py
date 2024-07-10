@@ -63,11 +63,14 @@ class SocialBrain:
           
         
     def information_process(self, utterance_user, age, confidence_of_age, step, interruptible, dict_object, move_arm, move_base, current_location, destination, objects_in_use):
+        print(f"age value is {age}")
         if age == 0:
-            age_string = "young"
-        else:
+            age_string = "younger"
+        elif age == 1:
             age_string = "elder"   
-        dataset_path = "dialog_results_1.json"
+        else:
+            age_string = ""   
+        dataset_path = "dialog_results.json"
         current_data = self.read_current_data(dataset_path)
         
         human_message = f"user_utterance: {utterance_user}, age: {age_string}, confidence_of_age: {confidence_of_age}, step: {step}, interruptible: {interruptible}, dict_object :{dict_object}, move_arm:{move_arm}, move_base:{move_base}, current_location:{current_location}, destination:{destination}, objects_in_use:{objects_in_use}." 
@@ -93,7 +96,7 @@ class SocialBrain:
         print("-----------------------------before model--------------------------")
         print("human_message", human_message)
         self.message_history.append(HumanMessage(content=human_message))
-        print(f"self.message_history is {self.message_history}")
+        # print(f"self.message_history is {self.message_history}")
         act_message = self.model(self.message_history)
         self.message_history.append(act_message)
         

@@ -5,7 +5,7 @@ prompt_1='''
     Here is the template that you will get:
 
     user_utterance: "string", 
-    age: 'elder' or 'young', 
+    age: 'elder' or 'younger', 
     confidence_of_age: int, 
     step: "string", 
     interruptible: bool, 
@@ -18,10 +18,12 @@ prompt_1='''
 
     There are rules that you need to follow to generate sentence for system_transcript:
     You should generate a response for the user's utterance, do not repeat the user's utterance.
-    if the age is 'young':
-        You do not need to generate a sentence to announce the robot's states.
+    if the age is 'younger':
+        First, it does not matter in which steps; you do not need to generate a response for the user's utterance.
+        Second, It does not matter whether the value of move_arm is true or false; you do not need to generate a response for the user's utterance.
+        Third, It does not matter whether the value of move_base is true or false; you do not need to generate a response for the user's utterance.
     if the age is 'elder':
-        First, we have 6 steps: already done, task done, set parameters, transporting search, transporting fetch, and transporting deliver. You need to generate a sentence to announce your current steps with the object perporty from dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"].
+        First, we have 6 steps: already done, task done, set parameters, transporting search, transporting fetch, and transporting deliver. You need to generate a sentence to announce your current steps with the object property from dict_object: [type: "string", color: "string", name: "string", location: "string", size: "string"].
         Second, if the value of move_arm is true, you need to generate a sentence, e.g., Be careful, I am moving my arm now.
         Third, if the value of move_base is true, you need to use current_location and destination to generate a sentence, e.g., Be careful, I am moving from the current_location to the destination.
     if the interruptible is false:
@@ -29,7 +31,7 @@ prompt_1='''
         
     You need to output those 12 items, If there is no value in this item, use '':
     * JSON{"system_transcript"}: the sentence you respond to the user.
-    * JSON{"command"}: You have seven options: 'bring_me', 'setting_breakfast', 'replace_object', 'change_location', 'stop', or 'other'.
+    * JSON{"command"}: You only have seven options: 'bring_me', 'setting_breakfast', 'replace_object', 'change_location', 'stop', or 'other'.
     * JSON{"add_type"}: the target object type.
     * JSON{"add_color"}: the target object color.
     * JSON{"add_name"}: the target object name.

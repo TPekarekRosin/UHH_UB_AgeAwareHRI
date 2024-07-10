@@ -16,9 +16,9 @@ class DialogueSystem:
         # string transcript
         # int32 age
         # float32 confidence
-        self.user_data["transcript"] = ""
-        self.user_data["age"] = "elder"
-        self.user_data["confidence"] = 90
+        # self.user_data["transcript"] = ''
+        # self.user_data["age"] = ''
+        # self.user_data["confidence"] = ''
         self.robot_data = dict()
         
         self.last_robot_step = None
@@ -48,8 +48,21 @@ class DialogueSystem:
         destination = str
         print("robot data", self.robot_data)
         if not self.robot_data:
-            system_transcript = "i have issues getting the robot status"
-            return '', (), system_transcript
+            # system_transcript = "i have issues getting the robot status"
+            # return '', (), system_transcript
+            step = ''
+            interruptible = ''
+            dict_object["type"] = ''
+            dict_object["color"] = ''
+            dict_object["name"] = ''
+            dict_object["location"] = ''
+            dict_object["size"] = ''
+            print("dict_object: ", dict_object)
+            # self.robot_data["object"]
+            move_arm = ''
+            move_base = ''
+            current_location = ''
+            destination = ''
         else:
             step = self.robot_data["step"]
             interruptible = self.robot_data["interruptable"]
@@ -68,7 +81,7 @@ class DialogueSystem:
             move_base = self.robot_data["move_base"]
             current_location = self.robot_data["current_location"]
             destination = self.robot_data["destination"]
-        print("transcript", transcript)
+        # print("transcript", transcript)
         # todo: define minor interruptions
         if "stop" not in transcript.lower() and confidence > 0.5:
             # todo: generate valid response for minor interruptions
@@ -76,9 +89,8 @@ class DialogueSystem:
                                                     transcript, age, confidence, step, interruptible, 
                                                     dict_object, move_arm, move_base, current_location, 
                                                     destination, self.objects_in_use)
+            print(f"1 age value is {age}")
             self.user_data["transcript"] = ""
-            self.user_data["age"] = ""
-            self.user_data["confidence"] = 0
                 
             
             return 'minor', response_to_robot, system_transcript
@@ -108,9 +120,14 @@ class DialogueSystem:
         print("dict_object: ", dict_object)
        
         print("user data", self.user_data)
-        utterance_user = self.user_data["transcript"]
-        age = self.user_data["age"]
-        confidence_of_age = self.user_data["confidence"]
+        if not self.user_data:
+            utterance_user = ''
+            age = ''
+            confidence_of_age = ''
+        else:
+            utterance_user = self.user_data["transcript"]
+            age = self.user_data["age"]
+            confidence_of_age = self.user_data["confidence"]
         if self.last_robot_step == self.robot_step and self.last_robot_interruptable == interruptable and self.last_robot_move_arm == move_arm and self.last_robot_move_base == move_base and self.last_robot_current_location == current_location and self.last_robot_destination == destination:
             print("the robot states have not changed.")
             return    
