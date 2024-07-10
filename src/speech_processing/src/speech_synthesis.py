@@ -16,14 +16,15 @@ class SynthesizerNode:
 
     def callback(self, data):
         rospy.loginfo(data)
-        text = data.data
+        # Disabled the audio playback of the robot feedback due to issues with interruptability
+        """text = data.data
         if text:
-            tts = gtts.gTTS(text)
+            #tts = gtts.gTTS(text)
             tts.save("system_transcript.mp3")
             self.pub_to_asr.publish("off")
             playsound("system_transcript.mp3")
             rospy.sleep(1)
-            self.pub_to_asr.publish("on")
+            self.pub_to_asr.publish("on")"""
         
 
 if __name__ == "__main__": 
