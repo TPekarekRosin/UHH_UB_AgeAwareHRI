@@ -31,7 +31,7 @@ prompt_1='''
         
     You need to output those 12 items, If there is no value in this item, use '':
     * JSON{"system_transcript"}: the sentence you respond to the user.
-    * JSON{"command"}: You only have seven options: 'bring_me', 'setting_breakfast', 'replace_object', 'change_location', 'stop', or 'other'.
+    * JSON{"command"}: You only have six options: 'bring_me' refers to the user's request for an object, 'setting_breakfast' pertains to anything related to breakfast, 'replace_object' indicates the user's request to replace one object with another, and 'change_location' specifies the user's request to place an object in a different location, 'stop', or 'other'.
     * JSON{"add_type"}: the target object type.
     * JSON{"add_color"}: the target object color.
     * JSON{"add_name"}: the target object name.
