@@ -1,6 +1,9 @@
 # UHH_UB_AgeAwareHRI
 This framework offers an adaptive approach to human-robot interaction. We use age as a modulating variable for the interaction and allow the user to interrupt and change the robot's actions during the interaction itself.
 
+This is the git repository for the paper ["A Framework for Adapting Human-Robot Interaction to Diverse User Groups"](https://arxiv.org/abs/2410.11377), accepted at ICSR2024.
+If you use this code, please cite our paper.
+
 ### Installation
 *setup.bash* installs the necessary python packages in a virtual environment *~/.arvenv*.
 
